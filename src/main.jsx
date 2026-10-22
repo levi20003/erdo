@@ -17,5 +17,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 // Registered in production only, so the dev server never serves stale cached files.
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}))
+  window.addEventListener('load', () => navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {}))
 }

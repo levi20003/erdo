@@ -7,6 +7,7 @@ import react from '@vitejs/plugin-react'
 /**
  * Injects the hashed build output into dist/sw.js so the service worker can
  * precache the whole app on install (offline from the very first visit).
+ * URLs are relative, so they resolve against the worker's scope under any base path.
  */
 function precacheManifest() {
   let files = []
@@ -18,7 +19,7 @@ function precacheManifest() {
     },
     writeBundle({ dir }) {
       const swPath = resolve(dir, 'sw.js')
-      const urls = ['/', ...files.filter((f) => f !== 'index.html').map((f) => `/${f}`)]
+      const urls = ['./', ...files.filter((f) => f !== 'index.html').map((f) => `./${f}`)]
       const version = createHash('sha256').update(urls.join()).digest('hex').slice(0, 10)
       const sw = readFileSync(swPath, 'utf8')
         .replace('self.__PRECACHE_URLS__', JSON.stringify(urls))
@@ -29,5 +30,7 @@ function precacheManifest() {
 }
 
 export default defineConfig({
+  // GitHub Pages serves the app from /erdo/; the deploy workflow sets BASE_PATH.
+  base: process.env.BASE_PATH || '/',
   plugins: [react(), precacheManifest()],
 })

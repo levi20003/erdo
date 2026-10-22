@@ -37,7 +37,7 @@ export default function App() {
         className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-4 overflow-x-clip px-3 pb-6 pt-[max(1rem,env(safe-area-inset-top))] min-[400px]:px-4 sm:px-6"
       >
         <header className="flex items-center gap-3 px-1 py-2">
-          <img src="/icons/icon.svg" alt="" className="size-10 rounded-xl ring-1 ring-zinc-800" />
+          <img src={`${import.meta.env.BASE_URL}icons/icon.svg`} alt="" className="size-10 rounded-xl ring-1 ring-zinc-800" />
           <div className="min-w-0">
             <h1 className="text-lg font-semibold tracking-tight text-zinc-100">
               Focus<span className="text-sand">Grove</span>

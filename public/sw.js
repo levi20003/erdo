@@ -4,8 +4,10 @@
  */
 const BUILD_URLS = self.__PRECACHE_URLS__
 const CACHE = 'focusgrove-__CACHE_VERSION__'
-const STATIC = ['/manifest.json', '/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png']
-const PRECACHE = [...(Array.isArray(BUILD_URLS) ? BUILD_URLS : ['/']), ...STATIC]
+// Relative to this worker's URL, so the app works under any base path (e.g. /erdo/ on GitHub Pages).
+const STATIC = ['./manifest.json', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png']
+const PRECACHE = [...(Array.isArray(BUILD_URLS) ? BUILD_URLS : ['./']), ...STATIC]
+const SHELL = new URL('./', self.location).href
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)))
@@ -31,10 +33,10 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((res) => {
           const copy = res.clone()
-          caches.open(CACHE).then((c) => c.put('/', copy))
+          caches.open(CACHE).then((c) => c.put(SHELL, copy))
           return res
         })
-        .catch(() => caches.match('/')),
+        .catch(() => caches.match(SHELL)),
     )
     return
   }
