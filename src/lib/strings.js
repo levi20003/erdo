@@ -10,7 +10,24 @@ export const t = {
   strictNote: 'Szigorú mód — ha elhagyod az alkalmazást, a munkamenet elbukik.',
   focusLocked: 'Értesítések némítva a fókusz alatt',
   stage: 'szakasz',
-  willGrow: 'Ebben a körben nő',
+  nextStage: (name, min) => `Következő: ${name} · ${min} p múlva`,
+  stagePath: (from, to) => `5 szakasz: ${from} → ${to}`,
+  fullyGrown: 'Teljesen kifejlett',
+  celebrate: {
+    label: 'Munkamenet kész',
+    grown: 'kifejlődött',
+    minutes: '+25 perc fókusz',
+    streak: (n) => `${n} napos sorozat`,
+    breakSoon: 'A szünet mindjárt kezdődik',
+  },
+  streakCard: {
+    unit: 'napos sorozat',
+    nextMilestone: (n) => `Következő mérföldkő: ${n} nap`,
+    remaining: (n) => `még ${n} nap`,
+    allDone: 'Minden mérföldkő teljesítve!',
+    start: 'Indíts egy fókuszt, és kezdődjön a sorozat!',
+    doneToday: 'Mára megvan',
+  },
   breakGuide: { breathing: 'Légzés', stretch: 'Nyújtás' },
   breathing: [
     { label: 'Belégzés', hint: 'Lassan, az orrodon át' },
@@ -68,7 +85,6 @@ export const t = {
     confirm: 'Törlés',
   },
   toast: {
-    completed: (item) => `Kész! ${item} nőtt az erdődben.`,
     failed: 'A munkamenet elbukott — elhagytad az alkalmazást.',
     gaveUp: 'Feladtad a munkamenetet.',
     breakOver: 'Lejárt a szünet. Jöhet a következő kör?',

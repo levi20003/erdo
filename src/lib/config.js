@@ -2,6 +2,12 @@
 export const FOCUS_SEC = 25 * 60
 export const BREAK_SEC = 5 * 60
 
+/** Completion celebration shown between focus and break; the 5-minute break starts after it. */
+export const CELEBRATION_MS = 3600
+
+/** Streak milestones shown on the streak card (days). */
+export const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100, 180, 365]
+
 /** A window blur (not a tab switch) fails the session if focus doesn't return within this time. */
 export const BLUR_GRACE_MS = 2000
 

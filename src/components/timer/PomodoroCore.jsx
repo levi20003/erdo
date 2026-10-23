@@ -6,9 +6,13 @@ import { useAppStore, useCategoryLookup } from '../../store/AppStore'
 import { BreakGuideToggle, BreathingGuide, StretchGuide } from '../breaks/BreakGuide'
 import ForestScene from '../growth/ForestScene'
 import ProgressRing from './ProgressRing'
+import StageStepper from './StageStepper'
 import TimerControls from './TimerControls'
 
-/** Ring + Erdő scene (or break guide) + growth stage + clock + controls. Shared by the card and Focus View. */
+/**
+ * Ring + Erdő scene (or break guide) + growth stages + clock + controls.
+ * Shared by the card and Focus View; `large` is the stripped-down Focus View variant.
+ */
 export default function PomodoroCore({ pomodoro, large = false }) {
   const { state, actions } = useAppStore()
   const categories = useCategoryLookup()
@@ -24,7 +28,7 @@ export default function PomodoroCore({ pomodoro, large = false }) {
   return (
     <div className="flex w-full flex-col items-center gap-5">
       <div className={large ? 'w-[min(80vw,52dvh,28rem)]' : 'w-full max-w-[18rem]'}>
-        <ProgressRing progress={timer ? progress : 0} color={onBreak ? '#c9ab84' : category?.color ?? '#5f6239'}>
+        <ProgressRing progress={timer ? progress : 0} color={onBreak ? '#c9ab84' : category?.color ?? '#5f6239'} live={phase === 'focus'}>
           {onBreak ? (
             <div key={`break-${state.prefs.breakGuide}`} className="size-full animate-scene-in">
               {state.prefs.breakGuide === 'stretch' ? (
@@ -46,18 +50,14 @@ export default function PomodoroCore({ pomodoro, large = false }) {
         {onBreak ? (
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-sand/80">{t.phase.break}</p>
         ) : (
-          <div key={`${category?.id}-${stage}`} className="flex animate-fade-up items-center gap-2 text-xs">
-            <span className="font-medium text-zinc-300">{phase === 'focus' ? item.stages[stage] : item.name}</span>
-            <span className="flex gap-1" aria-label={`${stage + 1}. ${t.stage} / 5`}>
-              {item.stages.map((s, i) => (
-                <span
-                  key={s}
-                  className="h-1 w-3 rounded-full transition-colors duration-700"
-                  style={{ background: phase === 'focus' && i <= stage ? category?.color ?? '#5f6239' : '#3f3f46' }}
-                />
-              ))}
-            </span>
-          </div>
+          <StageStepper
+            item={item}
+            stage={stage}
+            progress={growth}
+            active={phase === 'focus'}
+            color={category?.color ?? '#5f6239'}
+            compact={large}
+          />
         )}
         <p
           className={`font-mono font-extralight tabular-nums leading-none tracking-tight text-zinc-50 ${large ? 'text-7xl sm:text-8xl' : 'text-6xl'}`}
@@ -65,7 +65,6 @@ export default function PomodoroCore({ pomodoro, large = false }) {
         >
           {formatClock(timer ? remainingSec : FOCUS_SEC)}
         </p>
-        {phase === 'idle' && <p className="text-[11px] text-zinc-500">{t.willGrow}: {item.name}</p>}
       </div>
 
       {onBreak && <BreakGuideToggle value={state.prefs.breakGuide} onChange={(v) => actions.setPref('breakGuide', v)} />}

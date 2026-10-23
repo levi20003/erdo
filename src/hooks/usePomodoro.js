@@ -17,6 +17,8 @@ export function usePomodoro() {
   // Clamped to the phase length: `now` can lag one tick behind right after a phase change.
   const remainingSec = timer ? Math.min(timer.durationSec, Math.max(0, Math.ceil((timer.endsAt - now) / 1000))) : null
   const progress = timer ? 1 - remainingSec / timer.durationSec : 0
+  // The break is scheduled to start after the completion celebration.
+  const celebrating = timer?.phase === 'break' && now < timer.startedAt
 
   useStrictMode(timer, actions.failFocus)
 
@@ -31,5 +33,5 @@ export function usePomodoro() {
     document.title = timer ? `${formatClock(remainingSec)} · FocusGrove` : 'FocusGrove'
   }, [timer, remainingSec])
 
-  return { timer, remainingSec, progress }
+  return { timer, remainingSec, progress, celebrating }
 }

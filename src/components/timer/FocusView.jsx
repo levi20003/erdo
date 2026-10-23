@@ -1,14 +1,13 @@
 import { useEffect } from 'react'
-import { growthItem } from '../../lib/growth'
 import { t } from '../../lib/strings'
-import { useCategoryLookup } from '../../store/AppStore'
 import Icon from '../ui/Icon'
 import PomodoroCore from './PomodoroCore'
 
-/** Immersive, distraction-free layer: the forest, the clock and the one essential control. */
+/**
+ * Contextual Focus View: nothing but the growing item, the timer and the one
+ * essential control. The exit stays available but recedes until hovered or focused.
+ */
 export default function FocusView({ pomodoro, onExit }) {
-  const categories = useCategoryLookup()
-  const category = categories[pomodoro.timer?.categoryId]
   const focusing = pomodoro.timer?.phase === 'focus'
 
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function FocusView({ pomodoro, onExit }) {
       role="dialog"
       aria-modal="true"
       aria-label={t.fullscreen}
-      className="fixed inset-0 z-40 flex animate-fade-in flex-col overflow-hidden bg-zinc-950 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]"
+      className="fixed inset-0 z-40 flex animate-fade-in flex-col overflow-hidden bg-zinc-950 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]"
     >
       <div
         aria-hidden="true"
@@ -35,28 +34,18 @@ export default function FocusView({ pomodoro, onExit }) {
           focusing ? 'opacity-100' : 'opacity-60'
         }`}
       />
-      <header className="relative flex items-center justify-between gap-3">
-        <p className="flex min-w-0 items-center gap-2 text-xs text-zinc-500">
-          {category && <span className="size-2 shrink-0 rounded-full" style={{ background: category.color }} />}
-          <span className="truncate">
-            {category?.name ?? 'FocusGrove'}
-            {category && <span className="text-zinc-700"> · {growthItem(category.growth).name}</span>}
-          </span>
-        </p>
-        <button
-          type="button"
-          onClick={onExit}
-          className="flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-xs text-zinc-500 transition hover:bg-zinc-900 hover:text-zinc-200"
-        >
-          <Icon name="collapse" size={14} /> {t.exitFullscreen}
-        </button>
-      </header>
+      <button
+        type="button"
+        onClick={onExit}
+        aria-label={t.exitFullscreen}
+        title={t.exitFullscreen}
+        className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] z-10 grid size-10 place-items-center rounded-full text-zinc-500 opacity-80 transition hover:bg-zinc-900 hover:text-zinc-200 hover:opacity-100 focus-visible:opacity-100"
+      >
+        <Icon name="collapse" size={16} />
+      </button>
       <div className="relative flex flex-1 items-center justify-center">
         <PomodoroCore pomodoro={pomodoro} large />
       </div>
-      <p className={`relative flex items-center justify-center gap-1.5 text-[11px] text-zinc-600 transition-opacity ${focusing ? 'opacity-100' : 'opacity-0'}`}>
-        <Icon name="lock" size={12} /> {t.focusLocked}
-      </p>
     </div>
   )
 }

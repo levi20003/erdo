@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import Banners from './components/Banners'
+import SessionCelebration from './components/celebration/SessionCelebration'
 import CategoryManager from './components/categories/CategoryManager'
 import DailyChart from './components/dashboard/DailyChart'
 import StreakTile from './components/dashboard/StreakTile'
@@ -61,6 +62,7 @@ export default function App() {
       </div>
 
       {focusView.open && <FocusView pomodoro={pomodoro} onExit={focusView.exit} />}
+      <SessionCelebration celebrating={pomodoro.celebrating} />
       <SessionToasts />
     </>
   )

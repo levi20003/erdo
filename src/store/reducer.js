@@ -1,4 +1,4 @@
-import { BREAK_SEC, DEFAULT_CATEGORIES, FOCUS_SEC, MIN_LOGGED_FAIL_SEC } from '../lib/config'
+import { BREAK_SEC, CELEBRATION_MS, DEFAULT_CATEGORIES, FOCUS_SEC, MIN_LOGGED_FAIL_SEC } from '../lib/config'
 import { GROWTH_IDS } from '../lib/growth'
 import { uid } from '../lib/time'
 
@@ -8,6 +8,7 @@ import { uid } from '../lib/time'
  *  sessions            [{ id, categoryId, start, end, durationSec, status: 'completed'|'failed', reason? }]
  *  selectedCategoryId
  *  timer               null | { phase: 'focus'|'break', categoryId, startedAt, endsAt, durationSec, pageLoadId? }
+ *                      A break's startedAt lies CELEBRATION_MS in the future: the completion celebration plays first.
  *  prefs               { breakGuide: 'breathing'|'stretch' }
  *
  * Time-dependent actions carry `now`, so the reducer is pure and testable.
@@ -64,7 +65,13 @@ export function reducer(state, action) {
       return {
         ...state,
         sessions: [...state.sessions, session],
-        timer: { phase: 'break', categoryId: timer.categoryId, startedAt: action.now, endsAt: action.now + BREAK_SEC * 1000, durationSec: BREAK_SEC },
+        timer: {
+          phase: 'break',
+          categoryId: timer.categoryId,
+          startedAt: action.now + CELEBRATION_MS,
+          endsAt: action.now + CELEBRATION_MS + BREAK_SEC * 1000,
+          durationSec: BREAK_SEC,
+        },
       }
     }
 
