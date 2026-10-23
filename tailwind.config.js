@@ -43,6 +43,11 @@ export default {
         'pop-out': { from: { opacity: 1, transform: 'none' }, to: { opacity: 0, transform: 'scale(0.97) translateY(4px)' } },
         'toast-in': { from: { opacity: 0, transform: 'translateY(10px) scale(0.98)' }, to: { opacity: 1, transform: 'none' } },
         'toast-out': { from: { opacity: 1, transform: 'none' }, to: { opacity: 0, transform: 'translateY(6px) scale(0.98)' } },
+        // Live session: the timer card's border breathes between olive and gold.
+        'live-glow': {
+          '0%, 100%': { boxShadow: '0 0 0 1px rgb(128 132 77 / 0.35), 0 0 48px -16px rgb(128 132 77 / 0.55)' },
+          '50%': { boxShadow: '0 0 0 1px rgb(201 171 132 / 0.55), 0 0 72px -14px rgb(201 171 132 / 0.5)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 200ms ease-out both',
@@ -57,6 +62,7 @@ export default {
         'pop-out': 'pop-out 180ms ease-in both',
         'toast-in': 'toast-in 260ms cubic-bezier(.2,.8,.2,1) both',
         'toast-out': 'toast-out 180ms ease-in both',
+        'live-glow': 'live-glow 3.2s ease-in-out infinite',
       },
     },
   },

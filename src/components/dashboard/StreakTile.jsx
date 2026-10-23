@@ -45,7 +45,7 @@ function StreakFlame({ lit }) {
   )
 }
 
-export default function StreakTile({ streak }) {
+export default function StreakTile({ streak, className = '' }) {
   const lit = streak.current > 0
   const next = STREAK_MILESTONES.find((m) => m > streak.current)
   const prev = [...STREAK_MILESTONES].reverse().find((m) => m <= streak.current) ?? 0
@@ -55,7 +55,7 @@ export default function StreakTile({ streak }) {
     <Card
       title={t.streak}
       icon={<Icon name="flame" size={13} />}
-      className={lit ? 'border-sand/25 hover:border-sand/40' : ''}
+      className={`${lit ? 'border-sand/25 hover:border-sand/40' : ''} ${className}`}
     >
       {lit && (
         <span

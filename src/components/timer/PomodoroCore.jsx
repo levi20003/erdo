@@ -27,7 +27,8 @@ export default function PomodoroCore({ pomodoro, large = false }) {
 
   return (
     <div className="flex w-full flex-col items-center gap-5">
-      <div className={large ? 'w-[min(80vw,52dvh,28rem)]' : 'w-full max-w-[18rem]'}>
+      {/* Sized by height too, so the clock and Give Up stay on short screens (iPhone SE 1st gen: 568 px). */}
+      <div className={large ? 'w-[min(80vw,52dvh,28rem)]' : 'w-full max-w-[min(18rem,40dvh)]'}>
         <ProgressRing progress={timer ? progress : 0} color={onBreak ? '#c9ab84' : category?.color ?? '#5f6239'} live={phase === 'focus'}>
           {onBreak ? (
             <div key={`break-${state.prefs.breakGuide}`} className="size-full animate-scene-in">

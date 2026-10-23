@@ -8,8 +8,12 @@ export const CELEBRATION_MS = 3600
 /** Streak milestones shown on the streak card (days). */
 export const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100, 180, 365]
 
-/** A window blur (not a tab switch) fails the session if focus doesn't return within this time. */
-export const BLUR_GRACE_MS = 2000
+/**
+ * Leaving the app (tab switch, app switch, another window) fails the focus block
+ * unless the user is back within this time — forgiving an accidental swipe or
+ * app-switcher peek, not a real departure.
+ */
+export const LEAVE_GRACE_MS = 5000
 
 /** Failed sessions shorter than this are discarded instead of logged. */
 export const MIN_LOGGED_FAIL_SEC = 30

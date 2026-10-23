@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useToday } from '../../hooks/useToday'
 import { dailySeries, minutesByCategory } from '../../lib/stats'
 import { t } from '../../lib/strings'
 import { addDays, dayKey, formatMinutes, lastNDays, weekdayShort } from '../../lib/time'
@@ -15,6 +16,7 @@ export default function WeeklyChart({ className }) {
   const { sessions } = useAppStore().state
   const categories = useCategoryLookup()
   const [offset, setOffset] = useState(0)
+  const todayKey = useToday()
   const [direction, setDirection] = useState('left')
 
   const oldestOffset = useMemo(() => {
@@ -32,7 +34,7 @@ export default function WeeklyChart({ className }) {
       byCategory: minutesByCategory(sessions, new Set(days.map(dayKey))),
       total: series.reduce((sum, d) => sum + d.total, 0),
     }
-  }, [sessions, offset])
+  }, [sessions, offset, todayKey])
 
   const go = (delta) => {
     setDirection(delta > 0 ? 'right' : 'left')
@@ -41,7 +43,6 @@ export default function WeeklyChart({ className }) {
 
   // Scale to at least two pomodoros so a single session doesn't fill the column.
   const max = Math.max(50, ...series.map((d) => d.total))
-  const todayKey = dayKey()
   const rangeLabel = offset === 0 ? t.last7 : `${shortDate(days[0])} – ${shortDate(days[6])}`
   const navButton = 'grid size-8 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-100 disabled:pointer-events-none disabled:opacity-25'
 

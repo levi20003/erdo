@@ -1,14 +1,23 @@
-import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
+import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react'
 import { PAGE_LOAD_ID } from '../lib/pageLoad'
-import { load, save } from '../lib/storage'
+import { load, save, subscribe } from '../lib/storage'
 import { createInitialState, reducer } from './reducer'
 
 const StoreContext = createContext(null)
 
-export function AppStoreProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, undefined, () => createInitialState(load()))
+// Read once at startup, before the first render.
+const BOOT = load()
 
-  useEffect(() => save(state), [state])
+/** startedAt of a focus block that was already running when this page loaded (i.e. it was reloaded or reopened). */
+export const BOOT_FOCUS_STARTED_AT = BOOT.state.timer?.phase === 'focus' ? BOOT.state.timer.startedAt : null
+
+export function AppStoreProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, undefined, () => createInitialState(BOOT.state))
+  const [saveFailed, setSaveFailed] = useState(false)
+
+  useEffect(() => setSaveFailed(!save(state)), [state])
+  // Keep tabs in sync: another tab's save replaces ours instead of being overwritten by it.
+  useEffect(() => subscribe((next) => dispatch({ type: 'HYDRATE', state: next })), [])
 
   const actions = useMemo(
     () => ({
@@ -25,7 +34,9 @@ export function AppStoreProvider({ children }) {
     [],
   )
 
-  const value = useMemo(() => ({ state, actions }), [state, actions])
+  // 'unavailable' / 'repaired' come from startup; a failed save can happen any time (e.g. storage full).
+  const storage = saveFailed ? 'failing' : BOOT.status
+  const value = useMemo(() => ({ state, actions, storage }), [state, actions, storage])
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
 }
 

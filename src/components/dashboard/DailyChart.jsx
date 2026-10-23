@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useToday } from '../../hooks/useToday'
 import { minutesByCategory } from '../../lib/stats'
 import { t } from '../../lib/strings'
 import { dayKey, formatMinutes, startOfDay } from '../../lib/time'
@@ -14,12 +15,13 @@ export default function DailyChart({ className }) {
   const { sessions } = useAppStore().state
   const categories = useCategoryLookup()
 
+  const currentDay = useToday()
   const { today, byCategory, total } = useMemo(() => {
-    const key = dayKey()
+    const key = currentDay
     const today = sessions.filter((s) => dayKey(s.end) === key)
     const byCategory = minutesByCategory(sessions, new Set([key]))
     return { today, byCategory, total: Object.values(byCategory).reduce((a, b) => a + b, 0) }
-  }, [sessions])
+  }, [sessions, currentDay])
 
   const midnight = startOfDay().getTime()
 

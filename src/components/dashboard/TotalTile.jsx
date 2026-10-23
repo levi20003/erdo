@@ -3,12 +3,12 @@ import { formatHours } from '../../lib/time'
 import Card from '../ui/Card'
 import Icon from '../ui/Icon'
 
-export default function TotalTile({ totalMin, completedCount, failedCount }) {
+export default function TotalTile({ totalMin, completedCount, failedCount, className = '' }) {
   const attempts = completedCount + failedCount
   const rate = attempts ? Math.round((completedCount / attempts) * 100) : 0
 
   return (
-    <Card title={t.total} icon={<Icon name="clock" size={13} />}>
+    <Card title={t.total} icon={<Icon name="clock" size={13} />} className={className}>
       <div className="flex items-center gap-3">
         <span className="grid size-12 place-items-center rounded-2xl bg-olive-900 text-olive-300 ring-1 ring-olive/40">
           <Icon name="clock" size={24} />

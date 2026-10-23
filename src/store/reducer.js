@@ -1,5 +1,5 @@
-import { BREAK_SEC, CELEBRATION_MS, DEFAULT_CATEGORIES, FOCUS_SEC, MIN_LOGGED_FAIL_SEC } from '../lib/config'
-import { GROWTH_IDS } from '../lib/growth'
+import { BREAK_SEC, CELEBRATION_MS, FOCUS_SEC, MIN_LOGGED_FAIL_SEC } from '../lib/config'
+import { sanitizeState } from '../lib/sanitize'
 import { uid } from '../lib/time'
 
 /**
@@ -13,22 +13,9 @@ import { uid } from '../lib/time'
  *
  * Time-dependent actions carry `now`, so the reducer is pure and testable.
  */
+/** Initial state from saved data; anything missing or invalid falls back to defaults (see sanitize.js). */
 export function createInitialState(stored) {
-  const base = {
-    categories: DEFAULT_CATEGORIES,
-    sessions: [],
-    selectedCategoryId: DEFAULT_CATEGORIES[0].id,
-    timer: null,
-    prefs: { breakGuide: 'breathing' },
-  }
-  if (!stored) return base
-  const state = { ...base, ...stored, prefs: { ...base.prefs, ...stored.prefs } }
-  // Categories saved before growth items existed get one assigned.
-  state.categories = state.categories.map((c, i) => (c.growth ? c : { ...c, growth: GROWTH_IDS[i % GROWTH_IDS.length] }))
-  if (!state.categories.some((c) => c.id === state.selectedCategoryId)) {
-    state.selectedCategoryId = state.categories[0]?.id ?? null
-  }
-  return state
+  return sanitizeState(stored)
 }
 
 export function reducer(state, action) {
@@ -55,7 +42,8 @@ export function reducer(state, action) {
       if (!timer || action.now < timer.endsAt - 500) return state
       if (timer.phase === 'break') return { ...state, timer: null }
       const session = {
-        id: uid(),
+        // One focus block = one session: the id comes from its start, so a second tab can't log it twice.
+        id: `s-${timer.startedAt}`,
         categoryId: timer.categoryId,
         start: timer.startedAt,
         end: timer.endsAt,
@@ -81,7 +69,7 @@ export function reducer(state, action) {
       const elapsedSec = Math.round((end - timer.startedAt) / 1000)
       if (elapsedSec < MIN_LOGGED_FAIL_SEC) return { ...state, timer: null }
       const session = {
-        id: uid(),
+        id: `s-${timer.startedAt}`,
         categoryId: timer.categoryId,
         start: timer.startedAt,
         end,
@@ -113,6 +101,10 @@ export function reducer(state, action) {
       const selectedCategoryId = state.selectedCategoryId === action.id ? categories[0].id : state.selectedCategoryId
       return { ...state, categories, selectedCategoryId }
     }
+
+    case 'HYDRATE':
+      // Another tab saved newer state; it is already sanitized.
+      return action.state
 
     case 'SET_PREF':
       return { ...state, prefs: { ...state.prefs, [action.key]: action.value } }
