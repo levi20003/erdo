@@ -1,18 +1,18 @@
 import { useEffect } from 'react'
 import { LEAVE_GRACE_MS } from '../lib/config'
 import { PAGE_LOAD_ID } from '../lib/pageLoad'
-import { BOOT_FOCUS_STARTED_AT } from '../store/AppStore'
+import { createStrictGuard } from '../lib/strictGuard'
+import { bootFocusStartedAt } from '../store/boot'
 
 /**
- * Shared with usePomodoro: while the user is away, completion waits for this
- * hook's verdict, so a block can't "finish" in a background tab and then count.
+ * Shared with usePomodoro: while the user is away, completion waits for Strict
+ * Mode's verdict, so a block can't "finish" in a background tab and then count.
  */
 export const away = { since: null }
 
 /**
- * Strict Mode enforcement during a focus block owned by this page:
+ * Strict Mode for a focus block owned by this page (decisions: lib/strictGuard.js):
  *  - tab hidden, app backgrounded, other window focused → fails unless back within LEAVE_GRACE_MS
- *    (decided by a timer where the page keeps running, or on return where the OS froze it)
  *  - page reloaded or reopened mid-session → fails on load
  * A block started in ANOTHER tab is left to that tab; this one only mirrors it.
  * The web cannot tell a manual screen lock from an app switch, so locking counts as
@@ -26,24 +26,21 @@ export function useStrictMode(timer, failFocus) {
   useEffect(() => {
     if (!active) return
     if (!owned) {
-      if (startedAt === BOOT_FOCUS_STARTED_AT) failFocus('reload')
+      if (startedAt === bootFocusStartedAt()) failFocus('reload')
       return
     }
 
-    let reason = null
-    let graceTimer
+    const guard = createStrictGuard({ graceMs: LEAVE_GRACE_MS, onFail: failFocus })
+    const sync = () => {
+      away.since = guard.awaySince()
+    }
     const leave = (why) => {
-      if (away.since !== null) return
-      away.since = Date.now()
-      reason = why
-      graceTimer = setTimeout(() => failFocus(reason), LEAVE_GRACE_MS)
+      guard.leave(why)
+      sync()
     }
     const back = () => {
-      if (away.since === null) return
-      const gone = Date.now() - away.since
-      clearTimeout(graceTimer)
-      away.since = null
-      if (gone > LEAVE_GRACE_MS) failFocus(reason)
+      guard.back()
+      sync()
     }
 
     const onVisibility = () => (document.hidden ? leave('hidden') : back())
@@ -59,7 +56,7 @@ export function useStrictMode(timer, failFocus) {
     window.addEventListener('blur', onBlur)
     window.addEventListener('focus', onFocus)
     return () => {
-      clearTimeout(graceTimer)
+      guard.dispose()
       away.since = null
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pagehide', onPageHide)

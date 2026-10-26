@@ -1,41 +1,22 @@
-import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react'
-import { PAGE_LOAD_ID } from '../lib/pageLoad'
-import { load, save, subscribe } from '../lib/storage'
+import { createContext, useContext, useMemo, useReducer } from 'react'
+import { createActions } from './actions'
+import { getBoot } from './boot'
 import { createInitialState, reducer } from './reducer'
+import { usePersistence } from './usePersistence'
 
+/*
+ * App state: one reducer (store/reducer.js), persisted to localStorage
+ * (store/usePersistence.js), loaded once per page (store/boot.js).
+ */
 const StoreContext = createContext(null)
 
-// Read once at startup, before the first render.
-const BOOT = load()
-
-/** startedAt of a focus block that was already running when this page loaded (i.e. it was reloaded or reopened). */
-export const BOOT_FOCUS_STARTED_AT = BOOT.state.timer?.phase === 'focus' ? BOOT.state.timer.startedAt : null
-
 export function AppStoreProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, undefined, () => createInitialState(BOOT.state))
-  const [saveFailed, setSaveFailed] = useState(false)
+  const [state, dispatch] = useReducer(reducer, undefined, () => createInitialState(getBoot().state))
+  const saving = usePersistence(state, dispatch)
+  const actions = useMemo(() => createActions(dispatch), [])
 
-  useEffect(() => setSaveFailed(!save(state)), [state])
-  // Keep tabs in sync: another tab's save replaces ours instead of being overwritten by it.
-  useEffect(() => subscribe((next) => dispatch({ type: 'HYDRATE', state: next })), [])
-
-  const actions = useMemo(
-    () => ({
-      startFocus: () => dispatch({ type: 'START_FOCUS', now: Date.now(), pageLoadId: PAGE_LOAD_ID }),
-      completePhase: () => dispatch({ type: 'COMPLETE_PHASE', now: Date.now() }),
-      failFocus: (reason) => dispatch({ type: 'FAIL_FOCUS', reason, now: Date.now() }),
-      skipBreak: () => dispatch({ type: 'SKIP_BREAK' }),
-      selectCategory: (id) => dispatch({ type: 'SELECT_CATEGORY', id }),
-      addCategory: ({ name, color, growth }) => dispatch({ type: 'ADD_CATEGORY', name, color, growth }),
-      updateCategory: (id, patch) => dispatch({ type: 'UPDATE_CATEGORY', id, patch }),
-      deleteCategory: (id) => dispatch({ type: 'DELETE_CATEGORY', id }),
-      setPref: (key, value) => dispatch({ type: 'SET_PREF', key, value }),
-    }),
-    [],
-  )
-
-  // 'unavailable' / 'repaired' come from startup; a failed save can happen any time (e.g. storage full).
-  const storage = saveFailed ? 'failing' : BOOT.status
+  // Startup status ('migrated', 'repaired', 'unavailable', …) unless saving is failing right now.
+  const storage = saving ? getBoot().status : 'failing'
   const value = useMemo(() => ({ state, actions, storage }), [state, actions, storage])
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
 }

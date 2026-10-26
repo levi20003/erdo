@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
+import pkg from './package.json' with { type: 'json' }
 import react from '@vitejs/plugin-react'
 
 /**
@@ -32,5 +33,8 @@ function precacheManifest() {
 export default defineConfig({
   // GitHub Pages serves the app from /erdo/; the deploy workflow sets BASE_PATH.
   base: process.env.BASE_PATH || '/',
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   plugins: [react(), precacheManifest()],
+  // Unit tests only; e2e/ belongs to Playwright.
+  test: { include: ['src/**/*.test.js'] },
 })

@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { STREAK_MILESTONES } from '../../lib/config'
 import { t } from '../../lib/strings'
-import { dayKey, lastNDays } from '../../lib/time'
+import { dayKey, lastNDays, weekdayNarrow } from '../../lib/time'
 import Bar from '../ui/Bar'
 import Card from '../ui/Card'
 import Icon from '../ui/Icon'
@@ -45,7 +46,7 @@ function StreakFlame({ lit }) {
   )
 }
 
-export default function StreakTile({ streak, className = '' }) {
+function StreakTile({ streak, className = '' }) {
   const lit = streak.current > 0
   const next = STREAK_MILESTONES.find((m) => m > streak.current)
   const prev = [...STREAK_MILESTONES].reverse().find((m) => m <= streak.current) ?? 0
@@ -85,7 +86,7 @@ export default function StreakTile({ streak, className = '' }) {
         )}
       </div>
 
-      <ol className="relative mt-5 flex justify-between" aria-label="Fókusz napok a héten">
+      <ol className="relative mt-5 flex justify-between" aria-label={t.aria.weekDays}>
         {lastNDays(7).map((d) => {
           const key = dayKey(d)
           const hit = streak.days.has(key)
@@ -99,7 +100,7 @@ export default function StreakTile({ streak, className = '' }) {
                 <Icon name="check" size={11} strokeWidth={3} />
               </span>
               <span className={`text-[10px] uppercase ${key === todayKey ? 'text-sand' : 'text-zinc-600'}`}>
-                {d.toLocaleDateString('hu-HU', { weekday: 'narrow' })}
+                {weekdayNarrow(d)}
               </span>
             </li>
           )
@@ -118,3 +119,6 @@ export default function StreakTile({ streak, className = '' }) {
     </Card>
   )
 }
+
+// Memoized: App re-renders every second while a timer runs; this card only depends on its props and the store.
+export default memo(StreakTile)

@@ -41,7 +41,7 @@ export default function TimerCard({ pomodoro, onFullscreen, className = '' }) {
           <div className="relative flex w-full animate-fade-in items-center justify-between gap-3">
             <span className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-950/60 px-3 py-1 text-[11px] text-zinc-400">
               <Icon name="tree" size={13} className="text-olive-300" />
-              Erdő · 25 / 5
+              {t.themeBadge}
             </span>
             <button
               type="button"

@@ -1,10 +1,11 @@
+import { t } from '../../lib/strings'
 import { useAppStore } from '../../store/AppStore'
 import ForestScene from '../growth/ForestScene'
 
 export default function CategorySelect({ disabled }) {
   const { state, actions } = useAppStore()
   return (
-    <div role="radiogroup" aria-label="Kategória" className="flex flex-wrap justify-center gap-2">
+    <div role="radiogroup" aria-label={t.aria.category} className="flex flex-wrap justify-center gap-2">
       {state.categories.map((c) => {
         const selected = c.id === state.selectedCategoryId
         return (

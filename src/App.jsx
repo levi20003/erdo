@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import Banners from './components/Banners'
 import SessionCelebration from './components/celebration/SessionCelebration'
 import CategoryManager from './components/categories/CategoryManager'
@@ -6,26 +6,42 @@ import DailyChart from './components/dashboard/DailyChart'
 import StreakTile from './components/dashboard/StreakTile'
 import TotalTile from './components/dashboard/TotalTile'
 import WeeklyChart from './components/dashboard/WeeklyChart'
+import FeedbackPrompt from './components/feedback/FeedbackPrompt'
+import { consumeSettingsReopen } from './components/settings/reopen'
 import SessionToasts from './components/toast/SessionToasts'
 import FocusView from './components/timer/FocusView'
 import TimerCard from './components/timer/TimerCard'
+import Icon from './components/ui/Icon'
+import Sheet from './components/ui/Sheet'
 import { useFullscreen } from './hooks/useFullscreen'
 import { usePomodoro } from './hooks/usePomodoro'
 import { useToday } from './hooks/useToday'
+import { computeInsights } from './lib/insights'
+import { lazyScreen } from './lib/lazy'
 import { completed, computeStreak, totalMinutes } from './lib/stats'
 import { t } from './lib/strings'
 import { useAppStore } from './store/AppStore'
+
+// Opened on demand, so they stay out of the initial bundle.
+const SettingsPanel = lazyScreen(() => import('./components/settings/SettingsPanel'))
+const SharePanel = lazyScreen(() => import('./components/share/SharePanel'))
+const sheetFallback = <div className="h-40 animate-pulse rounded-2xl bg-zinc-800/40" />
 
 export default function App() {
   const { sessions } = useAppStore().state
   const pomodoro = usePomodoro() // single timer instance shared by the card and Focus View
   const focusView = useFullscreen()
   const today = useToday()
+  const [settingsOpen, setSettingsOpen] = useState(consumeSettingsReopen)
+  const [shareOpen, setShareOpen] = useState(false)
+  const openShare = useCallback(() => setShareOpen(true), [])
   // Contextual focus: once a block starts, everything but the timer steps away.
   const focusMode = pomodoro.timer?.phase === 'focus'
 
   useEffect(() => {
-    if (focusMode) window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (!focusMode) return
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
   }, [focusMode])
 
   const stats = useMemo(() => {
@@ -35,6 +51,7 @@ export default function App() {
       totalMin: totalMinutes(sessions),
       completedCount: done,
       failedCount: sessions.length - done,
+      insights: computeInsights(sessions),
     }
   }, [sessions, today]) // eslint-disable-line react-hooks/exhaustive-deps -- `today` re-derives the streak at midnight
 
@@ -54,10 +71,21 @@ export default function App() {
               </h1>
               <p className="truncate text-xs text-zinc-500">{t.appTagline}</p>
             </div>
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              aria-label={t.settings.open}
+              title={t.settings.open}
+              className="ml-auto grid size-10 shrink-0 place-items-center rounded-xl border border-zinc-800 text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-100"
+            >
+              <Icon name="settings" size={17} />
+            </button>
           </header>
         )}
 
         {!focusMode && <Banners />}
+        {/* Never during focus, and not over the completion celebration. */}
+        {!focusMode && !pomodoro.celebrating && <FeedbackPrompt />}
 
         <main
           className={
@@ -74,7 +102,14 @@ export default function App() {
           {!focusMode && (
             <>
               <StreakTile streak={stats.streak} className="animate-fade-up" />
-              <TotalTile totalMin={stats.totalMin} completedCount={stats.completedCount} failedCount={stats.failedCount} className="animate-fade-up" />
+              <TotalTile
+                totalMin={stats.totalMin}
+                completedCount={stats.completedCount}
+                failedCount={stats.failedCount}
+                insights={stats.insights}
+                onShare={openShare}
+                className="animate-fade-up"
+              />
               <DailyChart className="animate-fade-up md:col-span-2" />
               <WeeklyChart className="animate-fade-up md:col-span-2" />
               <CategoryManager className="animate-fade-up md:col-span-2" />
@@ -87,6 +122,16 @@ export default function App() {
 
       {focusView.open && <FocusView pomodoro={pomodoro} onExit={focusView.exit} />}
       <SessionCelebration celebrating={pomodoro.celebrating} />
+      <Sheet open={settingsOpen} onClose={() => setSettingsOpen(false)} title={t.settings.title}>
+        <Suspense fallback={sheetFallback}>
+          <SettingsPanel />
+        </Suspense>
+      </Sheet>
+      <Sheet open={shareOpen} onClose={() => setShareOpen(false)} title={t.share.title}>
+        <Suspense fallback={sheetFallback}>
+          <SharePanel />
+        </Suspense>
+      </Sheet>
       <SessionToasts />
     </>
   )

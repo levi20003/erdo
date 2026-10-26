@@ -16,7 +16,7 @@ export default function StageStepper({ item, stage, progress, active, color, com
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <ol className="flex items-center" aria-label={active ? `${stage + 1}. ${t.stage} / ${last + 1}: ${item.stages[stage]}` : item.name}>
+      <ol className="flex items-center" aria-label={active ? t.aria.stage(stage + 1, last + 1, item.stages[stage]) : item.name}>
         {item.stages.map((name, i) => {
           const done = active && i < stage
           const current = active && i === stage

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PALETTE } from '../../lib/config'
-import { GROWTH_IDS, GROWTH_ITEMS } from '../../lib/growth'
+import { GROWTH_IDS, growthItem } from '../../lib/growth'
 import { t } from '../../lib/strings'
 import ForestScene from '../growth/ForestScene'
 import Icon from '../ui/Icon'
@@ -50,7 +50,7 @@ export default function CategoryForm({ initial, onSubmit, onCancel }) {
                 }`}
               >
                 <ForestScene item={id} color={color} progress={1} backdrop={false} className="size-14" />
-                <span className="text-center leading-tight">{GROWTH_ITEMS[id].name}</span>
+                <span className="text-center leading-tight">{growthItem(id).name}</span>
               </button>
             )
           })}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { growthItem } from '../../lib/growth'
 import { completed } from '../../lib/stats'
 import { t } from '../../lib/strings'
@@ -13,7 +13,7 @@ import CategoryForm from './CategoryForm'
 
 const iconButton = 'rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-100 disabled:pointer-events-none disabled:opacity-30'
 
-export default function CategoryManager({ className }) {
+function CategoryManager({ className }) {
   const { state, actions } = useAppStore()
   const { push } = useToast()
   const [editing, setEditing] = useState(null) // null | 'new' | category
@@ -115,3 +115,6 @@ export default function CategoryManager({ className }) {
     </Card>
   )
 }
+
+// Memoized: App re-renders every second while a timer runs; this card only depends on its props and the store.
+export default memo(CategoryManager)

@@ -3,7 +3,7 @@ import { chime } from '../lib/chime'
 import { PAGE_LOAD_ID } from '../lib/pageLoad'
 import { formatClock } from '../lib/time'
 import { useAppStore } from '../store/AppStore'
-import { useNow } from './useNow'
+import { useTicker } from './useTicker'
 import { away, useStrictMode } from './useStrictMode'
 import { useWakeLock } from './useWakeLock'
 
@@ -14,7 +14,8 @@ import { useWakeLock } from './useWakeLock'
 export function usePomodoro() {
   const { state, actions } = useAppStore()
   const { timer } = state
-  const now = useNow(timer ? 250 : null)
+  // A break's startedAt is in the future during the celebration: wake up when it ends.
+  const now = useTicker(timer?.endsAt, timer?.phase === 'break' ? timer.startedAt : null)
 
   // Clamped to the phase length: `now` can lag one tick behind right after a phase change.
   const remainingSec = timer ? Math.min(timer.durationSec, Math.max(0, Math.ceil((timer.endsAt - now) / 1000))) : null
@@ -40,7 +41,7 @@ export function usePomodoro() {
     }
     completedRef.current = key
     actions.completePhase()
-    // `now` too: a block that ran out while the user was briefly away completes on the next tick after they return.
+    // `now` too: a block that ran out while the user was briefly away completes on the tick after they return.
   }, [timer, remainingSec, now, actions])
 
   useEffect(() => {

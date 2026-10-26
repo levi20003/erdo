@@ -1,31 +1,53 @@
 # FocusGrove
 
-Ultra-focused, offline-first 25/5 Pomodoro PWA. React 18 · Vite 6 · Tailwind CSS 3.4.
-No backend and no external APIs. All data lives in `localStorage` (`focusgrove:v1`).
+An offline-first, strictly 25/5 Pomodoro PWA. Every focus block grows a plant in your forest. There is no account, no ads, no tracking: all data stays in the browser's `localStorage`.
+
+**Live:** https://levi20003.github.io/erdo/ · Hungarian (default) and English · Installable on Android, iOS and desktop.
+
+## Features
+
+- **Strict 25/5 cycle.** No pause button by design. Leaving the app for more than 5 s fails the block; a reload fails it too. The screen is kept awake during focus (Screen Wake Lock).
+- **Erdő theme.** Four growth items (Öreg Tölgy, Fenyves, Mohás Szikla, Erdei Gomba), five stages each, animated SVG.
+- **Focus mode.** When a block starts, the dashboard steps away: only the plant, the clock and *Give up* remain. Optional full-screen view.
+- **Rewards.** Completion celebration, daily streak with milestones, weekly history, local "My progress" insights.
+- **Your data.** JSON backup and restore (merge), CSV export for spreadsheets, shareable forest image, local error log.
+- **Resilient.** Versioned storage with migrations and automatic backups, repair of damaged data, recovery when storage is full, crash screen instead of a blank page.
+
+## Quick start
 
 ```bash
 npm install
-npm run dev                         # http://localhost:5173
-npm run build && npm run preview    # production build + service worker (installable)
-npm run icons                       # regenerate PNG app icons (needs Python + Pillow)
+npm run dev          # http://localhost:5173
+npm run check        # lint + unit tests + production build
+npm run test:e2e     # Playwright end-to-end tests (builds and serves the app)
 ```
 
-## How it behaves
-| Feature | Where |
+| Script | What it does |
 | --- | --- |
-| Erdő theme: each category grows Öreg Tölgy, Fenyves, Mohás Szikla or Erdei Gomba through 5 stages | `src/lib/growth.js`, `src/components/growth/` |
-| Fixed 25 min focus → 5 min break (no pause button) | `src/lib/config.js`, `src/store/reducer.js` |
-| Break guide: box breathing (4-4-4-4) or 5 × 1-min stretches | `src/components/breaks/BreakGuide.jsx` |
-| Distraction lock: toasts are queued during focus and shown afterwards; install/offline banners hidden | `src/components/toast/ToastProvider.jsx`, `src/components/Banners.jsx` |
-| Fullscreen Focus View (Fullscreen API, with an overlay fallback for iOS) | `src/hooks/useFullscreen.js`, `src/components/timer/FocusView.jsx` |
-| Strict Mode: tab hidden → fail; window blur → fail after 2 s unless focus returns; reload or close mid-session → fail | `src/hooks/useStrictMode.js` |
-| Categories: create, rename, recolour (palette + custom picker), pick growth item, delete (bottom sheets) | `src/components/categories/`, `src/components/ui/Sheet.jsx` |
-| Streak, total hours, success rate, today timeline, 7-day stacked chart with week-by-week history | `src/components/dashboard/`, `src/lib/stats.js` |
-| PWA: `manifest.json`, PNG + maskable icons, service worker that precaches the hashed build | `public/`, `vite.config.js` (`precacheManifest` plugin) |
+| `npm run dev` | Vite dev server (no service worker) |
+| `npm run build` | Production build into `dist/` (set `BASE_PATH=/erdo/` for GitHub Pages) |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest unit tests |
+| `npm run test:e2e` | Playwright E2E tests against the production build |
+| `npm run check` | lint + unit tests + build (what the deploy gate runs) |
+| `npm run icons` | Regenerate PNG app icons (Python + Pillow) |
 
-Failed sessions under 30 s are discarded. Longer ones are logged as `failed` and count towards the success rate, but not towards focus time or the streak. Deleting a category keeps its history, labelled "Törölt kategória".
+## Deployment
 
-All UI text is in `src/lib/strings.js`.
+Pushing to `main` runs `.github/workflows/deploy.yml`: lint → unit tests → build → GitHub Pages. `.github/workflows/ci.yml` additionally runs the Playwright suite on every push and pull request.
 
-## Motion
-Growth parts fade and scale in per stage (`.grow-part`), foliage sways, and fireflies drift during focus. All keyframes live in `src/index.css` and `tailwind.config.js`. Everything is disabled under `prefers-reduced-motion`.
+## Documentation
+
+| Document | Contents |
+| --- | --- |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Modules, state, persistence and migrations, timer engine, strict mode, i18n, performance |
+| [TESTING.md](TESTING.md) | Test suites, how to run them, manual device checklist |
+| [PRIVACY.md](PRIVACY.md) | What is stored, where, and what never leaves the device |
+| [PRODUCT_METRICS.md](PRODUCT_METRICS.md) | The local metrics the app shows and how to measure the beta without tracking |
+| [CHANGELOG.md](CHANGELOG.md) | Release history |
+| [docs/marketing/](docs/marketing/) | Landing page copy, TikTok/Reels concepts, beta feedback prompt (Hungarian) |
+
+## Tech
+
+React 18, Vite 6, Tailwind CSS 3.4. Runtime dependencies: `react` and `react-dom` only. Dev tooling: Vitest, Playwright, ESLint.

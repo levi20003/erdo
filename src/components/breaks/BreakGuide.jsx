@@ -36,7 +36,8 @@ export function BreathingGuide({ elapsedSec }) {
                 strokeDasharray={`${filled} ${C}`}
                 strokeDashoffset={offset}
                 opacity={filled ? 1 : 0}
-                style={{ transition: 'stroke-dasharray 1s linear, opacity 0.3s' }}
+                // Only the active quarter animates; finished and upcoming ones are static (no per-frame work).
+                style={i === phase ? { transition: 'stroke-dasharray 1s linear, opacity 0.3s' } : undefined}
               />
             </g>
           )
@@ -98,7 +99,7 @@ const MODES = [
 /** Segmented control with a sliding indicator. */
 export function BreakGuideToggle({ value, onChange }) {
   return (
-    <div role="radiogroup" aria-label="Szünet típusa" className="relative grid grid-cols-2 rounded-xl border border-zinc-800 bg-zinc-950 p-1">
+    <div role="radiogroup" aria-label={t.aria.breakType} className="relative grid grid-cols-2 rounded-xl border border-zinc-800 bg-zinc-950 p-1">
       <span
         aria-hidden="true"
         className={`absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-lg bg-zinc-800 transition-transform duration-300 ease-out ${value === 'stretch' ? 'translate-x-full' : ''}`}

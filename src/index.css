@@ -63,6 +63,12 @@
   .glow-pulse {
     animation: glow-pulse 6s ease-in-out infinite;
   }
+  .motion-off .sway,
+  .motion-off .sway-slow,
+  .motion-off .spore,
+  .motion-off .glow-pulse {
+    animation: none;
+  }
 }
 
 @keyframes sway {
@@ -129,6 +135,25 @@
     animation-duration: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0ms !important;
+  }
+  /* Animations that END invisible would leave nothing on screen at 0 ms:
+     show the celebration as a still card, and drop purely decorative motion. */
+  .celebrate-overlay,
+  .celebrate-pop,
+  .celebrate-rise {
+    animation: none !important;
+  }
+  .celebrate-flare,
+  .celebrate-rays {
+    animation: none !important;
+    opacity: 0.35;
+  }
+  .swarm,
+  .firefly,
+  .ember,
+  .ring-ping,
+  .stage-bloom {
+    display: none;
   }
 }
 

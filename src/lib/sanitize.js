@@ -1,5 +1,8 @@
-import { BREAK_SEC, DEFAULT_CATEGORIES, FOCUS_SEC, PALETTE } from './config'
+import { BREAK_SEC, DEFAULT_CATEGORIES, FOCUS_SEC, PALETTE, SCHEMA_VERSION } from './config'
 import { GROWTH_IDS } from './growth'
+import { migrate } from './migrations'
+
+export const LANGS = ['hu', 'en']
 
 /*
  * Saved state is untrusted: an older version, a half-written save, a manual
@@ -70,9 +73,32 @@ function sanitizeTimer(raw, categoryIds) {
   }
 }
 
-/** Returns a complete, valid state built from whatever `raw` holds (null/garbage → defaults). */
-export function sanitizeState(raw) {
+function sanitizeFeedback(raw) {
+  if (!isObj(raw)) return null
+  return {
+    // Unix ms of the last time the prompt was shown, and how often it was dismissed.
+    shownAt: isNum(raw.shownAt) ? raw.shownAt : null,
+    dismissals: Number.isInteger(raw.dismissals) && raw.dismissals >= 0 ? Math.min(raw.dismissals, 99) : 0,
+    rating: Number.isInteger(raw.rating) && raw.rating >= 1 && raw.rating <= 5 ? raw.rating : null,
+  }
+}
+
+function sanitizePrefs(raw) {
   const src = isObj(raw) ? raw : {}
+  return {
+    breakGuide: src.breakGuide === 'stretch' ? 'stretch' : 'breathing',
+    lang: LANGS.includes(src.lang) ? src.lang : 'hu',
+    feedback: sanitizeFeedback(src.feedback),
+  }
+}
+
+/**
+ * Returns a complete, valid state of the current schema version built from
+ * whatever `raw` holds: legacy data is migrated first (lib/migrations.js),
+ * then every field is validated; null or garbage → defaults.
+ */
+export function sanitizeState(raw) {
+  const src = isObj(raw) ? migrate(raw).data : {}
   const categories = sanitizeCategories(src.categories)
   const ids = new Set(categories.map((c) => c.id))
   return {
@@ -80,6 +106,7 @@ export function sanitizeState(raw) {
     sessions: sanitizeSessions(src.sessions),
     selectedCategoryId: ids.has(src.selectedCategoryId) ? src.selectedCategoryId : categories[0].id,
     timer: sanitizeTimer(src.timer, ids),
-    prefs: { breakGuide: src.prefs?.breakGuide === 'stretch' ? 'stretch' : 'breathing' },
+    prefs: sanitizePrefs(src.prefs),
+    schemaVersion: SCHEMA_VERSION,
   }
 }

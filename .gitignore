@@ -31,3 +31,7 @@ pnpm-debug.log*
 *.swp
 .DS_Store
 Thumbs.db
+
+# Test output
+playwright-report/
+test-results/

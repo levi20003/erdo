@@ -1,18 +1,17 @@
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useToday } from '../../hooks/useToday'
 import { dailySeries, minutesByCategory } from '../../lib/stats'
 import { t } from '../../lib/strings'
-import { addDays, dayKey, formatMinutes, lastNDays, weekdayShort } from '../../lib/time'
+import { addDays, dayKey, formatMinutes, lastNDays, shortDate, weekdayShort } from '../../lib/time'
 import { useAppStore, useCategoryLookup } from '../../store/AppStore'
 import Card from '../ui/Card'
 import Icon from '../ui/Icon'
 import CategoryBars, { DELETED } from './CategoryBars'
 
 const MAX_WEEKS_BACK = 52
-const shortDate = (d) => d.toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' })
 
 /** Rolling 7-day window; ‹ › steps back through history with a directional slide. */
-export default function WeeklyChart({ className }) {
+function WeeklyChart({ className }) {
   const { sessions } = useAppStore().state
   const categories = useCategoryLookup()
   const [offset, setOffset] = useState(0)
@@ -34,7 +33,8 @@ export default function WeeklyChart({ className }) {
       byCategory: minutesByCategory(sessions, new Set(days.map(dayKey))),
       total: series.reduce((sum, d) => sum + d.total, 0),
     }
-  }, [sessions, offset, todayKey])
+    // todayKey isn't read inside, but it must recompute the window at midnight.
+  }, [sessions, offset, todayKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const go = (delta) => {
     setDirection(delta > 0 ? 'right' : 'left')
@@ -73,7 +73,7 @@ export default function WeeklyChart({ className }) {
           </p>
         </div>
 
-        <ol className="mb-6 flex h-36 items-end gap-1.5 sm:gap-2" aria-label="Fókuszidő naponta">
+        <ol className="mb-6 flex h-36 items-end gap-1.5 sm:gap-2" aria-label={t.aria.perDay}>
           {series.map((day) => {
             const isToday = day.key === todayKey
             return (
@@ -101,3 +101,6 @@ export default function WeeklyChart({ className }) {
     </Card>
   )
 }
+
+// Memoized: App re-renders every second while a timer runs; this card only depends on its props and the store.
+export default memo(WeeklyChart)

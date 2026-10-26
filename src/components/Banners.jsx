@@ -10,16 +10,30 @@ export default function Banners() {
   const online = useOnline()
   const { canInstall, install, dismiss } = useInstallPrompt()
   const { storage } = useAppStore()
-  const storageMessage =
-    storage === 'failing' || storage === 'unavailable' ? t.toast.storageFailing : storage === 'repaired' ? t.toast.storageRepaired : null
+  // Problems (data can't be saved / was damaged) are alerts; upgrade notices are informational.
+  const storageNotice =
+    storage === 'failing' || storage === 'unavailable'
+      ? { text: t.toast.storageFailing, alert: true }
+      : storage === 'repaired'
+        ? { text: t.toast.storageRepaired, alert: true }
+        : storage === 'newer'
+          ? { text: t.storageNewer, alert: false }
+          : storage === 'migrated'
+            ? { text: t.storageMigrated, alert: false }
+            : null
 
   if (locked) return null
 
   return (
     <>
-      {storageMessage && (
-        <div role="alert" className="flex animate-fade-up items-start gap-2 rounded-2xl border border-[#a8747a]/40 bg-zinc-900 px-4 py-2.5 text-xs leading-relaxed text-[#e2b8bc]">
-          <Icon name="alert" size={14} className="mt-0.5" /> {storageMessage}
+      {storageNotice && (
+        <div
+          role={storageNotice.alert ? 'alert' : 'status'}
+          className={`flex animate-fade-up items-start gap-2 rounded-2xl border bg-zinc-900 px-4 py-2.5 text-xs leading-relaxed ${
+            storageNotice.alert ? 'border-[#a8747a]/40 text-[#e2b8bc]' : 'border-zinc-800 text-zinc-400'
+          }`}
+        >
+          <Icon name={storageNotice.alert ? 'alert' : 'info'} size={14} className="mt-0.5" /> {storageNotice.text}
         </div>
       )}
       {!online && (

@@ -18,7 +18,25 @@ export const LEAVE_GRACE_MS = 5000
 /** Failed sessions shorter than this are discarded instead of logged. */
 export const MIN_LOGGED_FAIL_SEC = 30
 
+// The key name predates schema versioning; it stays so existing data keeps loading.
 export const STORAGE_KEY = 'focusgrove:v1'
+
+/**
+ * Version of the saved data's shape. Bump it together with a new entry in
+ * lib/migrations.js whenever the stored shape changes.
+ *   1 — unversioned data from before 1.0 (categories, sessions, timer, prefs.breakGuide)
+ *   2 — schemaVersion field, prefs.lang, prefs.feedback
+ */
+export const SCHEMA_VERSION = 2
+
+/** Where "Write a suggestion" leads: a pre-filled GitHub issue the user can review before sending. */
+export const FEEDBACK_URL = 'https://github.com/levi20003/erdo/issues/new'
+
+/** The feedback prompt appears after this many completed sessions, never during focus. */
+export const FEEDBACK_AFTER = 5
+
+/** Injected at build time from package.json (vite.config.js `define`). */
+export const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'dev'
 
 export const DEFAULT_CATEGORIES = [
   { id: 'tanulas', name: 'Tanulás', color: '#7d8247', growth: 'tolgy' },

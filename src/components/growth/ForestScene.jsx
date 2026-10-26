@@ -28,7 +28,9 @@ export default function ForestScene({ item = 'tolgy', color = '#7d8247', progres
   const stage = stageOf(p)
 
   return (
-    <svg viewBox={backdrop ? '0 0 200 200' : '34 34 132 132'} className={`block ${className}`} role="img" aria-hidden={!backdrop || undefined}>
+    // Ambient motion (sway, spores, glow) runs only while the scene is live; static
+    // scenes — idle, icons, previews — stay still and cost nothing per frame.
+    <svg viewBox={backdrop ? '0 0 200 200' : '34 34 132 132'} className={`block ${alive ? '' : 'motion-off'} ${className}`} role="img" aria-hidden={!backdrop || undefined}>
       {backdrop && (
         <>
           <defs>

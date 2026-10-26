@@ -9,7 +9,8 @@ import { uid } from '../lib/time'
  *  selectedCategoryId
  *  timer               null | { phase: 'focus'|'break', categoryId, startedAt, endsAt, durationSec, pageLoadId? }
  *                      A break's startedAt lies CELEBRATION_MS in the future: the completion celebration plays first.
- *  prefs               { breakGuide: 'breathing'|'stretch' }
+ *  prefs               { breakGuide: 'breathing'|'stretch', lang: 'hu'|'en', feedback: null | { shownAt, dismissals, rating } }
+ *  schemaVersion       SCHEMA_VERSION (lib/migrations.js)
  *
  * Time-dependent actions carry `now`, so the reducer is pure and testable.
  */
@@ -17,6 +18,8 @@ import { uid } from '../lib/time'
 export function createInitialState(stored) {
   return sanitizeState(stored)
 }
+
+const PREF_VALUES = { breakGuide: ['breathing', 'stretch'], lang: ['hu', 'en'] }
 
 export function reducer(state, action) {
   const { timer } = state
@@ -91,8 +94,12 @@ export function reducer(state, action) {
       return { ...state, categories: [...state.categories, category], selectedCategoryId: category.id }
     }
 
-    case 'UPDATE_CATEGORY':
-      return { ...state, categories: state.categories.map((c) => (c.id === action.id ? { ...c, ...action.patch } : c)) }
+    case 'UPDATE_CATEGORY': {
+      // Only editable fields; ids never change, so sessions keep pointing at their category.
+      const { name, color, growth } = action.patch
+      const patch = Object.fromEntries(Object.entries({ name, color, growth }).filter(([, v]) => v !== undefined))
+      return { ...state, categories: state.categories.map((c) => (c.id === action.id ? { ...c, ...patch } : c)) }
+    }
 
     case 'DELETE_CATEGORY': {
       // Keep at least one category, and never delete the one being focused on.
@@ -107,7 +114,33 @@ export function reducer(state, action) {
       return action.state
 
     case 'SET_PREF':
+      // Own keys only: a key like '__proto__' must not reach Object.prototype.
+      if (!Object.hasOwn(PREF_VALUES, action.key) || !PREF_VALUES[action.key].includes(action.value)) return state
       return { ...state, prefs: { ...state.prefs, [action.key]: action.value } }
+
+    case 'IMPORT_MERGE': {
+      // Merge, never replace: nothing the user already has is lost. On an id clash the existing entry wins.
+      const { imported } = action
+      const catIds = new Set(state.categories.map((c) => c.id))
+      const sessionIds = new Set(state.sessions.map((s) => s.id))
+      const categories = [...state.categories, ...imported.categories.filter((c) => !catIds.has(c.id))]
+      const sessions = [...state.sessions, ...imported.sessions.filter((s) => !sessionIds.has(s.id))].sort((a, b) => a.end - b.end)
+      return { ...state, categories, sessions }
+    }
+
+    case 'FEEDBACK_SHOWN':
+      return { ...state, prefs: { ...state.prefs, feedback: { dismissals: 0, rating: null, ...state.prefs.feedback, shownAt: action.now } } }
+
+    case 'FEEDBACK_DISMISS': {
+      const fb = state.prefs.feedback ?? { shownAt: action.now, rating: null, dismissals: 0 }
+      return { ...state, prefs: { ...state.prefs, feedback: { ...fb, dismissals: fb.dismissals + 1 } } }
+    }
+
+    case 'FEEDBACK_RATE': {
+      if (!Number.isInteger(action.rating) || action.rating < 1 || action.rating > 5) return state
+      const fb = state.prefs.feedback ?? { shownAt: action.now, dismissals: 0 }
+      return { ...state, prefs: { ...state.prefs, feedback: { ...fb, rating: action.rating } } }
+    }
 
     default:
       return state

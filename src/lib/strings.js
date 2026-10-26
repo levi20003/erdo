@@ -1,101 +1,48 @@
-/** All user-facing text in one place (Hungarian). */
-export const t = {
-  appTagline: 'Egy erdő, ami a fókuszodból nő',
-  phase: { idle: 'Készen áll', focus: 'Fókusz', break: 'Szünet' },
-  start: 'Fókusz indítása',
-  giveUp: 'Feladom',
-  skipBreak: 'Szünet kihagyása',
-  fullscreen: 'Teljes képernyő',
-  exitFullscreen: 'Kilépés',
-  strictNote: 'Szigorú mód — ha 5 mp-nél tovább elhagyod az appot, a munkamenet elbukik.',
-  focusLocked: 'Értesítések némítva a fókusz alatt',
-  stage: 'szakasz',
-  nextStage: (name, min) => `Következő: ${name} · ${min} p múlva`,
-  stagePath: (from, to) => `5 szakasz: ${from} → ${to}`,
-  fullyGrown: 'Teljesen kifejlett',
-  celebrate: {
-    label: 'Munkamenet kész',
-    grown: 'kifejlődött',
-    minutes: '+25 perc fókusz',
-    streak: (n) => `${n} napos sorozat`,
-    breakSoon: 'A szünet mindjárt kezdődik',
-  },
-  streakCard: {
-    unit: 'napos sorozat',
-    nextMilestone: (n) => `Következő mérföldkő: ${n} nap`,
-    remaining: (n) => `még ${n} nap`,
-    allDone: 'Minden mérföldkő teljesítve!',
-    start: 'Indíts egy fókuszt, és kezdődjön a sorozat!',
-    doneToday: 'Mára megvan',
-  },
-  breakGuide: { breathing: 'Légzés', stretch: 'Nyújtás' },
-  breathing: [
-    { label: 'Belégzés', hint: 'Lassan, az orrodon át' },
-    { label: 'Tartás', hint: 'Lazítsd el a vállad' },
-    { label: 'Kilégzés', hint: 'Hosszan, a szádon át' },
-    { label: 'Tartás', hint: 'Pihenj meg' },
-  ],
-  stretches: [
-    { icon: 'neck', name: 'Nyakkörzés', hint: 'Lassan, 5-5 kör mindkét irányba.' },
-    { icon: 'shoulders', name: 'Vállkörzés', hint: 'Húzd fel a vállad, majd körözz hátrafelé.' },
-    { icon: 'wrist', name: 'Csuklónyújtás', hint: 'Nyújtott karral húzd hátra az ujjaidat, 15 mp kezenként.' },
-    { icon: 'chest', name: 'Mellkasnyitás', hint: 'Kulcsold össze a kezed a hátad mögött, és emeld meg.' },
-    { icon: 'walk', name: 'Állj fel és sétálj', hint: 'Igyál egy pohár vizet, nézz ki az ablakon.' },
-  ],
-  streak: 'Napi sorozat',
-  days: 'nap',
-  best: 'Leghosszabb',
-  keepStreak: 'Ma még nincs fókusz — tartsd életben a sorozatot!',
-  total: 'Összes fókuszidő',
-  hours: 'óra',
-  sessions: 'munkamenet',
-  successRate: 'sikeres',
-  today: 'Ma',
-  week: 'Heti áttekintés',
-  last7: 'Elmúlt 7 nap',
-  prevWeek: 'Előző hét',
-  nextWeek: 'Következő hét',
-  perDay: 'napi átlag',
-  noData: 'Még nincs adat. Indíts egy fókuszt!',
-  noDataWeek: 'Ezen a héten nem volt fókusz.',
-  categories: 'Kategóriák',
-  newCategory: 'Új kategória',
-  editCategory: 'Kategória szerkesztése',
-  name: 'Név',
-  namePlaceholder: 'pl. Tanulás',
-  color: 'Szín',
-  customColor: 'Egyedi szín',
-  growthPicker: 'Mit növesztesz?',
-  save: 'Mentés',
-  cancel: 'Mégse',
-  close: 'Bezárás',
-  edit: 'Szerkesztés',
-  remove: 'Törlés',
-  deletedCategory: 'Törölt kategória',
-  lastCategory: 'Legalább egy kategória kell',
-  giveUpSheet: {
-    title: 'Feladod a munkamenetet?',
-    body: 'A növekedés leáll, és ez a kör elbukottként kerül a naplóba.',
-    keep: 'Folytatom',
-    confirm: 'Feladom',
-  },
-  deleteSheet: {
-    title: 'Kategória törlése',
-    body: (name) => `„${name}” törlődik. A korábbi munkamenetei megmaradnak a statisztikában.`,
-    confirm: 'Törlés',
-  },
-  toast: {
-    failed: 'A munkamenet elbukott — elhagytad az alkalmazást.',
-    gaveUp: 'Feladtad a munkamenetet.',
-    breakOver: 'Lejárt a szünet. Jöhet a következő kör?',
-    created: 'Kategória létrehozva',
-    saved: 'Változások mentve',
-    deleted: 'Kategória törölve',
-    offline: 'Offline módban vagy — minden működik.',
-    storageFailing: 'Az adatok nem menthetők ezen az eszközön (pl. privát böngészés vagy tele a tárhely). Ami ebben a munkamenetben történik, bezáráskor elveszhet.',
-    storageRepaired: 'A mentett adatok sérültek voltak, ezért alaphelyzetből indult az app. A régi adatok másolata megmaradt.',
-    installTitle: 'Telepítsd a kezdőképernyőre',
-    install: 'Telepítés',
-  },
-  footer: 'Offline működik · Az adataid csak ezen az eszközön vannak',
+import en from './i18n/en'
+import hu from './i18n/hu'
+
+/*
+ * Localization. Hungarian is the default and the fallback: a key missing from
+ * another language resolves to its Hungarian text, never to undefined.
+ *
+ * `t` is one live object: components import it once and read it at render time.
+ * setLanguage() swaps its contents; App remounts on a language change, so every
+ * component re-renders with the new text.
+ */
+const DICTIONARIES = { hu, en }
+const LOCALES = { hu: 'hu-HU', en: 'en-GB' }
+
+export const LANGUAGES = [
+  { code: 'hu', label: 'Magyar' },
+  { code: 'en', label: 'English' },
+]
+
+const isPlain = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
+
+/** Deep merge where `over` wins; arrays merge by index so a partial translation still has every item. */
+export function mergeStrings(base, over) {
+  if (Array.isArray(base)) return base.map((item, i) => (over?.[i] === undefined ? item : mergeStrings(item, over[i])))
+  if (isPlain(base)) {
+    const out = {}
+    for (const key of Object.keys(base)) out[key] = over && key in over ? mergeStrings(base[key], over[key]) : base[key]
+    return out
+  }
+  return over === undefined ? base : over
 }
+
+let current = 'hu'
+export const t = mergeStrings(hu, {})
+
+export function setLanguage(lang) {
+  const next = DICTIONARIES[lang] ? lang : 'hu'
+  if (next === current) return
+  current = next
+  const merged = mergeStrings(hu, DICTIONARIES[next])
+  for (const key of Object.keys(t)) delete t[key]
+  Object.assign(t, merged)
+  if (typeof document !== 'undefined') document.documentElement.lang = next
+}
+
+export const getLanguage = () => current
+/** BCP 47 locale for Intl date and number formatting. */
+export const getLocale = () => LOCALES[current]

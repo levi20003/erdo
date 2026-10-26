@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { useToday } from '../../hooks/useToday'
 import { minutesByCategory } from '../../lib/stats'
 import { t } from '../../lib/strings'
@@ -11,7 +11,7 @@ import CategoryBars, { DELETED } from './CategoryBars'
 const DAY_MS = 864e5
 
 /** Today: total, a 24-hour timeline of every session, and per-category bars. */
-export default function DailyChart({ className }) {
+function DailyChart({ className }) {
   const { sessions } = useAppStore().state
   const categories = useCategoryLookup()
 
@@ -30,12 +30,12 @@ export default function DailyChart({ className }) {
       <div className="mb-4 flex items-baseline justify-between">
         <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">{formatMinutes(total)}</p>
         <p className="text-xs text-zinc-500">
-          {today.filter((s) => s.status === 'completed').length} {t.sessions}
+          {t.sessionCount(today.filter((s) => s.status === 'completed').length)}
         </p>
       </div>
 
       <div className="mb-5">
-        <div className="relative h-9 overflow-hidden rounded-xl bg-zinc-950/70 ring-1 ring-inset ring-zinc-800/60" aria-label="Mai idővonal">
+        <div className="relative h-9 overflow-hidden rounded-xl bg-zinc-950/70 ring-1 ring-inset ring-zinc-800/60" aria-label={t.aria.timeline}>
           {today.map((s) => {
             const left = ((Math.max(s.start, midnight) - midnight) / DAY_MS) * 100
             const width = Math.max(0.6, ((s.end - Math.max(s.start, midnight)) / DAY_MS) * 100)
@@ -44,7 +44,7 @@ export default function DailyChart({ className }) {
             return (
               <span
                 key={s.id}
-                title={`${cat.name} · ${formatMinutes(s.durationSec / 60)}${failed ? ' · elbukott' : ''}`}
+                title={`${cat.name} · ${formatMinutes(s.durationSec / 60)}${failed ? ` · ${t.exportFile.status.failed}` : ''}`}
                 className="absolute inset-y-2 animate-fade-in rounded-[3px] transition-opacity hover:opacity-80"
                 style={{
                   left: `${left}%`,
@@ -66,3 +66,6 @@ export default function DailyChart({ className }) {
     </Card>
   )
 }
+
+// Memoized: App re-renders every second while a timer runs; this card only depends on its props and the store.
+export default memo(DailyChart)
