@@ -18,6 +18,10 @@ test('switching to English translates the UI and survives a reload', async ({ pa
 test('feedback prompt: after 5 sessions, dismissable, not shown again right away', async ({ page }) => {
   await openApp(page, { schemaVersion: 3, sessions: pastSessions(5), prefs: { onboarded: true } })
   const prompt = page.getByRole('region', { name: 'Hogy tetszik a FocusGrove?' })
+  // Never on the Focus screen, where it would push Start below the fold.
+  await expect(page.getByRole('button', { name: 'Fókusz indítása' })).toBeVisible()
+  await expect(prompt).toHaveCount(0)
+  await goTo(page, 'Statisztika')
   await expect(prompt).toBeVisible()
   await prompt.getByRole('button', { name: 'Most nem' }).click()
   await expect(prompt).toHaveCount(0)

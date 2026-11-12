@@ -30,7 +30,7 @@ function TodayStrip({ today, onOpen, className = '' }) {
       <button type="button" onClick={() => onOpen('stats')} className={tile}>
         <span className="text-[11px] uppercase tracking-[0.12em] text-zinc-400">{t.home.today}</span>
         <span className="text-lg font-semibold tabular-nums leading-tight text-zinc-50">{formatMinutes(minutes)}</span>
-        <span className="truncate text-xs text-zinc-400">{t.home.plantsToday(plants)}</span>
+        <span className="w-full truncate text-xs text-zinc-400">{t.home.plantsToday(plants)}</span>
       </button>
       <button type="button" onClick={() => onOpen('stats')} className={tile}>
         <span className="text-[11px] uppercase tracking-[0.12em] text-zinc-400">{t.home.streak}</span>
@@ -38,19 +38,19 @@ function TodayStrip({ today, onOpen, className = '' }) {
           <Icon name="flame" size={16} className={streak ? 'text-sand' : 'text-zinc-600'} />
           {streak}
         </span>
-        <span className="truncate text-xs text-zinc-400">{t.home.streakValue(streak)}</span>
+        <span className="w-full truncate text-xs text-zinc-400">{t.home.streakValue(streak)}</span>
       </button>
       <button type="button" onClick={() => onOpen('forest')} className={tile}>
         <span className="text-[11px] uppercase tracking-[0.12em] text-zinc-400">{t.home.next}</span>
         {next ? (
           <>
-            <span className="flex min-w-0 items-center gap-1">
-              <span className="grid size-6 shrink-0 place-items-center overflow-hidden rounded-md bg-zinc-950 opacity-80">
+            <span className="flex w-full min-w-0 items-center gap-1">
+              <span className="hidden size-6 shrink-0 place-items-center overflow-hidden rounded-md bg-zinc-950 opacity-80 min-[440px]:grid">
                 <ForestScene item={next.id} color="#7d8247" progress={1} backdrop={false} className="size-full" />
               </span>
-              <span className="truncate text-sm font-medium text-zinc-100">{growthItem(next.id).name}</span>
+              <span className="min-w-0 truncate text-[13px] font-medium text-zinc-100 sm:text-sm">{growthItem(next.id).name}</span>
             </span>
-            <span className="truncate text-xs text-sand">{t.home.nextValue(next.remaining)}</span>
+            <span className="w-full truncate text-xs text-sand">{t.home.nextValue(next.remaining)}</span>
           </>
         ) : (
           <span className="text-sm text-zinc-200">{t.home.allUnlocked}</span>

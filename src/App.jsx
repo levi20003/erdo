@@ -84,8 +84,8 @@ export default function App() {
         )}
 
         {!focusMode && <Banners />}
-        {/* Never during focus or over the celebration; only where it doesn't interrupt a task. */}
-        {!focusMode && !pomodoro.celebrating && (screen === 'focus' || screen === 'stats') && <FeedbackPrompt />}
+        {/* Only on Stats: on the Focus screen it would push the Start button below the fold on phones. */}
+        {!focusMode && !pomodoro.celebrating && screen === 'stats' && <FeedbackPrompt />}
 
         <main key={screen} className={focusMode ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center' : 'min-w-0 animate-fade-in'}>
           {screen === 'focus' && (
