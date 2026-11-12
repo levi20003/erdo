@@ -14,9 +14,10 @@ CI (`.github/workflows/ci.yml`) runs all of it on every push and pull request; t
 | File | Covers |
 | --- | --- |
 | `reducer.test.js` | Start / complete / fail rules, double-dispatch, celebration → 5-min break, one id per block, guarded deletes |
-| `features.test.js` | Validated prefs (incl. `__proto__`), import merge, category id immutability, feedback state, insights, feedback-prompt rules |
+| `features.test.js` | Validated prefs (incl. `__proto__`), import merge, category id immutability, feedback state, insights, feedback-prompt rules, sound settings validation, onboarding actions |
+| `forest.test.js` | Day/week/month/year ranges (Monday weeks), period shifting, unlock thresholds and "next unlock" |
 | `sanitize.test.js` | Repair of garbage, broken sessions/categories/timers, duplicates, ordering |
-| `migrations.test.js` | Every step present, v1 → v2, determinism and idempotency, newer-version data untouched |
+| `migrations.test.js` | Every step present, v1 → v2 → v3, determinism and idempotency, newer-version data untouched |
 | `storage.test.js` | Empty, corrupt JSON (copy kept), legacy (backup kept), newer version (unknown fields preserved), full quota (frees space, retries), blocked storage, no duplicate writes |
 | `errorLog.test.js` | Anonymisation, entry and size caps, never throws, clearing |
 | `exportData.test.js` | CSV BOM / separators / decimal marks per language, quoting, formula neutralisation, backup round-trip, emergency-file import, rejection of foreign files |
@@ -36,6 +37,8 @@ Run against the **production build** (service worker included), with Playwright'
 | `strict-and-reload` | 2 s away forgiven, 6 s away fails; block that ends while briefly away still completes; reload mid-focus fails, reload during break keeps it |
 | `data` | Corrupt storage opens with warning + copy; legacy data migrated with backup; CSV export; JSON backup → wipe → restore (merge, idempotent); share card is a 1080×1350 PNG |
 | `ux` | English switch persists; feedback prompt after 5 sessions, dismissable, never during focus; 375×667 phone has no horizontal overflow; reduced motion shows a still celebration |
+| `screens` | First-run introduction → category choice → persisted, replayable; tabs live in the URL (back button, reload); Stats empty state; My forest grown/withered counts, plant details, periods, locked collection; 10th session unlocks the birch (celebration + selectable) |
+| `sound` | With `--autoplay-policy=user-gesture-required`: the Start tap leaves the AudioContext running, the end of the block plays the chime and vibrates; background sound loops during focus, can be switched mid-session, settings persist |
 
 Projects: `desktop` (Chromium) and `mobile` (Chromium at 375×667, touch). Locally, `reuseExistingServer` lets you keep a preview running.
 
@@ -50,6 +53,8 @@ Automated tests run in Chromium. These need a real phone:
 - [ ] Switch to another app for ~2 s and come back: session continues. ~10 s: session fails.
 - [ ] Lock the phone with the power button during focus: session fails on return (documented limitation).
 - [ ] Share card: the native share sheet opens with the image.
+- [ ] No background sound, screen on, phone on the table: at 25:00 the chime is clearly audible (media volume up) and the phone vibrates; a tap stops it.
+- [ ] Background sound (rain) plays during focus and stops when the block ends.
 
 **iOS (Safari 16.4+, Add to Home Screen)**
 - [ ] Add to Home Screen; launches full screen; safe areas (notch, home bar) respected.
@@ -58,6 +63,8 @@ Automated tests run in Chromium. These need a real phone:
 - [ ] App switch > 5 s fails the session; < 5 s continues.
 - [ ] Share card opens the share sheet (or downloads).
 - [ ] CSV opens in Numbers with accents intact.
+- [ ] Ring/silent switch **off**, no background sound: the chime is audible at 25:00. (With the switch on, iOS mutes web audio — expected.)
+- [ ] Back button / swipe-back moves between screens instead of leaving the app.
 
 **Desktop**
 - [ ] CSV opens in Hungarian Excel with columns split and accents intact.

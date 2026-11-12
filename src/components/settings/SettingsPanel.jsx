@@ -6,13 +6,12 @@ import { buildBackup, buildCsv, parseBackup } from '../../lib/exportData'
 import { LANGUAGES, getLanguage, t } from '../../lib/strings'
 import { useAppStore } from '../../store/AppStore'
 import { useToast } from '../toast/ToastProvider'
-import { markSettingsReopen } from './reopen'
 
 const section = 'flex flex-col gap-3 border-t border-zinc-800 pt-5 first:border-t-0 first:pt-0'
-const heading = 'text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500'
-const hint = 'text-xs leading-relaxed text-zinc-500'
+const heading = 'text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-400'
+const hint = 'text-xs leading-relaxed text-zinc-400'
 const button =
-  'rounded-xl border border-zinc-800 px-3.5 py-2.5 text-sm text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/60 disabled:opacity-40'
+  'min-h-11 rounded-xl border border-zinc-800 px-3.5 py-2.5 text-sm text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/60 disabled:opacity-40'
 
 /** Contents of the Settings sheet: language, data backup/export/restore, error log, about. Lazy-loaded. */
 export default function SettingsPanel() {
@@ -58,7 +57,6 @@ export default function SettingsPanel() {
               aria-checked={lang === code}
               onClick={() => {
                 if (code === lang) return
-                markSettingsReopen()
                 actions.setPref('lang', code)
               }}
               className={`${button} ${lang === code ? 'border-olive-400 bg-olive-900/50' : ''}`}
@@ -123,6 +121,9 @@ export default function SettingsPanel() {
       <section className={section}>
         <h3 className={heading}>{t.settings.about}</h3>
         <p className="text-sm text-zinc-300">{t.settings.version(APP_VERSION)}</p>
+        <button type="button" onClick={actions.showOnboarding} className={button}>
+          {t.settings.replayIntro}
+        </button>
         <p className={hint}>{t.settings.privacy}</p>
       </section>
     </div>

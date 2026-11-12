@@ -21,7 +21,7 @@ const tree = (x, h, w) => `M${x} ${GROUND_Y + 4 - h}L${x - w} ${GROUND_Y + 6}H${
  * Circular "window" into the Erdő: dusk sky, layered tree line, ground, the
  * growing item and — while focusing — drifting fireflies.
  */
-export default function ForestScene({ item = 'tolgy', color = '#7d8247', progress = 0, alive = false, backdrop = true, className = '' }) {
+export default function ForestScene({ item = 'tolgy', color = '#7d8247', progress = 0, alive = false, withered = false, backdrop = true, className = '' }) {
   const id = useId().replace(/:/g, '')
   const Item = ITEM_RENDERERS[item] ?? ITEM_RENDERERS.tolgy
   const p = Math.min(1, Math.max(0, progress))
@@ -71,7 +71,24 @@ export default function ForestScene({ item = 'tolgy', color = '#7d8247', progres
         </>
       )}
 
-      <Item p={p} color={color} />
+      {withered ? (
+        // A failed session: the plant as far as it got, drained of colour and drooping.
+        <g filter={`url(#${id}-withered)`} style={{ transform: 'rotate(-9deg) scaleY(0.94)', transformOrigin: `100px ${GROUND_Y}px` }}>
+          <defs>
+            <filter id={`${id}-withered`}>
+              <feColorMatrix type="saturate" values="0.05" />
+              <feComponentTransfer>
+                <feFuncR type="linear" slope="0.62" intercept="0.06" />
+                <feFuncG type="linear" slope="0.5" intercept="0.03" />
+                <feFuncB type="linear" slope="0.38" />
+              </feComponentTransfer>
+            </filter>
+          </defs>
+          <Item p={p} color={color} />
+        </g>
+      ) : (
+        <Item p={p} color={color} />
+      )}
 
       {backdrop && alive && (
         <>

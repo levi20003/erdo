@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { SCHEMA_VERSION } from '../lib/config'
 import { ERROR_LOG_KEY, anonymize, clearErrorLog, logError, readErrorLog } from '../lib/errorLog'
 import { installMemoryStorage } from './helpers/memoryStorage'
 
@@ -18,7 +19,7 @@ describe('error log', () => {
   it('records timestamped entries with version info and a coarse environment only', () => {
     logError('runtime', new Error('boom'))
     const [entry] = readErrorLog()
-    expect(entry).toMatchObject({ kind: 'runtime', msg: 'boom', sv: 2 })
+    expect(entry).toMatchObject({ kind: 'runtime', msg: 'boom', sv: SCHEMA_VERSION })
     expect(new Date(entry.t).toString()).not.toBe('Invalid Date')
     expect(entry.env.length).toBeLessThan(30)
   })

@@ -2,6 +2,27 @@
 
 All notable changes. Dates are release dates in Europe/Budapest.
 
+## 1.1.0 — 2026-11-12 · Sounds, My forest, four screens
+
+### Added
+- **End-of-timer sound that always plays**, with or without background sound. The audio is unlocked by the Start tap (or the last onboarding tap), so iOS allows it 25 minutes later. The focus chime rings three times (stops on a tap); the end of a break rings once. Four chimes (bell, chime, bird, wood) plus off, volume, preview, and vibration on Android.
+- **Background sounds during focus**: rain, forest with birds, stream, brown noise. Synthesised on the device (no audio files, no network), free, with their own volume; switchable from the timer without leaving the session.
+- **Four screens** — Focus, My forest, Stats, Settings — with a bottom tab bar on phones and header tabs on larger screens. Each screen has its own address (`#erdo`, …), so the back button and reload keep your place. During focus everything but the timer steps away.
+- **My forest**: your plants by day / week / month / year with previous/next, grown and withered counts and focus minutes; tap a plant for its category, time, length and (for a withered one) why it failed. Share the period you're looking at.
+- **Withered plants**: a failed block now leaves a dry, bent plant in the forest instead of vanishing.
+- **Two unlockable plants**: Birch at 10 completed sessions, Cherry tree at 25 — announced in the completion celebration, shown in the My forest collection and selectable for a category (locked ones show how many sessions remain).
+- **First-run introduction**: three short cards (how a block works, what fails it, sounds and breaks), then "what are you focusing on?" and how to install. Skippable; replayable from Settings.
+- **Today strip** on the Focus screen: today's sessions, streak, next plant to unlock.
+- Friendly empty states for My forest and Stats that lead to the timer.
+
+### Changed
+- Storage schema 3: `prefs.onboarded` and `prefs.sound` (migrated; existing users skip the introduction).
+- Category chips scroll in one row on phones; the idle timer shows the plant name and path instead of stage dots.
+- Forest, Stats, Settings, introduction and sharing load on demand: main bundle 82.6 kB gzip.
+
+### Fixed
+- The end-of-block chime was silent on iPhone (the audio context was created outside a user gesture) and very quiet elsewhere (15% volume); breaks ended without any sound.
+
 ## 1.0.0 — 2026-10-26 · Production readiness
 
 ### Added

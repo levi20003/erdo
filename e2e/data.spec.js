@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import { expect, test } from '@playwright/test'
-import { KEY, openApp, pastSessions, stored } from './helpers'
+import { goTo, KEY, openApp, pastSessions, stored } from './helpers'
 
 test('corrupted storage: app still opens, warns, and keeps a copy', async ({ page }) => {
   await openApp(page, '{not json')
@@ -12,13 +12,15 @@ test('corrupted storage: app still opens, warns, and keeps a copy', async ({ pag
 test('legacy (unversioned) data is migrated with a backup', async ({ page }) => {
   await openApp(page, { sessions: pastSessions(2) })
   await expect(page.getByRole('status').filter({ hasText: 'frissítve' })).toBeVisible()
-  expect((await stored(page)).schemaVersion).toBe(2)
+  expect((await stored(page)).schemaVersion).toBe(3)
+  // Returning users skip the introduction.
+  await expect(page.getByRole('dialog', { name: 'Bevezető' })).toHaveCount(0)
   expect(await page.evaluate((k) => localStorage.getItem(`${k}:backup-v1`), KEY)).not.toBeNull()
 })
 
 test('CSV export, JSON backup and restore (merge)', async ({ page }, testInfo) => {
-  await openApp(page, { schemaVersion: 2, sessions: pastSessions(3) })
-  await page.getByRole('button', { name: 'Beállítások' }).click()
+  await openApp(page, { schemaVersion: 3, sessions: pastSessions(3), prefs: { onboarded: true } })
+  await goTo(page, 'Beállítások')
 
   const [csv] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Táblázat (CSV)' }).click()])
   const csvText = fs.readFileSync(await csv.path(), 'utf8')
@@ -31,9 +33,8 @@ test('CSV export, JSON backup and restore (merge)', async ({ page }, testInfo) =
   await json.saveAs(backupPath)
 
   // Wipe the data, then restore from the file.
-  await page.evaluate((k) => localStorage.setItem(k, JSON.stringify({ schemaVersion: 2 })), KEY)
+  await page.evaluate((k) => localStorage.setItem(k, JSON.stringify({ schemaVersion: 3, prefs: { onboarded: true } })), KEY)
   await page.reload()
-  await page.getByRole('button', { name: 'Beállítások' }).click()
   await page.getByTestId('import-input').setInputFiles(backupPath)
   await expect(page.getByText('Visszaállítva: 3 új munkamenet')).toBeVisible()
   expect((await stored(page)).sessions).toHaveLength(3)
@@ -44,7 +45,8 @@ test('CSV export, JSON backup and restore (merge)', async ({ page }, testInfo) =
 })
 
 test('share card renders a 1080×1350 PNG', async ({ page }) => {
-  await openApp(page, { schemaVersion: 2, sessions: pastSessions(6) })
+  await openApp(page, { schemaVersion: 3, sessions: pastSessions(6), prefs: { onboarded: true } })
+  await goTo(page, 'Statisztika')
   await page.getByRole('button', { name: 'Az erdőm megosztása' }).click()
   await expect(page.getByTestId('share-preview')).toBeVisible({ timeout: 10_000 })
   const [png] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Kép letöltése' }).click()])

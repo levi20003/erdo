@@ -48,6 +48,32 @@ describe('feedback prompt rules', () => {
   })
 })
 
+describe('reducer: sound and onboarding', () => {
+  const base = createInitialState(null)
+
+  it('validates every sound field', () => {
+    let s = reducer(base, { type: 'SET_SOUND', patch: { chime: 'madar', volume: 0.333, ambient: 'eso' } })
+    expect(s.prefs.sound).toMatchObject({ chime: 'madar', volume: 0.33, ambient: 'eso' })
+    s = reducer(s, { type: 'SET_SOUND', patch: { chime: 'siren', volume: 7, vibrate: 'yes', ambient: '../x' } })
+    expect(s.prefs.sound).toMatchObject({ chime: 'harang', volume: 0.8, vibrate: true, ambient: 'off' })
+  })
+
+  it('finishing the introduction selects the chosen category; unknown ids are ignored', () => {
+    let s = reducer(base, { type: 'COMPLETE_ONBOARDING', categoryId: 'kreativ' })
+    expect(s.prefs.onboarded).toBe(true)
+    expect(s.selectedCategoryId).toBe('kreativ')
+    s = reducer(base, { type: 'COMPLETE_ONBOARDING', categoryId: 'nope' })
+    expect(s.selectedCategoryId).toBe(base.selectedCategoryId)
+  })
+
+  it('the introduction cannot be reopened during focus', () => {
+    const done = reducer(base, { type: 'COMPLETE_ONBOARDING' })
+    const focusing = reducer(done, { type: 'START_FOCUS', now: 1, pageLoadId: 'p' })
+    expect(reducer(focusing, { type: 'SHOW_ONBOARDING' })).toBe(focusing)
+    expect(reducer(done, { type: 'SHOW_ONBOARDING' }).prefs.onboarded).toBe(false)
+  })
+})
+
 describe('reducer: new actions', () => {
   const base = createInitialState(null)
 

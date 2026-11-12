@@ -1,4 +1,4 @@
-import { BREAK_SEC, DEFAULT_CATEGORIES, FOCUS_SEC, PALETTE, SCHEMA_VERSION } from './config'
+import { AMBIENTS, BREAK_SEC, CHIMES, DEFAULT_CATEGORIES, DEFAULT_SOUND, FOCUS_SEC, PALETTE, SCHEMA_VERSION, STARTER_GROWTH } from './config'
 import { GROWTH_IDS } from './growth'
 import { migrate } from './migrations'
 
@@ -29,7 +29,7 @@ function sanitizeCategories(raw) {
       name,
       color: typeof c.color === 'string' && HEX.test(c.color) ? c.color : PALETTE[i % PALETTE.length],
       // Categories saved before growth items existed get one assigned.
-      growth: GROWTH_IDS.includes(c.growth) ? c.growth : GROWTH_IDS[i % GROWTH_IDS.length],
+      growth: GROWTH_IDS.includes(c.growth) ? c.growth : STARTER_GROWTH[i % STARTER_GROWTH.length],
     })
   })
   return out.length ? out : DEFAULT_CATEGORIES
@@ -83,12 +83,27 @@ function sanitizeFeedback(raw) {
   }
 }
 
+const unit = (v, fallback) => (isNum(v) && v >= 0 && v <= 1 ? Math.round(v * 100) / 100 : fallback)
+
+export function sanitizeSound(raw) {
+  const src = isObj(raw) ? raw : {}
+  return {
+    chime: CHIMES.includes(src.chime) ? src.chime : DEFAULT_SOUND.chime,
+    volume: unit(src.volume, DEFAULT_SOUND.volume),
+    vibrate: typeof src.vibrate === 'boolean' ? src.vibrate : DEFAULT_SOUND.vibrate,
+    ambient: AMBIENTS.includes(src.ambient) ? src.ambient : DEFAULT_SOUND.ambient,
+    ambientVolume: unit(src.ambientVolume, DEFAULT_SOUND.ambientVolume),
+  }
+}
+
 function sanitizePrefs(raw) {
   const src = isObj(raw) ? raw : {}
   return {
     breakGuide: src.breakGuide === 'stretch' ? 'stretch' : 'breathing',
     lang: LANGS.includes(src.lang) ? src.lang : 'hu',
     feedback: sanitizeFeedback(src.feedback),
+    onboarded: src.onboarded === true,
+    sound: sanitizeSound(src.sound),
   }
 }
 

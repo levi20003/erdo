@@ -8,7 +8,7 @@ main.jsx
    └─ AppStoreProvider      reducer + persistence + cross-tab sync
       └─ LanguageRoot       applies prefs.lang, remounts the UI on change
          └─ ToastProvider   toasts, suppressed during focus (distraction lock)
-            └─ App          timer (usePomodoro), dashboard, sheets
+            └─ App          timer (usePomodoro), tabs (useTab), screens, sheets
 ```
 
 ## Source layout
@@ -30,20 +30,27 @@ main.jsx
 | `src/lib/exportData.js` | JSON backup/restore, CSV export. |
 | `src/lib/shareCard.js` | Canvas rendering of the share image. |
 | `src/lib/insights.js`, `src/lib/stats.js` | Derived numbers (streak, totals, weekly comparison). |
-| `src/hooks/` | React wiring: `usePomodoro`, `useStrictMode`, `useTicker`, `useWakeLock`, `useToday`, … |
-| `src/components/` | UI, grouped by area (timer, growth, dashboard, categories, settings, share, feedback…). |
+| `src/lib/sound.js` | Web Audio engine: unlock, chimes, phase-end sound + vibration, synthesised background sounds. |
+| `src/lib/unlocks.js`, `src/lib/forest.js` | Plant unlock thresholds; My forest periods (day/week/month/year, Monday weeks). |
+| `src/hooks/` | React wiring: `usePomodoro`, `useStrictMode`, `useTicker`, `useWakeLock`, `useSoundscape`, `useTab`, `useToday`, … |
+| `src/components/` | UI, grouped by area (timer, growth, forest, stats, settings, sound, onboarding, layout, share, feedback…). |
 | `public/sw.js` | Service worker; `vite.config.js` injects the hashed asset list at build time. |
 
 ## State
 
 ```js
 {
-  schemaVersion: 2,
-  categories: [{ id, name, color, growth: 'tolgy' | 'fenyves' | 'szikla' | 'gomba' }],
+  schemaVersion: 3,
+  categories: [{ id, name, color, growth: 'tolgy' | 'fenyves' | 'szikla' | 'gomba' | 'nyir' | 'cseresznye' }],
   sessions:   [{ id, categoryId, start, end, durationSec, status: 'completed' | 'failed', reason? }],
   selectedCategoryId,
   timer: null | { phase: 'focus' | 'break', categoryId, startedAt, endsAt, durationSec, pageLoadId? },
-  prefs: { breakGuide: 'breathing' | 'stretch', lang: 'hu' | 'en', feedback: null | { shownAt, dismissals, rating } },
+  prefs: {
+    breakGuide: 'breathing' | 'stretch', lang: 'hu' | 'en', feedback: null | { shownAt, dismissals, rating },
+    onboarded: boolean,
+    sound: { chime: 'harang' | 'csengo' | 'madar' | 'fa' | 'off', volume: 0..1, vibrate: boolean,
+             ambient: 'off' | 'eso' | 'erdo' | 'patak' | 'zaj', ambientVolume: 0..1 },
+  },
 }
 ```
 
@@ -82,6 +89,25 @@ Session ids are derived from the focus block's start (`s-<startedAt>`), so the s
 - A focus block found at page load (reload / reopen) fails. A block started in another tab is mirrored, not enforced.
 - `useWakeLock` keeps the screen on during focus and re-acquires the lock on return; unsupported browsers just skip it. The web cannot distinguish a manual screen lock from an app switch, so locking the phone counts as leaving.
 
+## Screens and navigation
+
+`useTab` maps four screens to URL hashes (`#fokusz`, `#erdo`, `#statisztika`, `#beallitasok`), so the browser/Android back button moves between them and a reload keeps the screen. `BottomNav` (phones) and `HeaderNav` (`md` and up) render the same items. While a focus block runs the screen is forced to the timer and the header and tabs are not rendered. Forest, Stats, Settings, the introduction and the share panel are lazy chunks.
+
+The first-run introduction shows while `prefs.onboarded` is false (never over a running block); the migration to schema 3 marks existing users with sessions as onboarded.
+
+## Sound
+
+Everything is synthesised with Web Audio — there are no audio files.
+
+- **Unlock.** Mobile browsers only start audio inside a user gesture. `unlockAudio()` creates/resumes the shared `AudioContext` in the Start tap (and the last onboarding tap), so the chime can play when the block ends 25 minutes later.
+- **Phase end.** `usePomodoro` calls `playPhaseEnd(phase, sound)` right after `completePhase()`: the focus chime repeats three times (a tap stops it) and vibrates `[400,150,400,150,700]` where `navigator.vibrate` exists (Android); a naturally ended break rings once. A skipped break makes no sound.
+- **Background sounds.** `useSoundscape(owned, sound)` plays the chosen loop (noise buffers shaped by filters and LFOs, plus scheduled bird calls / drops) only in the tab that owns the running block, and stops only what it started, so a preview in Settings is not cut off.
+- **Limits.** iOS mutes web audio when the ring/silent switch is on and has no vibration API; media volume applies. These are platform rules the app cannot override.
+
+## Unlocks and My forest
+
+`lib/unlocks.js` holds the thresholds (`GROWTH_UNLOCKS`: birch 10, cherry 25 completed sessions); the category form disables locked species and the celebration announces a new one when the count crosses a threshold. `lib/forest.js` computes the period ranges for My forest; failed sessions render as withered plants (an SVG colour-matrix filter plus a slight bend in `ForestScene`).
+
 ## Localisation
 
 `t` is one live object imported everywhere. `setLanguage()` replaces its contents with Hungarian merged with the target language (missing keys fall back to Hungarian, arrays merge by index), sets `<html lang>`, and `LanguageRoot` remounts the UI. Dates and numbers use `getLocale()` (`hu-HU` / `en-GB`). A unit test enforces key parity between the dictionaries.
@@ -101,4 +127,4 @@ Measured in Chromium (5 s samples): an idle dashboard does **zero** layouts per 
 - only the active breathing arc animates;
 - `prefers-reduced-motion` disables motion and shows the celebration as a still card.
 
-Bundle (production, gzip): main JS 78.7 kB, CSS 8.2 kB; Settings (2.0 kB) and Share (2.6 kB) load on demand. The service worker precaches all of it for offline use.
+Bundle (production, gzip): main JS 82.6 kB, CSS 9.0 kB; Forest, Stats, Settings, the introduction and Share load on demand. The service worker precaches all of it for offline use.

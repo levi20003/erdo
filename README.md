@@ -7,9 +7,12 @@ An offline-first, strictly 25/5 Pomodoro PWA. Every focus block grows a plant in
 ## Features
 
 - **Strict 25/5 cycle.** No pause button by design. Leaving the app for more than 5 s fails the block; a reload fails it too. The screen is kept awake during focus (Screen Wake Lock).
-- **Erdő theme.** Four growth items (Öreg Tölgy, Fenyves, Mohás Szikla, Erdei Gomba), five stages each, animated SVG.
-- **Focus mode.** When a block starts, the dashboard steps away: only the plant, the clock and *Give up* remain. Optional full-screen view.
-- **Rewards.** Completion celebration, daily streak with milestones, weekly history, local "My progress" insights.
+- **Sounds.** An end-of-timer chime that plays even without background sound (repeats until you tap, vibrates on Android), and free background sounds during focus — rain, forest, stream, brown noise — synthesised on the device.
+- **Erdő theme.** Four starter plants (Öreg Tölgy, Fenyves, Mohás Szikla, Erdei Gomba) and two to unlock (Nyírfa at 10 sessions, Cseresznyefa at 25), five stages each, animated SVG.
+- **My forest.** Every block you finish grows a plant, every block you abandon leaves a withered one. Browse by day, week, month or year, tap a plant for its details, share a period.
+- **Four screens.** Focus, My forest, Stats, Settings — bottom tabs on phones, back button works. A short first-run introduction.
+- **Focus mode.** When a block starts, everything else steps away: only the plant, the clock, sounds and *Give up* remain. Optional full-screen view.
+- **Rewards.** Completion celebration, unlocks, daily streak with milestones, weekly history, local "My progress" insights.
 - **Your data.** JSON backup and restore (merge), CSV export for spreadsheets, shareable forest image, local error log.
 - **Resilient.** Versioned storage with migrations and automatic backups, repair of damaged data, recovery when storage is full, crash screen instead of a blank page.
 

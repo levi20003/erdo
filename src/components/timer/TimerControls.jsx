@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { unlockAudio } from '../../lib/sound'
 import { t } from '../../lib/strings'
 import { useAppStore } from '../../store/AppStore'
 import Icon from '../ui/Icon'
@@ -15,7 +16,11 @@ export default function TimerControls({ timer }) {
       <button
         type="button"
         disabled={!state.selectedCategoryId}
-        onClick={actions.startFocus}
+        onClick={() => {
+          // Inside the tap: lets the end-of-session chime play 25 minutes later (iOS).
+          unlockAudio()
+          actions.startFocus()
+        }}
         className={`${base} w-full max-w-64 bg-olive text-sand-100 shadow-[0_8px_24px_-12px_rgb(95_98_57/0.9)] hover:bg-olive-400 disabled:opacity-40`}
       >
         <Icon name="play" size={16} /> {t.start}

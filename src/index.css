@@ -22,6 +22,15 @@
   }
 }
 
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ---------- Erdő growth scene (SVG) ---------- */
 @layer components {
   /* A part of a growth item that fades and scales in when its stage is reached. */

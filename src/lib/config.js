@@ -26,8 +26,19 @@ export const STORAGE_KEY = 'focusgrove:v1'
  * lib/migrations.js whenever the stored shape changes.
  *   1 — unversioned data from before 1.0 (categories, sessions, timer, prefs.breakGuide)
  *   2 — schemaVersion field, prefs.lang, prefs.feedback
+ *   3 — prefs.onboarded, prefs.sound
  */
-export const SCHEMA_VERSION = 2
+export const SCHEMA_VERSION = 3
+
+/** End-of-phase sounds (synthesised in lib/sound.js; no audio files). */
+export const CHIMES = ['harang', 'csengo', 'madar', 'fa', 'off']
+/** Background sounds during focus (also synthesised). */
+export const AMBIENTS = ['off', 'eso', 'erdo', 'patak', 'zaj']
+export const DEFAULT_SOUND = { chime: 'harang', volume: 0.8, vibrate: true, ambient: 'off', ambientVolume: 0.5 }
+
+/** Plants available from the start; the others unlock after this many completed sessions. */
+export const STARTER_GROWTH = ['tolgy', 'fenyves', 'szikla', 'gomba']
+export const GROWTH_UNLOCKS = { nyir: 10, cseresznye: 25 }
 
 /** Where "Write a suggestion" leads: a pre-filled GitHub issue the user can review before sending. */
 export const FEEDBACK_URL = 'https://github.com/levi20003/erdo/issues/new'

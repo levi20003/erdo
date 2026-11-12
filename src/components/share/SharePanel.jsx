@@ -10,9 +10,14 @@ import ForestScene from '../growth/ForestScene'
 
 const MAX_PLANTS = 24
 
-/** "Share my forest": builds the image on the device, then shares or downloads it. Lazy-loaded. */
-export default function SharePanel() {
-  const { sessions } = useAppStore().state
+/**
+ * "Share my forest": builds the image on the device, then shares or downloads it.
+ * With `scope` ({ sessions, label }) it shares that period — what the forest
+ * screen is showing — instead of everything. Lazy-loaded.
+ */
+export default function SharePanel({ scope = null }) {
+  const all = useAppStore().state.sessions
+  const sessions = scope?.sessions ?? all
   const categories = useCategoryLookup()
   const artRef = useRef(null)
   const [card, setCard] = useState(null) // { blob, url }
@@ -51,11 +56,11 @@ export default function SharePanel() {
           stats: [
             { value: formatHours(totalMinutes(sessions)), label: t.share.hours },
             { value: total, label: t.share.sessions },
-            { value: computeStreak(sessions).current, label: t.share.streak },
+            { value: computeStreak(all).current, label: t.share.streak },
           ],
           labels: {
             title: t.share.cardTitle,
-            subtitle: new Date().toLocaleDateString(getLocale(), { year: 'numeric', month: 'long', day: 'numeric' }),
+            subtitle: scope?.label ?? new Date().toLocaleDateString(getLocale(), { year: 'numeric', month: 'long', day: 'numeric' }),
             more: `+${total - plants.length}`,
             footer: `${location.host}${import.meta.env.BASE_URL}`.replace(/\/$/, ''),
           },
@@ -72,7 +77,7 @@ export default function SharePanel() {
       cancelled = true
       if (url) URL.revokeObjectURL(url)
     }
-  }, [grown, kinds, categories, sessions])
+  }, [grown, kinds, categories, sessions, all, scope])
 
   if (!grown.length) return <p className="text-sm text-zinc-400">{t.share.empty}</p>
 

@@ -10,7 +10,7 @@ All in the browser's `localStorage` for the app's address (`levi20003.github.io`
 
 | Key | Contents |
 | --- | --- |
-| `focusgrove:v1` | Your categories (name, colour, plant), sessions (start, end, duration, completed/failed and why), the running timer, settings (break guide, language, feedback prompt state) |
+| `focusgrove:v1` | Your categories (name, colour, plant), sessions (start, end, duration, completed/failed and why), the running timer, settings (break guide, language, sounds, whether you've seen the introduction, feedback prompt state) |
 | `focusgrove:v1:backup-v<N>` | An untouched copy of your data, taken before upgrading it to a new format |
 | `focusgrove:v1:backup-before-reset-<time>` | A copy taken before "Reset to defaults" on the crash screen |
 | `focusgrove:v1:corrupt-<time>` | A copy of saved data that could not be read, kept instead of being overwritten |
@@ -22,7 +22,7 @@ The service worker additionally caches the app's own files (HTML, JavaScript, CS
 
 ## Network
 
-The only network traffic is downloading the app itself from GitHub Pages, which, like any web host, sees the request (IP address, browser). After the first visit the app runs from the device cache. FocusGrove makes no other requests: no APIs, fonts, CDNs, analytics or ads.
+The only network traffic is downloading the app itself from GitHub Pages, which, like any web host, sees the request (IP address, browser). After the first visit the app runs from the device cache. FocusGrove makes no other requests: no APIs, fonts, CDNs, analytics or ads. Chimes and background sounds are generated on the device; nothing is streamed.
 
 ## The error log
 
@@ -41,4 +41,4 @@ The star rating itself is stored only on your device.
 
 ## Permissions
 
-FocusGrove asks for no permissions. The Screen Wake Lock (keeping the screen on during focus) needs no permission and shares no data. The share sheet is your operating system's own.
+FocusGrove asks for no permissions. Vibration (Android) needs none. The Screen Wake Lock (keeping the screen on during focus) needs no permission and shares no data. The share sheet is your operating system's own.

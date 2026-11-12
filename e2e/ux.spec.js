@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test'
-import { MIN, openApp, overflowing, pastSessions, stored } from './helpers'
+import { goTo, MIN, openApp, overflowing, pastSessions, stored } from './helpers'
 
 test('switching to English translates the UI and survives a reload', async ({ page }) => {
   await openApp(page)
-  await page.getByRole('button', { name: 'Beállítások' }).click()
+  await goTo(page, 'Beállítások')
   await page.getByRole('radio', { name: 'English' }).click()
-  // The settings sheet reopens after the language remount.
-  await expect(page.getByRole('dialog', { name: 'Settings and data' })).toBeVisible()
-  await page.keyboard.press('Escape')
+  // Still on the Settings screen after the language remount, now in English.
+  await expect(page.getByText('Settings and data')).toBeVisible()
+  await goTo(page, 'Focus')
   await expect(page.getByRole('button', { name: 'Start focus' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.lang)).toBe('en')
   await page.reload()
@@ -16,7 +16,7 @@ test('switching to English translates the UI and survives a reload', async ({ pa
 })
 
 test('feedback prompt: after 5 sessions, dismissable, not shown again right away', async ({ page }) => {
-  await openApp(page, { schemaVersion: 2, sessions: pastSessions(5) })
+  await openApp(page, { schemaVersion: 3, sessions: pastSessions(5), prefs: { onboarded: true } })
   const prompt = page.getByRole('region', { name: 'Hogy tetszik a FocusGrove?' })
   await expect(prompt).toBeVisible()
   await prompt.getByRole('button', { name: 'Most nem' }).click()
@@ -27,14 +27,14 @@ test('feedback prompt: after 5 sessions, dismissable, not shown again right away
 })
 
 test('feedback prompt never appears during focus', async ({ page }) => {
-  await openApp(page, { schemaVersion: 2, sessions: pastSessions(5) })
+  await openApp(page, { schemaVersion: 3, sessions: pastSessions(5), prefs: { onboarded: true } })
   await page.getByRole('button', { name: 'Fókusz indítása' }).click()
   await page.clock.runFor(MIN)
   await expect(page.getByText('Hogy tetszik a FocusGrove?')).toHaveCount(0)
 })
 
 test('@mobile no horizontal overflow on a small phone, dashboard and focus mode', async ({ page }) => {
-  await openApp(page, { schemaVersion: 2, sessions: pastSessions(8) })
+  await openApp(page, { schemaVersion: 3, sessions: pastSessions(8), prefs: { onboarded: true } })
   expect(await overflowing(page)).toEqual([])
   await page.getByRole('button', { name: 'Fókusz indítása' }).click()
   await page.clock.runFor(MIN)

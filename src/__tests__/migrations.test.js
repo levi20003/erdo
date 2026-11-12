@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SCHEMA_VERSION } from '../lib/config'
+import { DEFAULT_SOUND, SCHEMA_VERSION } from '../lib/config'
 import { MIGRATION_STEPS, migrate, storedVersion } from '../lib/migrations'
 import { sanitizeState } from '../lib/sanitize'
 
@@ -45,6 +45,14 @@ describe('migrations', () => {
     const s = sanitizeState(legacy)
     expect(s.schemaVersion).toBe(SCHEMA_VERSION)
     expect(s.categories[0].growth).toBe('tolgy')
-    expect(s.prefs).toEqual({ breakGuide: 'stretch', lang: 'hu', feedback: null })
+    expect(s.prefs).toEqual({ breakGuide: 'stretch', lang: 'hu', feedback: null, onboarded: true, sound: DEFAULT_SOUND })
+  })
+
+  it('2 → 3: existing users skip the introduction, new ones see it', () => {
+    const used = migrate({ schemaVersion: 2, sessions: legacy.sessions, prefs: { lang: 'en' } }).data
+    expect(used.prefs).toMatchObject({ lang: 'en', onboarded: true, sound: DEFAULT_SOUND })
+    const unused = migrate({ schemaVersion: 2, sessions: [] }).data
+    expect(unused.prefs.onboarded).toBe(false)
+    expect(sanitizeState(null).prefs.onboarded).toBe(false)
   })
 })

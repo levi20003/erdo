@@ -1,4 +1,4 @@
-import { SCHEMA_VERSION } from './config'
+import { DEFAULT_SOUND, SCHEMA_VERSION } from './config'
 
 /*
  * Saved-data migrations. Each step takes data of version N and returns data of
@@ -12,6 +12,16 @@ const STEPS = {
   1: (data) => ({
     ...data,
     prefs: { ...(isObj(data.prefs) ? data.prefs : {}), lang: 'hu', feedback: null },
+  }),
+  // 2 → 3: first-run introduction and sound settings. Anyone who already used
+  // the app has seen it, so only people without sessions get the introduction.
+  2: (data) => ({
+    ...data,
+    prefs: {
+      ...(isObj(data.prefs) ? data.prefs : {}),
+      onboarded: Array.isArray(data.sessions) && data.sessions.length > 0,
+      sound: { ...DEFAULT_SOUND },
+    },
   }),
 }
 

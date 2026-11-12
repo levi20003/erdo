@@ -16,7 +16,8 @@ export default function StageStepper({ item, stage, progress, active, color, com
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <ol className="flex items-center" aria-label={active ? t.aria.stage(stage + 1, last + 1, item.stages[stage]) : item.name}>
+      {/* The dots only mean something while a block runs; idle shows the name and the path. */}
+      {active && <ol className="flex items-center" aria-label={active ? t.aria.stage(stage + 1, last + 1, item.stages[stage]) : item.name}>
         {item.stages.map((name, i) => {
           const done = active && i < stage
           const current = active && i === stage
@@ -53,7 +54,7 @@ export default function StageStepper({ item, stage, progress, active, color, com
             </li>
           )
         })}
-      </ol>
+      </ol>}
 
       <div className="flex min-h-[2.25rem] flex-col items-center">
         <p key={active ? stage : 'idle'} className={`text-sm font-medium text-zinc-100 ${active ? 'stage-in' : ''}`}>

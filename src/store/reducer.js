@@ -1,5 +1,5 @@
 import { BREAK_SEC, CELEBRATION_MS, FOCUS_SEC, MIN_LOGGED_FAIL_SEC } from '../lib/config'
-import { sanitizeState } from '../lib/sanitize'
+import { sanitizeSound, sanitizeState } from '../lib/sanitize'
 import { uid } from '../lib/time'
 
 /**
@@ -9,7 +9,8 @@ import { uid } from '../lib/time'
  *  selectedCategoryId
  *  timer               null | { phase: 'focus'|'break', categoryId, startedAt, endsAt, durationSec, pageLoadId? }
  *                      A break's startedAt lies CELEBRATION_MS in the future: the completion celebration plays first.
- *  prefs               { breakGuide: 'breathing'|'stretch', lang: 'hu'|'en', feedback: null | { shownAt, dismissals, rating } }
+ *  prefs               { breakGuide: 'breathing'|'stretch', lang: 'hu'|'en', feedback: null | { shownAt, dismissals, rating },
+ *                        onboarded: boolean, sound: { chime, volume, vibrate, ambient, ambientVolume } }
  *  schemaVersion       SCHEMA_VERSION (lib/migrations.js)
  *
  * Time-dependent actions carry `now`, so the reducer is pure and testable.
@@ -117,6 +118,18 @@ export function reducer(state, action) {
       // Own keys only: a key like '__proto__' must not reach Object.prototype.
       if (!Object.hasOwn(PREF_VALUES, action.key) || !PREF_VALUES[action.key].includes(action.value)) return state
       return { ...state, prefs: { ...state.prefs, [action.key]: action.value } }
+
+    case 'SET_SOUND':
+      // Every field is re-validated, so a bad value can't reach the audio code.
+      return { ...state, prefs: { ...state.prefs, sound: sanitizeSound({ ...state.prefs.sound, ...action.patch }) } }
+
+    case 'COMPLETE_ONBOARDING': {
+      const selectedCategoryId = state.categories.some((c) => c.id === action.categoryId) ? action.categoryId : state.selectedCategoryId
+      return { ...state, selectedCategoryId, prefs: { ...state.prefs, onboarded: true } }
+    }
+
+    case 'SHOW_ONBOARDING':
+      return timer?.phase === 'focus' ? state : { ...state, prefs: { ...state.prefs, onboarded: false } }
 
     case 'IMPORT_MERGE': {
       // Merge, never replace: nothing the user already has is lost. On an id clash the existing entry wins.

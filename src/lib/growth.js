@@ -7,7 +7,7 @@ import { t } from './strings'
  */
 export const STAGE_AT = [0, 0.08, 0.3, 0.6, 0.92]
 
-export const GROWTH_IDS = ['tolgy', 'fenyves', 'szikla', 'gomba']
+export const GROWTH_IDS = ['tolgy', 'fenyves', 'szikla', 'gomba', 'nyir', 'cseresznye']
 
 export function stageOf(progress) {
   let stage = 0

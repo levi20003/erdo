@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
-import { chime } from '../lib/chime'
 import { PAGE_LOAD_ID } from '../lib/pageLoad'
+import { playPhaseEnd } from '../lib/sound'
 import { formatClock } from '../lib/time'
 import { useAppStore } from '../store/AppStore'
 import { useTicker } from './useTicker'
+import { useSoundscape } from './useSoundscape'
 import { away, useStrictMode } from './useStrictMode'
 import { useWakeLock } from './useWakeLock'
 
@@ -14,6 +15,7 @@ import { useWakeLock } from './useWakeLock'
 export function usePomodoro() {
   const { state, actions } = useAppStore()
   const { timer } = state
+  const { sound } = state.prefs
   // A break's startedAt is in the future during the celebration: wake up when it ends.
   const now = useTicker(timer?.endsAt, timer?.phase === 'break' ? timer.startedAt : null)
 
@@ -25,7 +27,9 @@ export function usePomodoro() {
   const focusing = timer?.phase === 'focus'
 
   useStrictMode(timer, actions.failFocus)
-  useWakeLock(focusing && timer.pageLoadId === PAGE_LOAD_ID)
+  const owned = focusing && timer.pageLoadId === PAGE_LOAD_ID
+  useWakeLock(owned)
+  useSoundscape(owned, sound)
 
   // One completion per phase: keyed by the phase's own identity, not by render.
   const completedRef = useRef(null)
@@ -37,12 +41,13 @@ export function usePomodoro() {
       // Only the tab that runs the block completes it, and only once the user is
       // back: if they left, Strict Mode decides on return whether it still counts.
       if (timer.pageLoadId !== PAGE_LOAD_ID || away.since !== null) return
-      chime()
     }
     completedRef.current = key
     actions.completePhase()
+    // A break that ran out (not one that was skipped) rings too, softer.
+    playPhaseEnd(timer.phase, sound)
     // `now` too: a block that ran out while the user was briefly away completes on the tick after they return.
-  }, [timer, remainingSec, now, actions])
+  }, [timer, remainingSec, now, actions]) // eslint-disable-line react-hooks/exhaustive-deps -- `sound` is read at the moment of completion
 
   useEffect(() => {
     document.title = timer ? `${formatClock(remainingSec)} · FocusGrove` : 'FocusGrove'

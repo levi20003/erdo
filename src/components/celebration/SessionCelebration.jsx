@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { growthItem } from '../../lib/growth'
-import { computeStreak } from '../../lib/stats'
+import { completed, computeStreak } from '../../lib/stats'
+import { unlockedAt } from '../../lib/unlocks'
 import { t } from '../../lib/strings'
 import { useAppStore, useCategoryLookup } from '../../store/AppStore'
 import ForestScene from '../growth/ForestScene'
@@ -28,6 +29,8 @@ export default function SessionCelebration({ celebrating }) {
   const categories = useCategoryLookup()
   const session = sessions.at(-1)
   const streak = useMemo(() => computeStreak(sessions).current, [sessions])
+  // Did this very session unlock a new plant?
+  const unlocked = useMemo(() => unlockedAt(completed(sessions).length), [sessions])
 
   if (!celebrating || session?.status !== 'completed') return null
   const category = categories[session.categoryId]
@@ -79,6 +82,11 @@ export default function SessionCelebration({ celebrating }) {
           {streak > 0 && (
             <span className="flex items-center gap-1 rounded-full border border-sand/30 bg-sand-900/80 px-3 py-1.5 text-sand-200">
               <Icon name="flame" size={13} /> {t.celebrate.streak(streak)}
+            </span>
+          )}
+          {unlocked && (
+            <span className="flex items-center gap-1 rounded-full border border-sand/60 bg-sand/15 px-3 py-1.5 font-medium text-sand-100">
+              <Icon name="sprout" size={13} /> {t.celebrate.unlocked(growthItem(unlocked).name)}
             </span>
           )}
         </div>

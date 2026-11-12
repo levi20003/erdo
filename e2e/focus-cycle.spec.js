@@ -1,15 +1,16 @@
 import { expect, test } from '@playwright/test'
-import { MIN, openApp, stored, timerCard } from './helpers'
+import { goTo, MIN, openApp, stored, timerCard } from './helpers'
 
 test('full cycle: focus → growth stages → celebration → break → back to dashboard, persisted', async ({ page }) => {
   await openApp(page)
   await page.getByRole('button', { name: 'Fókusz indítása' }).click()
 
-  // Contextual focus: only the timer card with Give Up; no dashboard, no pause.
-  await expect(page.locator('main > section')).toHaveCount(1)
+  // Contextual focus: only the timer card with Give Up; no menu, header or other cards, no pause.
+  await expect(page.locator('main section')).toHaveCount(1)
+  await expect(page.getByRole('navigation')).toHaveCount(0)
+  await expect(page.locator('header h1')).toHaveCount(0)
   await expect(timerCard(page).getByRole('button', { name: 'Feladom' })).toBeVisible()
   await expect(page.getByRole('button', { name: /szünet|pause/i })).toHaveCount(0)
-  await expect(page.getByText('Napi sorozat')).toHaveCount(0)
 
   // The forest grows: more parts visible and the stepper advances with time.
   const visibleParts = () => timerCard(page).locator('[data-show="true"]').count()
@@ -35,8 +36,9 @@ test('full cycle: focus → growth stages → celebration → break → back to 
   await expect(page.getByRole('status').filter({ hasText: 'Munkamenet kész' })).toHaveCount(0)
   await expect(timerCard(page).getByText('Szünet', { exact: true })).toBeVisible()
   await expect(timerCard(page).getByRole('radio', { name: 'Légzés' })).toHaveAttribute('aria-checked', 'true')
-  // Dashboard is back during the break.
-  await expect(page.getByText('Napi sorozat')).toBeVisible()
+  // The menu and today's numbers are back during the break.
+  await expect(page.getByRole('navigation')).toBeVisible()
+  await expect(page.getByText('1 növény')).toBeVisible()
 
   await page.clock.runFor(5 * MIN + 1000)
   await expect(timerCard(page).getByRole('button', { name: 'Fókusz indítása' })).toBeVisible()
@@ -45,6 +47,7 @@ test('full cycle: focus → growth stages → celebration → break → back to 
 
   // Survives a reload.
   await page.reload()
+  await goTo(page, 'Statisztika')
   await expect(page.getByText('1 munkamenet')).toBeVisible()
   expect((await stored(page)).sessions).toHaveLength(1)
 })

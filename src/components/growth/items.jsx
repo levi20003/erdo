@@ -1,7 +1,7 @@
 import { darken, lighten } from '../../lib/color'
 
 /*
- * The four Erdő growth items, drawn on a 200×200 canvas with the ground at y=155.
+ * The Erdő growth items, drawn on a 200×200 canvas with the ground at y=155.
  * Every item is fully drawn; <Part> hides the pieces whose stage hasn't been
  * reached yet and fades/scales them in when it is (see .grow-part in index.css).
  */
@@ -269,4 +269,120 @@ export function Fungus({ p, color }) {
   )
 }
 
-export const ITEM_RENDERERS = { tolgy: Oak, fenyves: Pine, szikla: MossRock, gomba: Fungus }
+/* ---------------- Nyírfa (unlocks at 10 sessions) ---------------- */
+const BIRCH_BARK = '#e7e5e4'
+const BIRCH_MARK = '#3f3f46'
+
+export function Birch({ p, color }) {
+  const light = lighten(color, 0.22)
+  const mid = lighten(color, 0.08)
+  const dark = darken(color, 0.12)
+  // Drooping, slightly elongated leaf clusters.
+  const cluster = (cx, cy, rx, ry, fill) => <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={fill} />
+  return (
+    <>
+      <Part show={p < 0.08}>
+        {/* Winged seed */}
+        <ellipse cx="100" cy="150" rx="2.6" ry="4" fill="#a8835a" />
+        <path d="M97.4 149c-4-1-6-4-5-6 2 0 5 2 5 6ZM102.6 149c4-1 6-4 5-6-2 0-5 2-5 6Z" fill="#d9c09f" opacity="0.85" />
+      </Part>
+      <Grow scale={0.4 + 0.6 * p}>
+        <Part show={p >= 0.08}>
+          <path d="M97 155L98.6 92Q100 86 101.4 92L103 155Z" fill={BIRCH_BARK} />
+        </Part>
+        <Part show={p >= 0.3}>
+          <path d="M97.6 140h3M98.4 128h4M97.9 117h2.6M98.8 106h3.2M98 147h2" stroke={BIRCH_MARK} strokeWidth="1.6" strokeLinecap="round" />
+        </Part>
+        <Part show={p >= 0.45}>
+          <path d="M99.5 118L86 104M100.5 110L114 96M100 100L92 86" stroke="#d6d3d1" strokeWidth="1.6" strokeLinecap="round" />
+        </Part>
+        <Part show={p >= 0.08 && p < 0.3}>
+          <path d="M100 93c-7-1-10-6-9-10 6 1 9 5 9 10Z" fill={color} />
+          <path d="M100 91c1-7 6-10 10-9-1 6-5 9-10 9Z" fill={light} />
+        </Part>
+        <g className="sway">
+          <Part show={p >= 0.3}>{cluster(100, 76, 17, 25, mid)}</Part>
+          <Part show={p >= 0.45}>
+            {cluster(83, 98, 12, 19, dark)}
+            {cluster(117, 94, 12, 19, dark)}
+          </Part>
+          <Part show={p >= 0.7}>
+            {cluster(89, 66, 11, 17, color)}
+            {cluster(111, 63, 11, 17, color)}
+            {cluster(100, 52, 9, 13, light)}
+          </Part>
+          <Part show={p >= 0.92}>
+            {/* Catkins */}
+            <path d="M86 112v6M114 108v6M95 98v5M108 88v5M82 84v5" stroke="#b08f63" strokeWidth="1.8" strokeLinecap="round" />
+            <ellipse cx="96" cy="60" rx="4" ry="7" fill="#fff" opacity="0.12" />
+          </Part>
+        </g>
+      </Grow>
+    </>
+  )
+}
+
+/* ---------------- Cseresznyefa (unlocks at 25 sessions) ---------------- */
+const CHERRY_BARK = '#5b4636'
+const BLOSSOM = '#e4b3c0'
+const BLOSSOM_LIGHT = '#f2d4dc'
+
+export function Cherry({ p, color }) {
+  const dark = darken(color, 0.3)
+  const mid = darken(color, 0.1)
+  const blossoms = [
+    [76, 88, 5], [90, 72, 6], [108, 66, 5.5], [124, 84, 5], [100, 80, 4.5], [84, 100, 4], [116, 100, 4.5], [98, 58, 4],
+  ]
+  return (
+    <>
+      <Part show={p < 0.08}>
+        <circle cx="100" cy="150" r="4.5" fill="#c9a27a" />
+        <path d="M100 145.5c1-3 3-4 5-4" stroke="#6b8f4e" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+      </Part>
+      <Grow scale={0.4 + 0.6 * p}>
+        <Part show={p >= 0.08}>
+          <path d="M95 155C97 135 96 118 99 104L102 104C104 118 104 135 106 155Z" fill={CHERRY_BARK} />
+        </Part>
+        <Part show={p >= 0.45}>
+          <path d="M99 116C92 108 84 104 76 98M101 110C108 102 116 98 124 92M100 104C99 94 96 86 92 78" stroke={CHERRY_BARK} strokeWidth="3" fill="none" strokeLinecap="round" />
+        </Part>
+        <Part show={p >= 0.08 && p < 0.3}>
+          <path d="M100 104c-8 0-12-5-12-10 7 0 12 4 12 10Z" fill={color} />
+          <path d="M100 102c0-7 5-11 12-11 0 6-5 11-12 11Z" fill={mid} />
+        </Part>
+        <g className="sway">
+          <Part show={p >= 0.3}>
+            <ellipse cx="100" cy="82" rx="30" ry="22" fill={mid} />
+          </Part>
+          <Part show={p >= 0.45}>
+            <ellipse cx="76" cy="92" rx="17" ry="14" fill={dark} />
+            <ellipse cx="124" cy="88" rx="17" ry="14" fill={dark} />
+          </Part>
+          <Part show={p >= 0.7}>
+            {blossoms.slice(0, 5).map(([cx, cy, r]) => (
+              <g key={`${cx}-${cy}`}>
+                <circle cx={cx} cy={cy} r={r} fill={BLOSSOM} />
+                <circle cx={cx} cy={cy} r={r * 0.35} fill={BLOSSOM_LIGHT} />
+              </g>
+            ))}
+          </Part>
+          <Part show={p >= 0.92}>
+            {blossoms.slice(5).map(([cx, cy, r]) => (
+              <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} fill={BLOSSOM_LIGHT} />
+            ))}
+            <ellipse cx="92" cy="70" rx="12" ry="7" fill={BLOSSOM} opacity="0.55" />
+            <ellipse cx="112" cy="76" rx="10" ry="6" fill={BLOSSOM_LIGHT} opacity="0.5" />
+          </Part>
+        </g>
+      </Grow>
+      <Part show={p >= 0.92}>
+        {/* Fallen petals */}
+        <ellipse cx="80" cy="154" rx="2.6" ry="1.4" fill={BLOSSOM} transform="rotate(-20 80 154)" />
+        <ellipse cx="118" cy="155" rx="2.4" ry="1.3" fill={BLOSSOM_LIGHT} transform="rotate(15 118 155)" />
+        <ellipse cx="128" cy="152" rx="2" ry="1.1" fill={BLOSSOM} transform="rotate(30 128 152)" />
+      </Part>
+    </>
+  )
+}
+
+export const ITEM_RENDERERS = { tolgy: Oak, fenyves: Pine, szikla: MossRock, gomba: Fungus, nyir: Birch, cseresznye: Cherry }
