@@ -28,7 +28,7 @@ function Visual({ step }) {
         </div>
         <div className="flex flex-col items-center gap-2">
           <ForestScene item="tolgy" progress={0.45} withered backdrop={false} className="size-32" />
-          <span className="text-xs text-[#e2b8bc]">&gt; 5 s</span>
+          <span className="text-xs text-rose">&gt; 5 s</span>
         </div>
       </div>
     )
@@ -103,14 +103,14 @@ export default function Onboarding({ onDone }) {
           <>
             <Visual step={step} />
             <div className="flex flex-col gap-3">
-              <h2 ref={heading} tabIndex={-1} className="text-2xl font-semibold leading-tight tracking-tight text-zinc-50 outline-none">{steps[step].title}</h2>
+              <h2 ref={heading} tabIndex={-1} className="font-display text-[1.75rem] font-medium leading-tight tracking-tight text-zinc-50 outline-none">{steps[step].title}</h2>
               <p className="text-base leading-relaxed text-zinc-300">{steps[step].body}</p>
             </div>
           </>
         ) : (
           <>
             <div className="flex flex-col gap-2">
-              <h2 ref={heading} tabIndex={-1} className="text-2xl font-semibold tracking-tight text-zinc-50 outline-none">{t.onboarding.chooseTitle}</h2>
+              <h2 ref={heading} tabIndex={-1} className="font-display text-[1.75rem] font-medium tracking-tight text-zinc-50 outline-none">{t.onboarding.chooseTitle}</h2>
               <p className="text-sm text-zinc-400">{t.onboarding.chooseHint}</p>
             </div>
             <div role="radiogroup" aria-label={t.onboarding.chooseTitle} className="grid w-full grid-cols-2 gap-2">
@@ -138,7 +138,7 @@ export default function Onboarding({ onDone }) {
                   <p className="mt-1 text-xs leading-relaxed text-zinc-400">{isIos() ? t.onboarding.installIos : t.onboarding.installOther}</p>
                 </div>
                 {canInstall && (
-                  <button type="button" onClick={install} className="min-h-10 rounded-xl bg-olive px-3 text-xs font-medium text-sand-100">
+                  <button type="button" onClick={install} className="min-h-10 rounded-xl bg-olive px-3 text-xs font-medium text-cream">
                     {t.onboarding.installButton}
                   </button>
                 )}
@@ -162,7 +162,7 @@ export default function Onboarding({ onDone }) {
         <button
           type="button"
           onClick={() => (step < last ? setStep(step + 1) : finish())}
-          className="min-h-12 flex-[2] rounded-2xl bg-olive text-base font-medium text-sand-100 shadow-[0_8px_24px_-12px_rgb(95_98_57/0.9)] transition hover:bg-olive-400 active:scale-[0.98]"
+          className="btn-primary min-h-12 flex-[2] text-base"
         >
           {step < last ? t.onboarding.next : t.onboarding.start}
         </button>

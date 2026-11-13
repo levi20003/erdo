@@ -10,6 +10,7 @@ import { useAppStore, useCategoryLookup } from '../../store/AppStore'
 import { DELETED } from '../dashboard/CategoryBars'
 import ForestScene from '../growth/ForestScene'
 import Card from '../ui/Card'
+import Segmented from '../ui/Segmented'
 import Icon from '../ui/Icon'
 import Sheet, { useRetained } from '../ui/Sheet'
 
@@ -26,7 +27,7 @@ function periodLabel(period, { start, end }) {
 }
 
 const timeOf = (ms) => new Date(ms).toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' })
-const growthOf = (s) => (s.status === 'completed' ? 1 : Math.min(1, s.durationSec / FOCUS_SEC))
+const growthOf = (s) => (s.status === 'completed' ? 1 : Math.min(1, s.durationSec / (s.plannedSec ?? FOCUS_SEC)))
 
 /** "My forest": every grown and withered plant, by day / week / month / year, plus the plant collection. */
 export default function ForestView({ onStartFocus, onShare }) {
@@ -65,30 +66,23 @@ export default function ForestView({ onStartFocus, onShare }) {
           )
         }
       >
-        <div role="radiogroup" aria-label={t.forest.title} className="mb-4 grid grid-cols-4 gap-1 rounded-2xl border border-zinc-800 bg-zinc-950/60 p-1">
-          {PERIODS.map((p) => (
-            <button
-              key={p}
-              type="button"
-              role="radio"
-              aria-checked={period === p}
-              onClick={() => {
-                setPeriod(p)
-                setAnchor(new Date())
-              }}
-              className={`min-h-10 rounded-xl text-sm transition ${period === p ? 'bg-zinc-800 font-medium text-zinc-50' : 'text-zinc-400 hover:text-zinc-200'}`}
-            >
-              {t.forest.periods[p]}
-            </button>
-          ))}
-        </div>
+        <Segmented
+          label={t.forest.title}
+          className="mb-4"
+          value={period}
+          options={PERIODS.map((p) => ({ id: p, label: t.forest.periods[p] }))}
+          onChange={(p) => {
+            setPeriod(p)
+            setAnchor(new Date())
+          }}
+        />
 
         <div className="mb-4 flex items-center justify-between gap-2">
           <button type="button" aria-label={t.forest.prev} onClick={() => setAnchor((a) => shiftPeriod(period, a, -1))} className={navButton}>
             <Icon name="chevronLeft" size={18} />
           </button>
           <div className="min-w-0 text-center">
-            <p className="truncate text-base font-medium text-zinc-100" aria-live="polite">
+            <p className="truncate font-display text-lg font-medium text-zinc-50" aria-live="polite">
               {label}
             </p>
             {!current && (
@@ -111,33 +105,37 @@ export default function ForestView({ onStartFocus, onShare }) {
         {plants.length > 0 ? (
           <>
             <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-              <span className="rounded-full border border-olive/50 bg-olive-900/60 px-2.5 py-1 text-olive-200">{t.forest.grown(grown.length)}</span>
-              {plants.length > grown.length && (
-                <span className="rounded-full border border-zinc-800 px-2.5 py-1 text-zinc-400">{t.forest.withered(plants.length - grown.length)}</span>
-              )}
-              <span className="ml-auto tabular-nums text-zinc-300">{formatMinutes(minutes)}</span>
+              <span className="chip bg-olive/20 text-olive-200 ring-1 ring-inset ring-olive/40">
+                <Icon name="sprout" size={12} /> {t.forest.grown(grown.length)}
+              </span>
+              {plants.length > grown.length && <span className="chip bg-zinc-800 text-zinc-400">{t.forest.withered(plants.length - grown.length)}</span>}
+              <span className="num ml-auto font-display text-base font-semibold text-zinc-100">{formatMinutes(minutes)}</span>
             </div>
             {/* The forest floor: plants in planting order, every other one set back a little. */}
-            <div className="rounded-3xl bg-[radial-gradient(ellipse_at_50%_0%,rgb(201_171_132/0.10),transparent_60%),linear-gradient(to_bottom,#0f110b,#16180f)] p-3 ring-1 ring-inset ring-zinc-800/60 sm:p-4">
-              <ul className="flex flex-wrap justify-center gap-y-2">
+            <div className="rounded-3xl bg-[radial-gradient(ellipse_at_50%_0%,rgb(var(--glow)/0.16),transparent_60%),linear-gradient(to_bottom,var(--floor-top),var(--floor-bottom))] p-3 ring-1 ring-inset ring-zinc-800/60 sm:p-4">
+              <ul key={`${period}-${range.start.getTime()}`} className="flex flex-wrap justify-center gap-y-2">
                 {plants.slice(0, MAX_SHOWN).map((s, i) => {
                   const cat = categories[s.categoryId] ?? DELETED
                   return (
-                    <li key={s.id} className={`basis-1/5 px-0.5 min-[420px]:basis-1/6 sm:basis-[12.5%] lg:basis-[10%] ${i % 2 ? 'translate-y-1.5' : ''}`}>
+                    <li
+                      key={s.id}
+                      className={`basis-1/5 animate-sprout px-0.5 min-[420px]:basis-1/6 sm:basis-[12.5%] lg:basis-[10%] ${i % 2 ? 'mt-2' : ''}`}
+                      style={{ animationDelay: `${Math.min(i, 40) * 25}ms` }}
+                    >
                       <button
                         type="button"
                         onClick={() => setSelected(s)}
                         aria-label={t.forest.plantLabel(cat.name, timeOf(s.end), t.forest.status[s.status])}
-                        className="relative block aspect-square w-full rounded-xl transition hover:bg-white/5 active:scale-95"
+                        className="group relative block aspect-square w-full rounded-xl transition hover:bg-zinc-50/5 active:scale-90"
                       >
-                        <span aria-hidden="true" className="absolute inset-x-[18%] bottom-[6%] h-[10%] rounded-full bg-black/40 blur-[2px]" />
+                        <span aria-hidden="true" className="absolute inset-x-[18%] bottom-[6%] h-[10%] rounded-full bg-black/30 blur-[2px]" />
                         <ForestScene
                           item={cat.growth}
                           color={cat.color}
                           progress={growthOf(s)}
                           withered={s.status === 'failed'}
                           backdrop={false}
-                          className="relative size-full"
+                          className="relative size-full origin-bottom transition-transform duration-300 ease-spring group-hover:-translate-y-0.5 group-hover:scale-110"
                         />
                       </button>
                     </li>
@@ -152,7 +150,7 @@ export default function ForestView({ onStartFocus, onShare }) {
             <ForestScene item="tolgy" progress={0.02} backdrop={false} className="size-20 opacity-70" />
             <p className="max-w-xs text-sm leading-relaxed text-zinc-400">{completedCount ? t.forest.empty : t.forest.emptyNow}</p>
             {current && (
-              <button type="button" onClick={onStartFocus} className="rounded-xl bg-olive px-5 py-3 text-sm font-medium text-sand-100 hover:bg-olive-400">
+              <button type="button" onClick={onStartFocus} className="btn-primary min-h-12">
                 {t.forest.emptyCta}
               </button>
             )}
@@ -162,17 +160,17 @@ export default function ForestView({ onStartFocus, onShare }) {
 
       <Card title={t.forest.collection} icon={<Icon name="leaf" size={13} />}>
         <p className="-mt-2 mb-4 text-xs text-zinc-400">{t.forest.collectionHint}</p>
-        <ul className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+        <ul className="grid grid-cols-3 gap-2 sm:grid-cols-5">
           {GROWTH_IDS.map((id) => {
             const open = isUnlocked(id, completedCount)
             const color = Object.values(categories).find((c) => c.growth === id)?.color ?? '#7d8247'
             return (
-              <li key={id} className={`flex flex-col items-center gap-1 rounded-2xl border p-2 text-center ${open ? 'border-zinc-800 bg-zinc-950/50' : 'border-dashed border-zinc-800'}`}>
-                <span className={`relative block size-16 ${open ? '' : 'opacity-35 grayscale'}`}>
+              <li key={id} className={`group flex flex-col items-center gap-1 rounded-2xl border p-2 text-center transition ${open ? 'border-zinc-800 bg-zinc-950/50 hover:border-olive/50' : 'border-dashed border-zinc-800'}`}>
+                <span className={`relative block size-16 transition-transform duration-300 ease-spring ${open ? 'group-hover:-rotate-3 group-hover:scale-110' : 'opacity-35 grayscale'}`}>
                   <ForestScene item={id} color={color} progress={1} backdrop={false} className="size-full" />
                   {!open && (
                     <span className="absolute inset-0 grid place-items-center">
-                      <Icon name="lock" size={18} className="text-zinc-200" />
+                      <Icon name="lock" size={18} className="text-zinc-300" />
                     </span>
                   )}
                 </span>
@@ -198,7 +196,7 @@ function PlantDetails({ session: s, category }) {
   const row = 'flex items-baseline justify-between gap-4 border-t border-zinc-800 py-3 text-sm'
   return (
     <div className="flex flex-col items-center gap-5">
-      <div className="size-56 overflow-hidden rounded-full ring-1 ring-zinc-800">
+      <div className="size-56 animate-scene-in overflow-hidden rounded-full shadow-lift ring-1 ring-zinc-800">
         <ForestScene item={category.growth} color={category.color} progress={growthOf(s)} withered={failed} className="size-full" />
       </div>
       <dl className="w-full">
@@ -221,7 +219,7 @@ function PlantDetails({ session: s, category }) {
         </div>
         <div className={row}>
           <dt className="text-zinc-400">{t.forest.statusLabel}</dt>
-          <dd className={failed ? 'text-[#e2b8bc]' : 'text-olive-300'}>
+          <dd className={failed ? 'text-rose' : 'text-olive-300'}>
             {t.forest.status[s.status]}
             {failed && s.reason ? ` · ${t.exportFile.reason[s.reason] ?? s.reason}` : ''}
           </dd>

@@ -9,7 +9,7 @@ import { sanitizeState } from './sanitize'
  * older or newer version of the app.
  */
 
-const KNOWN_KEYS = ['categories', 'sessions', 'selectedCategoryId', 'timer', 'prefs', 'schemaVersion']
+const KNOWN_KEYS = ['categories', 'sessions', 'selectedCategoryId', 'timer', 'prefs', 'challenges', 'schemaVersion']
 export const BACKUP_PREFIX = `${STORAGE_KEY}:backup-`
 export const CORRUPT_PREFIX = `${STORAGE_KEY}:corrupt-`
 
@@ -79,8 +79,8 @@ export function load() {
 }
 
 function serialize(state) {
-  const { categories, sessions, selectedCategoryId, timer, prefs } = state
-  return JSON.stringify({ ...passthrough, schemaVersion: SCHEMA_VERSION, categories, sessions, selectedCategoryId, timer, prefs })
+  const { categories, sessions, selectedCategoryId, timer, prefs, challenges } = state
+  return JSON.stringify({ ...passthrough, schemaVersion: SCHEMA_VERSION, categories, sessions, selectedCategoryId, timer, prefs, challenges })
 }
 
 function isQuotaError(err) {

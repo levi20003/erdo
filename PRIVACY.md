@@ -10,7 +10,7 @@ All in the browser's `localStorage` for the app's address (`levi20003.github.io`
 
 | Key | Contents |
 | --- | --- |
-| `focusgrove:v1` | Your categories (name, colour, plant), sessions (start, end, duration, completed/failed and why), the running timer, settings (break guide, language, sounds, whether you've seen the introduction, feedback prompt state) |
+| `focusgrove:v1` | Your categories (name, colour, plant), sessions (start, end, duration, completed/failed and why), the running timer, settings (break guide, language, sounds, theme, focus length, daily goal, nickname, whether you've seen the introduction, feedback prompt state), friend challenges (goal, dates, the friend's nickname and last known count) |
 | `focusgrove:v1:backup-v<N>` | An untouched copy of your data, taken before upgrading it to a new format |
 | `focusgrove:v1:backup-before-reset-<time>` | A copy taken before "Reset to defaults" on the crash screen |
 | `focusgrove:v1:corrupt-<time>` | A copy of saved data that could not be read, kept instead of being overwritten |
@@ -36,6 +36,7 @@ When something goes wrong, the app records a short entry **on the device**: time
 | Share my forest | An image: your plants, total hours, sessions, streak, the date | Wherever you share it (or your downloads) |
 | Feedback → "Write a suggestion" | Opens a GitHub "new issue" page pre-filled with your star rating and the app version; nothing is submitted unless you submit it | GitHub (its privacy policy applies) |
 | Download error log | The error log, as a file | Your device's downloads |
+| Challenge a friend → Share / Copy link | A link containing the challenge's random id, goal, length, start date, **your nickname** and **your session count in that challenge** — nothing else | Whoever you send it to (through the app you choose) |
 
 The star rating itself is stored only on your device.
 

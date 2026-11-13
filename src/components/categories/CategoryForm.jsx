@@ -105,7 +105,7 @@ export default function CategoryForm({ initial, onSubmit, onCancel }) {
         <button type="button" onClick={onCancel} className="rounded-xl px-4 py-3 text-sm text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-200 sm:py-2.5">
           {t.cancel}
         </button>
-        <button type="submit" className="rounded-xl bg-olive px-5 py-3 text-sm font-medium text-sand-100 transition hover:bg-olive-400 active:scale-[0.98] sm:py-2.5">
+        <button type="submit" className="rounded-xl bg-olive px-5 py-3 text-sm font-medium text-cream transition hover:bg-olive-400 active:scale-[0.98] sm:py-2.5">
           {t.save}
         </button>
       </div>

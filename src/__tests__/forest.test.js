@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { isCurrentPeriod, periodRange, sessionsIn, shiftPeriod } from '../lib/forest'
-import { isUnlocked, nextUnlock, unlockedAt } from '../lib/unlocks'
+import { isUnlocked, nextUnlock, unlockedAt, unlockProgress } from '../lib/unlocks'
 
 const d = (y, m, day, h = 12) => new Date(y, m - 1, day, h)
 
@@ -30,14 +30,25 @@ describe('forest periods', () => {
 })
 
 describe('plant unlocks', () => {
-  it('starts with four plants and unlocks birch at 10, cherry at 25', () => {
+  it('starts with four plants; sunflower at 3, birch at 10 … sequoia at 100', () => {
     expect(isUnlocked('tolgy', 0)).toBe(true)
+    expect(isUnlocked('napraforgo', 2)).toBe(false)
+    expect(isUnlocked('napraforgo', 3)).toBe(true)
     expect(isUnlocked('nyir', 9)).toBe(false)
     expect(isUnlocked('nyir', 10)).toBe(true)
+    expect(nextUnlock(0)).toEqual({ id: 'napraforgo', at: 3, remaining: 3 })
     expect(nextUnlock(3)).toEqual({ id: 'nyir', at: 10, remaining: 7 })
     expect(nextUnlock(10)).toEqual({ id: 'cseresznye', at: 25, remaining: 15 })
-    expect(nextUnlock(25)).toBeNull()
+    expect(nextUnlock(60)).toEqual({ id: 'mamutfenyo', at: 100, remaining: 40 })
+    expect(nextUnlock(100)).toBeNull()
     expect(unlockedAt(10)).toBe('nyir')
     expect(unlockedAt(11)).toBeNull()
+  })
+
+  it('the progress bar restarts after every unlock', () => {
+    expect(unlockProgress(0, nextUnlock(0))).toBe(0)
+    expect(unlockProgress(10, nextUnlock(10))).toBe(0)
+    expect(unlockProgress(17, nextUnlock(17))).toBeCloseTo(7 / 15)
+    expect(unlockProgress(100, nextUnlock(100))).toBe(1)
   })
 })

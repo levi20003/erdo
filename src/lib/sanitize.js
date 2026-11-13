@@ -1,4 +1,21 @@
-import { AMBIENTS, BREAK_SEC, CHIMES, DEFAULT_CATEGORIES, DEFAULT_SOUND, FOCUS_SEC, PALETTE, SCHEMA_VERSION, STARTER_GROWTH } from './config'
+import { cleanName, sanitizeChallenges } from './challenge'
+import {
+  AMBIENTS,
+  BREAK_LENGTHS,
+  CHIMES,
+  DEFAULT_CATEGORIES,
+  DEFAULT_DAILY_GOAL,
+  DEFAULT_PRESET,
+  DEFAULT_SOUND,
+  FOCUS_LENGTHS,
+  MAX_DAILY_GOAL,
+  MAX_FOCUS_SEC,
+  PALETTE,
+  PRESET_IDS,
+  SCHEMA_VERSION,
+  STARTER_GROWTH,
+  THEMES,
+} from './config'
 import { GROWTH_IDS } from './growth'
 import { migrate } from './migrations'
 
@@ -49,18 +66,18 @@ function sanitizeSessions(raw) {
         s.end >= s.start &&
         isNum(s.durationSec) &&
         s.durationSec > 0 &&
-        s.durationSec <= FOCUS_SEC &&
+        s.durationSec <= MAX_FOCUS_SEC &&
         (s.status === 'completed' || s.status === 'failed'),
     )
-    .map((s) => ({ ...s, id: String(s.id) }))
+    .map(({ plannedSec, ...s }) => ({ ...s, id: String(s.id), ...(FOCUS_LENGTHS.includes(plannedSec) ? { plannedSec } : {}) }))
     .filter((s) => !seen.has(s.id) && seen.add(s.id))
     .sort((a, b) => a.end - b.end)
 }
 
 function sanitizeTimer(raw, categoryIds) {
   if (!isObj(raw)) return null
-  const expected = raw.phase === 'focus' ? FOCUS_SEC : raw.phase === 'break' ? BREAK_SEC : null
-  if (!expected || raw.durationSec !== expected) return null
+  const lengths = raw.phase === 'focus' ? FOCUS_LENGTHS : raw.phase === 'break' ? BREAK_LENGTHS : null
+  if (!lengths || !lengths.includes(raw.durationSec)) return null
   if (!isNum(raw.startedAt) || !isNum(raw.endsAt) || raw.endsAt <= raw.startedAt) return null
   if (!categoryIds.has(raw.categoryId)) return null
   return {
@@ -69,6 +86,8 @@ function sanitizeTimer(raw, categoryIds) {
     startedAt: raw.startedAt,
     endsAt: raw.endsAt,
     durationSec: raw.durationSec,
+    // The break that follows this focus block (its length depends on the preset).
+    ...(raw.phase === 'focus' && BREAK_LENGTHS.includes(raw.breakSec) ? { breakSec: raw.breakSec } : {}),
     ...(isStr(raw.pageLoadId) ? { pageLoadId: raw.pageLoadId } : {}),
   }
 }
@@ -104,8 +123,14 @@ function sanitizePrefs(raw) {
     feedback: sanitizeFeedback(src.feedback),
     onboarded: src.onboarded === true,
     sound: sanitizeSound(src.sound),
+    theme: THEMES.includes(src.theme) ? src.theme : 'system',
+    preset: PRESET_IDS.includes(src.preset) ? src.preset : DEFAULT_PRESET,
+    dailyGoal: sanitizeGoal(src.dailyGoal),
+    nickname: cleanName(src.nickname),
   }
 }
+
+export const sanitizeGoal = (v) => (Number.isInteger(v) && v >= 1 && v <= MAX_DAILY_GOAL ? v : DEFAULT_DAILY_GOAL)
 
 /**
  * Returns a complete, valid state of the current schema version built from
@@ -122,6 +147,7 @@ export function sanitizeState(raw) {
     selectedCategoryId: ids.has(src.selectedCategoryId) ? src.selectedCategoryId : categories[0].id,
     timer: sanitizeTimer(src.timer, ids),
     prefs: sanitizePrefs(src.prefs),
+    challenges: sanitizeChallenges(src.challenges),
     schemaVersion: SCHEMA_VERSION,
   }
 }

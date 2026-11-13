@@ -66,7 +66,7 @@ export default function Sheet({ open, onClose, title, description, children }) {
         <div aria-hidden="true" className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-700 sm:hidden" />
         <header className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-base font-semibold text-zinc-100">{title}</h2>
+            <h2 className="font-display text-xl font-medium text-zinc-50">{title}</h2>
             {description && <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{description}</p>}
           </div>
           <button
@@ -94,7 +94,7 @@ export function ConfirmSheet({ open, onClose, onConfirm, title, description, con
         <button
           type="button"
           onClick={onConfirm}
-          className="rounded-xl border border-zinc-800 px-4 py-3 text-sm font-medium text-[#e2b8bc] transition hover:border-[#a8747a]/50 hover:bg-[#a8747a]/10 sm:py-2.5"
+          className="rounded-xl border border-zinc-800 px-4 py-3 text-sm font-medium text-rose transition hover:border-[#a8747a]/50 hover:bg-[#a8747a]/10 sm:py-2.5"
         >
           {confirmLabel}
         </button>
@@ -102,7 +102,7 @@ export function ConfirmSheet({ open, onClose, onConfirm, title, description, con
           type="button"
           data-autofocus
           onClick={onClose}
-          className="rounded-xl bg-olive px-4 py-3 text-sm font-medium text-sand-100 transition hover:bg-olive-400 sm:py-2.5"
+          className="rounded-xl bg-olive px-4 py-3 text-sm font-medium text-cream transition hover:bg-olive-400 sm:py-2.5"
         >
           {cancelLabel}
         </button>

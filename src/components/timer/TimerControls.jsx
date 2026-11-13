@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { haptic } from '../../lib/haptics'
 import { unlockAudio } from '../../lib/sound'
 import { t } from '../../lib/strings'
 import { useAppStore } from '../../store/AppStore'
 import Icon from '../ui/Icon'
 import { ConfirmSheet } from '../ui/Sheet'
 
-const base = 'flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition active:scale-[0.98]'
+const quiet = 'btn-ghost min-h-11 px-5 text-zinc-400'
 
 export default function TimerControls({ timer }) {
   const { state, actions } = useAppStore()
@@ -17,20 +18,24 @@ export default function TimerControls({ timer }) {
         type="button"
         disabled={!state.selectedCategoryId}
         onClick={() => {
-          // Inside the tap: lets the end-of-session chime play 25 minutes later (iOS).
+          // Inside the tap: lets the end-of-session chime play when the block ends (iOS).
           unlockAudio()
+          haptic(state.prefs.sound.vibrate, 20)
           actions.startFocus()
         }}
-        className={`${base} w-full max-w-64 bg-olive text-sand-100 shadow-[0_8px_24px_-12px_rgb(95_98_57/0.9)] hover:bg-olive-400 disabled:opacity-40`}
+        className="btn-primary min-h-14 w-full max-w-[19rem] text-base"
       >
-        <Icon name="play" size={16} /> {t.start}
+        <span className="grid size-7 place-items-center rounded-full bg-cream/15">
+          <Icon name="play" size={14} className="translate-x-px fill-current" />
+        </span>
+        {t.start}
       </button>
     )
   }
 
   if (timer.phase === 'break') {
     return (
-      <button type="button" onClick={actions.skipBreak} className={`${base} border border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200`}>
+      <button type="button" onClick={actions.skipBreak} className={quiet}>
         <Icon name="skip" size={16} /> {t.skipBreak}
       </button>
     )
@@ -41,7 +46,7 @@ export default function TimerControls({ timer }) {
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className={`${base} border border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300`}
+        className={quiet}
       >
         <Icon name="stop" size={15} /> {t.giveUp}
       </button>

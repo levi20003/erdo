@@ -25,13 +25,13 @@ export default function ProgressRing({ progress, color, live = false, children }
   return (
     <div className="relative aspect-square w-full">
       <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90 overflow-visible" aria-hidden="true">
-        <circle cx="50" cy="50" r={R} fill="none" stroke="#27272a" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r={R} fill="none" stroke="rgb(var(--z800))" strokeWidth="1.4" />
         {live && <circle {...arc} strokeWidth="4" className="ring-breathe" style={{ ...arc.style, filter: 'blur(2.5px)' }} />}
         <circle {...arc} strokeWidth="1.6" style={{ ...arc.style, filter: `drop-shadow(0 0 2px ${color})` }} />
         {live && progress > 0.002 && (
           <g style={{ transform: `translate(${headX}px, ${headY}px)`, transition: 'transform 0.4s linear' }}>
             <circle r="1.7" fill={color} className="ring-ping" />
-            <circle r="1.9" fill="#f3ebdf" style={{ filter: `drop-shadow(0 0 2.5px ${color})` }} />
+            <circle r="1.9" fill="#fbf6ec" stroke={color} strokeWidth="0.4" style={{ filter: `drop-shadow(0 0 2.5px ${color})` }} />
           </g>
         )}
       </svg>

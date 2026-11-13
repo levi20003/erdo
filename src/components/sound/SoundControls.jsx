@@ -26,7 +26,7 @@ function Slider({ value, onChange, labelText, id }) {
         step="0.05"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-11 w-full cursor-pointer accent-[#c9ab84]"
+        className="h-11 w-full cursor-pointer accent-sand"
       />
     </label>
   )

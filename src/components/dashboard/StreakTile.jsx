@@ -17,7 +17,7 @@ function StreakFlame({ lit }) {
   return (
     <span
       className={`relative grid size-16 shrink-0 place-items-center rounded-2xl ${
-        lit ? 'bg-[radial-gradient(circle_at_50%_70%,rgb(201_171_132/0.25),rgb(42_35_25)_70%)] ring-1 ring-sand/25' : 'bg-zinc-800/80'
+        lit ? 'bg-[radial-gradient(circle_at_50%_70%,rgb(var(--sand)/0.32),rgb(var(--sand-900))_72%)] ring-1 ring-sand/30' : 'bg-zinc-800/80'
       }`}
     >
       <svg viewBox="0 0 40 40" className="size-11" aria-hidden="true">
@@ -28,15 +28,15 @@ function StreakFlame({ lit }) {
           </linearGradient>
         </defs>
         <g className={lit ? 'flame-outer' : ''}>
-          <path d="M20 4c2 6 10 10 10 19a10 10 0 0 1-20 0c0-4 2-7 4-9 0 4 2 6 4 6 0-6-2-10 2-16Z" fill={lit ? 'url(#flame-outer)' : '#3f3f46'} />
+          <path d="M20 4c2 6 10 10 10 19a10 10 0 0 1-20 0c0-4 2-7 4-9 0 4 2 6 4 6 0-6-2-10 2-16Z" fill={lit ? 'url(#flame-outer)' : 'rgb(var(--z700))'} />
         </g>
         {lit && (
           <g className="flame-inner">
             <path d="M20 17c1 3 5 5 5 9.5a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 0 2 1 3 2 3 0-3-.5-5 .5-7.5Z" fill="#f3ebdf" opacity="0.9" />
           </g>
         )}
-        <path d="M20 33c-6 0-9 3-11 5 6 1 10-1 11-5Z" fill={lit ? '#80844d' : '#3f3f46'} />
-        <path d="M20 33c5 0 8 2 10 4-5 1-9 0-10-4Z" fill={lit ? '#5f6239' : '#27272a'} />
+        <path d="M20 33c-6 0-9 3-11 5 6 1 10-1 11-5Z" fill={lit ? '#80844d' : 'rgb(var(--z700))'} />
+        <path d="M20 33c5 0 8 2 10 4-5 1-9 0-10-4Z" fill={lit ? '#5f6239' : 'rgb(var(--z800))'} />
         {lit &&
           EMBERS.map(([x, delay, dx]) => (
             <circle key={x} className="ember" cx={20 + x} cy="12" r="0.9" fill="#e6d6bf" style={{ '--delay': `${delay}s`, '--dx': `${dx}px` }} />
@@ -67,7 +67,7 @@ function StreakTile({ streak, className = '' }) {
       <div className="relative flex items-center gap-4">
         <StreakFlame lit={lit} />
         <div className="min-w-0">
-          <p className="text-5xl font-semibold leading-none tabular-nums tracking-tight text-zinc-50">{streak.current}</p>
+          <p className="num font-display text-6xl font-semibold leading-none text-zinc-50">{streak.current}</p>
           <p className="mt-1.5 text-xs text-zinc-400">{t.streakCard.unit}</p>
         </div>
       </div>
@@ -93,8 +93,8 @@ function StreakTile({ streak, className = '' }) {
           return (
             <li key={key} className="flex flex-col items-center gap-1.5">
               <span
-                className={`grid size-6 place-items-center rounded-full transition-colors ${
-                  hit ? 'bg-sand text-zinc-950 shadow-[0_0_10px_rgb(201_171_132/0.45)]' : 'bg-zinc-800/80 text-transparent'
+                className={`grid size-7 place-items-center rounded-full transition-colors ${
+                  hit ? 'bg-sand text-cream shadow-[0_0_10px_rgb(var(--sand)/0.45)]' : 'bg-zinc-800/80 text-transparent'
                 } ${key === todayKey && !hit ? 'ring-1 ring-sand/50' : ''}`}
               >
                 <Icon name="check" size={11} strokeWidth={3} />
@@ -109,7 +109,7 @@ function StreakTile({ streak, className = '' }) {
 
       <p className="relative mt-4 text-xs">
         {!lit ? (
-          <span className="text-zinc-500">{t.streakCard.start}</span>
+          <span className="text-zinc-400">{t.streakCard.start}</span>
         ) : streak.doneToday ? (
           <span className="text-olive-300">✓ {t.streakCard.doneToday} · {t.best}: {streak.longest} {t.days}</span>
         ) : (

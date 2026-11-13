@@ -46,13 +46,13 @@ export default class ErrorBoundary extends Component {
         <h1 className="text-xl font-semibold text-zinc-50">{t.crash.title}</h1>
         <p className="text-sm leading-relaxed text-zinc-400">{t.crash.body}</p>
         <div className="flex flex-col gap-2">
-          <button type="button" onClick={() => window.location.reload()} className={`${button} bg-olive text-sand-100 hover:bg-olive-400`}>
+          <button type="button" onClick={() => window.location.reload()} className={`${button} bg-olive text-cream hover:bg-olive-400`}>
             {t.crash.reload}
           </button>
           <button type="button" onClick={this.downloadEverything} className={`${button} border border-zinc-800 text-zinc-300 hover:border-zinc-700`}>
             {t.crash.download}
           </button>
-          <button type="button" onClick={this.reset} className={`${button} text-[#e2b8bc] hover:bg-zinc-900`}>
+          <button type="button" onClick={this.reset} className={`${button} text-rose hover:bg-zinc-900`}>
             {t.crash.reset}
           </button>
         </div>

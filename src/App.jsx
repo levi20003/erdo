@@ -1,9 +1,15 @@
 import { Suspense, useCallback, useMemo, useState } from 'react'
 import Banners from './components/Banners'
 import SessionCelebration from './components/celebration/SessionCelebration'
+import ChallengeSheet from './components/challenge/ChallengeSheet'
+import InviteSheet from './components/challenge/InviteSheet'
+import { useChallengeInbox } from './components/challenge/useChallengeInbox'
 import FeedbackPrompt from './components/feedback/FeedbackPrompt'
-import TodayStrip from './components/focus/TodayStrip'
-import { BottomNav, HeaderNav } from './components/layout/Nav'
+import FocusSide from './components/focus/FocusSide'
+import GoalSheet from './components/focus/GoalSheet'
+import Greeting from './components/focus/Greeting'
+import Header from './components/layout/Header'
+import { BottomNav } from './components/layout/Nav'
 import { AmbientPicker } from './components/sound/SoundControls'
 import SessionToasts from './components/toast/SessionToasts'
 import FocusView from './components/timer/FocusView'
@@ -25,10 +31,10 @@ const ForestView = lazyScreen(() => import('./components/forest/ForestView'))
 const StatsView = lazyScreen(() => import('./components/stats/StatsView'))
 const SettingsView = lazyScreen(() => import('./components/settings/SettingsView'))
 const Onboarding = lazyScreen(() => import('./components/onboarding/Onboarding'))
-const sheetFallback = <div className="h-40 animate-pulse rounded-2xl bg-zinc-800/40" />
+const sheetFallback = <div className="h-40 animate-pulse rounded-3xl bg-zinc-800/40" />
 
 /*
- * Four screens — Focus, My forest, Stats, Settings — behind a bottom tab bar on
+ * Four screens — Focus, My forest, Stats, Settings — behind a floating tab bar on
  * phones and header tabs on larger screens. During a focus block everything but
  * the timer steps away (no header, no tabs).
  */
@@ -41,7 +47,11 @@ export default function App() {
   const [tab, setTab] = useTab()
   const [share, setShare] = useState(null) // null | { scope }
   const [soundOpen, setSoundOpen] = useState(false)
+  const [goalOpen, setGoalOpen] = useState(false)
+  const [challenge, setChallenge] = useState(undefined) // undefined: closed · null: new · object: send score
   const shownShare = useRetained(share)
+  const shownChallenge = useRetained(challenge === undefined ? undefined : { c: challenge })
+  const { invite, closeInvite } = useChallengeInbox()
 
   const focusMode = pomodoro.timer?.phase === 'focus'
   const onboarding = !state.prefs.onboarded && !focusMode
@@ -49,6 +59,8 @@ export default function App() {
   const goFocus = useCallback(() => setTab('focus'), [setTab])
   const openShareAll = useCallback(() => setShare({ scope: null }), [])
   const openShare = useCallback((scope) => setShare({ scope }), [])
+  const openGoal = useCallback(() => setGoalOpen(true), [])
+  const openChallenge = useCallback((c) => setChallenge(c), [])
 
   const stats = useMemo(() => {
     const done = completed(sessions).length
@@ -67,51 +79,43 @@ export default function App() {
       <div
         inert={focusView.open || onboarding ? '' : undefined}
         className={`mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-4 overflow-x-clip px-3 pt-[max(0.75rem,env(safe-area-inset-top))] min-[400px]:px-4 sm:px-6 ${
-          focusMode ? 'pb-4' : 'pb-28 md:pb-8'
+          focusMode ? 'pb-4' : 'pb-32 md:pb-10'
         }`}
       >
-        {!focusMode && (
-          <header className="flex items-center gap-3 px-1 py-1.5">
-            <img src={`${import.meta.env.BASE_URL}icons/icon.svg`} alt="" className="size-9 rounded-xl ring-1 ring-zinc-800" />
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg font-semibold leading-tight tracking-tight text-zinc-100">
-                Focus<span className="text-sand">Grove</span>
-              </h1>
-              <p className="hidden truncate text-xs text-zinc-400 min-[400px]:block">{t.appTagline}</p>
-            </div>
-            <HeaderNav tab={screen} onChange={setTab} />
-          </header>
-        )}
+        {!focusMode && <Header tab={screen} onTab={setTab} />}
 
         {!focusMode && <Banners />}
         {/* Only on Stats: on the Focus screen it would push the Start button below the fold on phones. */}
         {!focusMode && !pomodoro.celebrating && screen === 'stats' && <FeedbackPrompt />}
 
-        <main key={screen} className={focusMode ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center' : 'min-w-0 animate-fade-in'}>
+        <main key={screen} className={focusMode ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center' : 'min-w-0 animate-fade-up'}>
           {screen === 'focus' && (
             <div
               className={
                 focusMode
                   ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center'
-                  : 'mx-auto grid w-full max-w-xl gap-3 lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start lg:gap-4'
+                  : 'mx-auto grid w-full max-w-xl gap-4 lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start'
               }
             >
-              <TimerCard
-                pomodoro={pomodoro}
-                onFullscreen={focusView.enter}
-                onSound={() => setSoundOpen(true)}
-                className={focusMode ? 'min-h-[min(44rem,calc(100dvh-2rem))]' : ''}
-              />
-              {!focusMode && <TodayStrip today={today} onOpen={setTab} className="lg:sticky lg:top-4" />}
+              <div className="flex min-w-0 flex-col gap-4">
+                {!focusMode && <Greeting onGoal={openGoal} />}
+                <TimerCard
+                  pomodoro={pomodoro}
+                  onFullscreen={focusView.enter}
+                  onSound={() => setSoundOpen(true)}
+                  className={focusMode ? 'min-h-[min(46rem,calc(100dvh-2rem))] justify-center' : ''}
+                />
+              </div>
+              {!focusMode && <FocusSide onOpen={setTab} onChallenge={openChallenge} className="lg:sticky lg:top-4" />}
             </div>
           )}
           <Suspense fallback={sheetFallback}>
             {screen === 'forest' && <ForestView onStartFocus={goFocus} onShare={openShare} />}
-            {screen === 'stats' && <StatsView stats={stats} onShare={openShareAll} onStartFocus={goFocus} />}
+            {screen === 'stats' && <StatsView stats={stats} onShare={openShareAll} onStartFocus={goFocus} onChallenge={openChallenge} onGoal={openGoal} />}
             {screen === 'settings' && (
               <>
-                <SettingsView />
-                <p className="mt-6 text-center text-xs text-zinc-400">{t.footer}</p>
+                <SettingsView onGoal={openGoal} />
+                <p className="mt-6 text-center text-xs text-zinc-500">{t.footer}</p>
               </>
             )}
           </Suspense>
@@ -124,6 +128,9 @@ export default function App() {
       <Sheet open={soundOpen} onClose={() => setSoundOpen(false)} title={t.sound.title}>
         <AmbientPicker />
       </Sheet>
+      <GoalSheet open={goalOpen} onClose={() => setGoalOpen(false)} />
+      <ChallengeSheet open={challenge !== undefined} onClose={() => setChallenge(undefined)} challenge={shownChallenge?.c ?? null} />
+      <InviteSheet invite={onboarding ? null : invite} onClose={closeInvite} onAccepted={() => setTab('stats')} />
       <Sheet open={share !== null} onClose={() => setShare(null)} title={t.share.title}>
         <Suspense fallback={sheetFallback}>{shownShare && <SharePanel scope={shownShare.scope} />}</Suspense>
       </Sheet>

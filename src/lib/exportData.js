@@ -10,14 +10,14 @@ import { t } from './strings'
 
 /** Full backup of the user's data (the running timer is deliberately left out). */
 export function buildBackup(state, now = new Date()) {
-  const { categories, sessions, selectedCategoryId, prefs } = state
+  const { categories, sessions, selectedCategoryId, prefs, challenges } = state
   return {
     app: 'FocusGrove',
     kind: 'backup',
     appVersion: APP_VERSION,
     schemaVersion: SCHEMA_VERSION,
     exportedAt: now.toISOString(),
-    data: { schemaVersion: SCHEMA_VERSION, categories, sessions, selectedCategoryId, prefs },
+    data: { schemaVersion: SCHEMA_VERSION, categories, sessions, selectedCategoryId, prefs, challenges },
   }
 }
 

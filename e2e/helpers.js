@@ -9,7 +9,7 @@ export const MIN = 60_000
  * for a brand-new one.
  */
 export async function openApp(page, saved, { firstRun = false } = {}) {
-  if (saved === undefined && !firstRun) saved = { schemaVersion: 3, prefs: { onboarded: true } }
+  if (saved === undefined && !firstRun) saved = { schemaVersion: 4, prefs: { onboarded: true } }
   await page.clock.install()
   await page.goto('/')
   await page.evaluate(([key, value]) => {

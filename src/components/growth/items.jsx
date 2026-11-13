@@ -385,4 +385,217 @@ export function Cherry({ p, color }) {
   )
 }
 
-export const ITEM_RENDERERS = { tolgy: Oak, fenyves: Pine, szikla: MossRock, gomba: Fungus, nyir: Birch, cseresznye: Cherry }
+
+/* ---------------- Napraforgó (unlocks at 3 sessions) ---------------- */
+const PETALS = Array.from({ length: 16 }, (_, i) => i * 22.5)
+
+export function Sunflower({ p, color }) {
+  const leaf = darken(color, 0.05)
+  const leafDark = darken(color, 0.3)
+  return (
+    <>
+      <Part show={p < 0.08}>
+        <path d="M100 141c4.5 3 5.5 10 0 15-5.5-5-4.5-12 0-15Z" fill="#3b3226" />
+        <path d="M100 143.5v10" stroke="#d9d2c0" strokeWidth="1" strokeLinecap="round" />
+      </Part>
+      <Grow scale={0.35 + 0.65 * p}>
+        <g className="sway">
+          <Part show={p >= 0.08}>
+            <path d="M100 155C100 128 101.5 98 100 68" stroke="#6f8f3e" strokeWidth="4.2" fill="none" strokeLinecap="round" />
+          </Part>
+          <Part show={p >= 0.08 && p < 0.3}>
+            <path d="M100 72c-10-2-14-8-13-13 8 0 13 6 13 13Z" fill={color} />
+            <path d="M100 72c10-2 14-8 13-13-8 0-13 6-13 13Z" fill={leaf} />
+          </Part>
+          <Part show={p >= 0.3}>
+            <path d="M100 128c-15-1-25-10-27-21 13-1 24 7 27 21Z" fill={leafDark} />
+            <path d="M100 112c15-2 25-11 27-22-13-1-24 7-27 22Z" fill={leaf} />
+            <path d="M100 94c-12-1-20-8-22-17 11-1 19 5 22 17Z" fill={color} />
+          </Part>
+          <Part show={p >= 0.6 && p < 0.92}>
+            <circle cx="100" cy="64" r="9.5" fill={leafDark} />
+            <path d="M90.5 66 100 52l9.5 14Z" fill={leaf} />
+            <path d="M93 60h14" stroke="#e9b73a" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+          </Part>
+          <Part show={p >= 0.92}>
+            {PETALS.map((deg, i) => (
+              <ellipse key={deg} cx="100" cy="42" rx="4.6" ry="11" fill={i % 2 ? '#e9b73a' : '#f5cf58'} transform={`rotate(${deg} 100 60)`} />
+            ))}
+            <circle cx="100" cy="60" r="12" fill="#5a3d24" />
+            <circle cx="100" cy="60" r="7.5" fill="#7a5532" />
+            {[[-4, -3], [3, -5], [5, 2], [-2, 4], [-6, 2], [1, 0]].map(([dx, dy]) => (
+              <circle key={`${dx}${dy}`} cx={100 + dx} cy={60 + dy} r="1.1" fill="#3e2a18" />
+            ))}
+          </Part>
+        </g>
+      </Grow>
+    </>
+  )
+}
+
+/* ---------------- Vörös juhar (unlocks at 40 sessions) ---------------- */
+const MAPLE = ['#9e3b2a', '#bf5533', '#d9773a', '#eaa04a']
+
+/** A five-lobed maple leaf as a star polygon. */
+function mapleLeaf(cx, cy, r, rot = 0) {
+  const pts = Array.from({ length: 10 }, (_, i) => {
+    const a = ((rot + i * 36 - 90) * Math.PI) / 180
+    const rr = i % 2 ? r * 0.45 : r
+    return `${(cx + rr * Math.cos(a)).toFixed(1)} ${(cy + rr * Math.sin(a)).toFixed(1)}`
+  })
+  return `M${pts.join('L')}Z`
+}
+
+export function Maple({ p, color }) {
+  return (
+    <>
+      <Part show={p < 0.08}>
+        <circle cx="100" cy="151" r="2.6" fill="#8a5a3a" />
+        <path d="M100 151c-3-6-10-9-14-8 1 5 8 9 14 8Z" fill="#c9915a" />
+        <path d="M100 151c3-6 10-9 14-8-1 5-8 9-14 8Z" fill="#d9a46a" />
+      </Part>
+      <Grow scale={0.4 + 0.6 * p}>
+        <Part show={p >= 0.08}>
+          <path d="M96 155L98 100Q100 94 102 100L104 155Z" fill="#5b4334" />
+        </Part>
+        <Part show={p >= 0.45}>
+          <path d="M99 122L83 106M101 114L119 98M100 104L95 86" stroke="#5b4334" strokeWidth="3.2" strokeLinecap="round" />
+        </Part>
+        <Part show={p >= 0.08 && p < 0.3}>
+          <path d={mapleLeaf(93, 96, 7, -10)} fill={color} />
+          <path d={mapleLeaf(107, 93, 7.5, 12)} fill={lighten(color, 0.12)} />
+        </Part>
+        <g className="sway">
+          <Part show={p >= 0.3}>
+            <circle cx="100" cy="82" r="27" fill={MAPLE[1]} />
+          </Part>
+          <Part show={p >= 0.45}>
+            <circle cx="77" cy="96" r="18" fill={MAPLE[0]} />
+            <circle cx="123" cy="94" r="18" fill={MAPLE[0]} />
+          </Part>
+          <Part show={p >= 0.7}>
+            <circle cx="88" cy="64" r="17" fill={MAPLE[2]} />
+            <circle cx="114" cy="62" r="18" fill={MAPLE[2]} />
+          </Part>
+          <Part show={p >= 0.92}>
+            {[[80, 78, 6, 0], [104, 52, 6, 20], [124, 76, 5.5, -15], [96, 90, 5, 10], [70, 98, 5, 30], [130, 98, 5, -25]].map(([x, y, r, rot]) => (
+              <path key={`${x}${y}`} d={mapleLeaf(x, y, r, rot)} fill={MAPLE[3]} />
+            ))}
+          </Part>
+        </g>
+      </Grow>
+      <Part show={p >= 0.92}>
+        <path d={mapleLeaf(78, 153, 4, 20)} fill={MAPLE[2]} />
+        <path d={mapleLeaf(121, 154, 3.6, -30)} fill={MAPLE[0]} />
+        <path d={mapleLeaf(134, 151, 3, 10)} fill={MAPLE[3]} />
+      </Part>
+    </>
+  )
+}
+
+/* ---------------- Szomorúfűz (unlocks at 60 sessions) ---------------- */
+const WILLOW_BARK = '#6a5640'
+const strand = (x, len, drift) => `M${x} 84C${x + drift * 0.3} ${84 + len * 0.4} ${x + drift} ${84 + len * 0.7} ${x + drift * 1.1} ${84 + len}`
+
+export function Willow({ p, color }) {
+  const light = lighten(color, 0.16)
+  const dark = darken(color, 0.25)
+  const inner = [[92, 44, -2], [100, 48, 0], [108, 44, 2], [86, 40, -3], [114, 40, 3]]
+  const outer = [[74, 50, -6], [80, 56, -4], [120, 56, 4], [126, 50, 6], [68, 42, -7], [132, 42, 7]]
+  const top = [[90, 34, -1], [97, 38, 1], [104, 36, 0], [111, 34, 2]]
+  return (
+    <>
+      <Part show={p < 0.08}>
+        <ellipse cx="100" cy="149" rx="3.2" ry="6.5" fill="#d8d0a8" />
+        <path d="M98 145l-2-1M102 147l2-1M98 151l-2 1M102 153l2 1" stroke="#b9ae80" strokeWidth="0.9" strokeLinecap="round" />
+      </Part>
+      <Grow scale={0.4 + 0.6 * p}>
+        <Part show={p >= 0.08}>
+          <path d="M94 155C96 136 92 118 98 100L102 100C107 118 104 136 108 155Z" fill={WILLOW_BARK} />
+        </Part>
+        <Part show={p >= 0.08 && p < 0.3}>
+          <path d="M100 101c-6-3-9-12-7-19 5 4 7 11 7 19Z" fill={color} />
+          <path d="M100 101c6-3 9-12 7-19-5 4-7 11-7 19Z" fill={light} />
+        </Part>
+        <Part show={p >= 0.45}>
+          <path d="M100 104C90 92 78 90 70 96M100 104C110 92 122 90 130 96" stroke={WILLOW_BARK} strokeWidth="3" fill="none" strokeLinecap="round" />
+        </Part>
+        <g className="sway-slow">
+          <Part show={p >= 0.3}>
+            <ellipse cx="100" cy="84" rx="26" ry="13" fill={dark} />
+            {inner.map(([x, len, d]) => (
+              <path key={x} d={strand(x, len, d)} stroke={color} strokeWidth="3.4" fill="none" strokeLinecap="round" />
+            ))}
+          </Part>
+          <Part show={p >= 0.6}>
+            <ellipse cx="100" cy="82" rx="36" ry="15" fill={dark} />
+            {outer.map(([x, len, d]) => (
+              <path key={x} d={strand(x, len, d)} stroke={darken(color, 0.1)} strokeWidth="3.4" fill="none" strokeLinecap="round" />
+            ))}
+          </Part>
+          <Part show={p >= 0.92}>
+            {top.map(([x, len, d]) => (
+              <path key={x} d={strand(x, len, d)} stroke={light} strokeWidth="2.6" fill="none" strokeLinecap="round" opacity="0.9" />
+            ))}
+            <ellipse cx="96" cy="76" rx="14" ry="5" fill={light} opacity="0.35" />
+          </Part>
+        </g>
+      </Grow>
+    </>
+  )
+}
+
+/* ---------------- Mamutfenyő (unlocks at 100 sessions) ---------------- */
+const SEQUOIA_BARK = '#8a4b32'
+
+export function Sequoia({ p, color }) {
+  const dark = darken(color, 0.35)
+  const mid = darken(color, 0.18)
+  const tuft = (cx, cy, rx, ry, fill, rot = 0) => <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={fill} transform={`rotate(${rot} ${cx} ${cy})`} />
+  return (
+    <>
+      <Part show={p < 0.08}>
+        <ellipse cx="100" cy="149" rx="4.5" ry="6" fill="#8a5a3a" />
+        <path d="M96 147h8M95.5 150.5h9M96.5 154h7" stroke="#5b3a24" strokeWidth="1" />
+      </Part>
+      <Grow scale={0.32 + 0.68 * p}>
+        <Part show={p >= 0.08}>
+          <path d="M95 155L97.8 38Q100 31 102.2 38L105 155Z" fill={SEQUOIA_BARK} />
+          <path d="M99 150V60M101.5 140V80" stroke="#6b3826" strokeWidth="0.9" opacity="0.7" />
+        </Part>
+        <g className="sway-slow">
+          <Part show={p >= 0.08 && p < 0.3}>{tuft(100, 42, 6, 9, color)}</Part>
+          <Part show={p >= 0.3}>
+            {tuft(86, 122, 14, 7, dark, -8)}
+            {tuft(115, 116, 14, 7, dark, 8)}
+            {tuft(100, 110, 10, 6, mid)}
+          </Part>
+          <Part show={p >= 0.6}>
+            {tuft(88, 96, 13, 7, mid, -10)}
+            {tuft(112, 90, 13, 7, mid, 10)}
+            {tuft(92, 74, 11, 6, color, -8)}
+            {tuft(108, 68, 11, 6, color, 8)}
+          </Part>
+          <Part show={p >= 0.92}>
+            {tuft(100, 50, 8, 11, lighten(color, 0.1))}
+            {tuft(100, 36, 5, 8, lighten(color, 0.18))}
+            <ellipse cx="100" cy="128" rx="40" ry="5" fill="#ffffff" opacity="0.08" />
+          </Part>
+        </g>
+      </Grow>
+    </>
+  )
+}
+
+export const ITEM_RENDERERS = {
+  tolgy: Oak,
+  fenyves: Pine,
+  szikla: MossRock,
+  gomba: Fungus,
+  napraforgo: Sunflower,
+  nyir: Birch,
+  cseresznye: Cherry,
+  juhar: Maple,
+  fuz: Willow,
+  mamutfenyo: Sequoia,
+}

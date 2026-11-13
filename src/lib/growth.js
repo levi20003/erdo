@@ -1,13 +1,13 @@
 import { t } from './strings'
 
 /**
- * Erdő theme: what a category grows during a 25-minute focus block.
+ * Erdő theme: what a category grows during a focus block.
  * Each item has five stages; STAGE_AT holds the progress at which each begins.
  * Names and stage names are text, so they live in the language files (t.growth).
  */
 export const STAGE_AT = [0, 0.08, 0.3, 0.6, 0.92]
 
-export const GROWTH_IDS = ['tolgy', 'fenyves', 'szikla', 'gomba', 'nyir', 'cseresznye']
+export const GROWTH_IDS = ['tolgy', 'fenyves', 'szikla', 'gomba', 'napraforgo', 'nyir', 'cseresznye', 'juhar', 'fuz', 'mamutfenyo']
 
 export function stageOf(progress) {
   let stage = 0

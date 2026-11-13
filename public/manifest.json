@@ -2,7 +2,7 @@
   "id": "./",
   "name": "FocusGrove — Pomodoro",
   "short_name": "FocusGrove",
-  "description": "Offline 25/5 Pomodoro, szigorú fókusz móddal.",
+  "description": "Offline fókusz időzítő: minden befejezett kör egy növény az erdődben.",
   "lang": "hu",
   "start_url": "./",
   "scope": "./",

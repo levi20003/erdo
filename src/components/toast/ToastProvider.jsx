@@ -10,7 +10,7 @@ const EXIT_MS = 180
 const TONES = {
   info: { icon: 'info', className: 'text-zinc-400' },
   success: { icon: 'sprout', className: 'text-olive-300' },
-  danger: { icon: 'alert', className: 'text-[#d9a3a8]' },
+  danger: { icon: 'alert', className: 'text-rose' },
 }
 
 /**

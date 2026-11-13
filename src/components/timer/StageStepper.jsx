@@ -1,4 +1,3 @@
-import { FOCUS_SEC } from '../../lib/config'
 import { STAGE_AT } from '../../lib/growth'
 import { t } from '../../lib/strings'
 import Icon from '../ui/Icon'
@@ -8,11 +7,11 @@ import Icon from '../ui/Icon'
  * with a check, the current one pops and pulses when reached, and the
  * connector to the next step fills live as the stage progresses.
  */
-export default function StageStepper({ item, stage, progress, active, color, compact = false }) {
+export default function StageStepper({ item, stage, progress, active, color, durationSec, compact = false }) {
   const last = item.stages.length - 1
   const next = stage + 1
   const stageFraction = active && next <= last ? (progress - STAGE_AT[stage]) / (STAGE_AT[next] - STAGE_AT[stage]) : 0
-  const minutesToNext = active && next <= last ? Math.max(1, Math.ceil(((STAGE_AT[next] - progress) * FOCUS_SEC) / 60)) : null
+  const minutesToNext = active && next <= last ? Math.max(1, Math.ceil(((STAGE_AT[next] - progress) * durationSec) / 60)) : null
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -24,7 +23,7 @@ export default function StageStepper({ item, stage, progress, active, color, com
           return (
             <li key={name} className="flex items-center">
               {i > 0 && (
-                <span className="relative h-0.5 w-4 overflow-hidden rounded-full bg-zinc-800 min-[380px]:w-6 sm:w-7" aria-hidden="true">
+                <span className="relative h-1 w-4 overflow-hidden rounded-full bg-zinc-800 min-[380px]:w-6 sm:w-7" aria-hidden="true">
                   <span
                     className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-700 ease-out"
                     style={{ width: `${active && i <= stage ? 100 : active && i === next ? stageFraction * 100 : 0}%`, background: color }}
@@ -44,7 +43,7 @@ export default function StageStepper({ item, stage, progress, active, color, com
                 }}
               >
                 {done ? (
-                  <Icon name="check" size={compact ? 11 : 12} strokeWidth={3} className="text-zinc-950" />
+                  <Icon name="check" size={compact ? 11 : 12} strokeWidth={3} className="text-cream" />
                 ) : current ? (
                   <span className="size-2 rounded-full" style={{ background: color }} />
                 ) : (
@@ -56,19 +55,12 @@ export default function StageStepper({ item, stage, progress, active, color, com
         })}
       </ol>}
 
-      <div className="flex min-h-[2.25rem] flex-col items-center">
-        <p key={active ? stage : 'idle'} className={`text-sm font-medium text-zinc-100 ${active ? 'stage-in' : ''}`}>
+      <div className="flex flex-col items-center">
+        <p key={active ? stage : 'idle'} className={`font-display text-lg font-medium leading-snug text-zinc-50 ${active ? 'stage-in' : ''}`}>
           {active ? item.stages[stage] : item.name}
         </p>
-        {!compact && (
-          <p className="text-[11px] text-zinc-500">
-            {!active
-              ? t.stagePath(item.stages[0], item.stages[last])
-              : minutesToNext
-                ? t.nextStage(item.stages[next], minutesToNext)
-                : t.fullyGrown}
-          </p>
-        )}
+        {/* Idle: the name is enough (keeps Start above the fold); live: what grows next and when. */}
+        {!compact && active && <p className="text-xs text-zinc-500">{minutesToNext ? t.nextStage(item.stages[next], minutesToNext) : t.fullyGrown}</p>}
       </div>
     </div>
   )

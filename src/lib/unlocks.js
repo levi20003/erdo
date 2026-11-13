@@ -19,3 +19,10 @@ export function nextUnlock(completedCount) {
 export function unlockedAt(completedCount) {
   return GROWTH_IDS.find((g) => unlockAt(g) > 0 && unlockAt(g) === completedCount) ?? null
 }
+
+/** Progress (0…1) from the previous unlock towards `next` — so the bar restarts after every new plant. */
+export function unlockProgress(completedCount, next) {
+  if (!next) return 1
+  const prev = Math.max(0, ...GROWTH_IDS.map(unlockAt).filter((at) => at < next.at))
+  return Math.min(1, Math.max(0, (completedCount - prev) / (next.at - prev)))
+}

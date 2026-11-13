@@ -1,6 +1,29 @@
-/** The cycle is intentionally fixed: 25 minutes of focus, then 5 minutes of break. */
-export const FOCUS_SEC = 25 * 60
-export const BREAK_SEC = 5 * 60
+/**
+ * Focus lengths. Pomodoro 25/5 is the default; 50/10 and 90/15 are for deep
+ * work. There is still no pause: Strict Mode applies to every length.
+ */
+export const PRESETS = {
+  25: { focus: 25 * 60, break: 5 * 60 },
+  50: { focus: 50 * 60, break: 10 * 60 },
+  90: { focus: 90 * 60, break: 15 * 60 },
+}
+export const PRESET_IDS = ['25', '50', '90']
+export const DEFAULT_PRESET = '25'
+export const FOCUS_SEC = PRESETS[DEFAULT_PRESET].focus
+export const BREAK_SEC = PRESETS[DEFAULT_PRESET].break
+export const FOCUS_LENGTHS = PRESET_IDS.map((id) => PRESETS[id].focus)
+export const BREAK_LENGTHS = PRESET_IDS.map((id) => PRESETS[id].break)
+export const MAX_FOCUS_SEC = Math.max(...FOCUS_LENGTHS)
+
+/** Appearance: follow the device, or force light / dark. */
+export const THEMES = ['system', 'light', 'dark']
+
+/** Completed sessions per day the "daily goal" ring counts towards. */
+export const DEFAULT_DAILY_GOAL = 4
+export const MAX_DAILY_GOAL = 12
+
+/** Shown to a friend in a challenge link; nothing else about the user leaves the device. */
+export const MAX_NICKNAME = 20
 
 /** Completion celebration shown between focus and break; the 5-minute break starts after it. */
 export const CELEBRATION_MS = 3600
@@ -27,8 +50,9 @@ export const STORAGE_KEY = 'focusgrove:v1'
  *   1 — unversioned data from before 1.0 (categories, sessions, timer, prefs.breakGuide)
  *   2 — schemaVersion field, prefs.lang, prefs.feedback
  *   3 — prefs.onboarded, prefs.sound
+ *   4 — prefs.theme, prefs.preset, prefs.dailyGoal, prefs.nickname, challenges
  */
-export const SCHEMA_VERSION = 3
+export const SCHEMA_VERSION = 4
 
 /** End-of-phase sounds (synthesised in lib/sound.js; no audio files). */
 export const CHIMES = ['harang', 'csengo', 'madar', 'fa', 'off']
@@ -38,7 +62,7 @@ export const DEFAULT_SOUND = { chime: 'harang', volume: 0.8, vibrate: true, ambi
 
 /** Plants available from the start; the others unlock after this many completed sessions. */
 export const STARTER_GROWTH = ['tolgy', 'fenyves', 'szikla', 'gomba']
-export const GROWTH_UNLOCKS = { nyir: 10, cseresznye: 25 }
+export const GROWTH_UNLOCKS = { napraforgo: 3, nyir: 10, cseresznye: 25, juhar: 40, fuz: 60, mamutfenyo: 100 }
 
 /** Where "Write a suggestion" leads: a pre-filled GitHub issue the user can review before sending. */
 export const FEEDBACK_URL = 'https://github.com/levi20003/erdo/issues/new'

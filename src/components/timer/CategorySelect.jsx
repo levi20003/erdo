@@ -17,13 +17,14 @@ export default function CategorySelect({ disabled }) {
             aria-checked={selected}
             disabled={disabled}
             onClick={() => actions.selectCategory(c.id)}
-            className={`flex min-h-10 max-w-full flex-none snap-start items-center gap-1.5 rounded-full border py-1 pl-1.5 pr-3.5 text-sm transition duration-200 active:scale-[0.97] disabled:cursor-not-allowed ${
+            className={`flex min-h-11 max-w-full flex-none snap-start items-center gap-2 rounded-full border py-1 pl-1 pr-4 text-sm font-medium transition duration-200 ease-spring active:scale-[0.95] disabled:cursor-not-allowed ${
               selected
-                ? 'border-zinc-600 bg-zinc-800 text-zinc-100 shadow-[0_0_0_3px_rgb(255_255_255/0.03)]'
+                ? 'border-transparent bg-zinc-800 text-zinc-50 shadow-card ring-2 ring-inset'
                 : 'border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-800/40 hover:text-zinc-200 disabled:opacity-35'
             }`}
+            style={selected ? { '--tw-ring-color': `${c.color}aa` } : undefined}
           >
-            <span className="grid size-6 shrink-0 place-items-center overflow-hidden rounded-full bg-zinc-950">
+            <span className={`grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-zinc-950 transition-transform duration-300 ease-spring ${selected ? 'scale-110' : ''}`}>
               <ForestScene item={c.growth} color={c.color} progress={1} backdrop={false} className="size-full" />
             </span>
             <span className="truncate">{c.name}</span>

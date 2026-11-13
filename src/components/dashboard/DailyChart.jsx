@@ -28,7 +28,7 @@ function DailyChart({ className }) {
   return (
     <Card title={t.today} icon={<Icon name="sun" size={13} />} className={className}>
       <div className="mb-4 flex items-baseline justify-between">
-        <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">{formatMinutes(total)}</p>
+        <p className="num font-display text-3xl font-semibold text-zinc-50">{formatMinutes(total)}</p>
         <p className="text-xs text-zinc-500">
           {t.sessionCount(today.filter((s) => s.status === 'completed').length)}
         </p>
@@ -49,7 +49,7 @@ function DailyChart({ className }) {
                 style={{
                   left: `${left}%`,
                   width: `${width}%`,
-                  background: failed ? 'repeating-linear-gradient(45deg,#3f3f46 0 2px,transparent 2px 4px)' : cat.color,
+                  background: failed ? 'repeating-linear-gradient(45deg,rgb(var(--z600)) 0 2px,transparent 2px 4px)' : cat.color,
                 }}
               />
             )

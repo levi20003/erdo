@@ -12,7 +12,7 @@ test('corrupted storage: app still opens, warns, and keeps a copy', async ({ pag
 test('legacy (unversioned) data is migrated with a backup', async ({ page }) => {
   await openApp(page, { sessions: pastSessions(2) })
   await expect(page.getByRole('status').filter({ hasText: 'frissítve' })).toBeVisible()
-  expect((await stored(page)).schemaVersion).toBe(3)
+  expect((await stored(page)).schemaVersion).toBe(4)
   // Returning users skip the introduction.
   await expect(page.getByRole('dialog', { name: 'Bevezető' })).toHaveCount(0)
   expect(await page.evaluate((k) => localStorage.getItem(`${k}:backup-v1`), KEY)).not.toBeNull()

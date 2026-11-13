@@ -2,6 +2,27 @@
 
 All notable changes. Dates are release dates in Europe/Budapest.
 
+## 1.2.0 — 2026-11-13 · Light and dark, a new look, levels, challenges
+
+### Added
+- **Light and dark mode.** Follows the device by default; a switch in the header and a System / Light / Dark choice in Settings override it. Applied before the first paint (no flash). In light mode the forest scene is daylight, in dark mode a night sky.
+- **Choosable focus lengths**: 25/5 (Pomodoro, default), 50/10 (deep work), 90/15 (flow). Strict Mode applies to all of them; a withered plant remembers how far the block got.
+- **Daily goal** (1–12 sessions, default 4): a ring on the Focus screen, tap to change; reaching it is celebrated.
+- **Forester levels**: 1 XP per completed focus minute, each level a little further than the last, ten titles from *Seed* to *Spirit of the forest*. The celebration fills the XP bar and announces a level-up.
+- **Your year**: twelve small calendars coloured by focus time; tap a day for its sessions and minutes.
+- **Challenge a friend** — without a server or an account: the challenge (goal, length, nickname, session count) travels in a link; the friend accepts it and sends their score back with a link of their own. Every field of an incoming link is validated.
+- **Four new plants**: Sunflower (3 sessions), Red maple (40), Weeping willow (60), Giant sequoia (100).
+- **Seasons**: the scene dresses for spring (flowers, petals), summer (fireflies), autumn (fallen and falling leaves) and winter (snow).
+- Greeting by time of day, focus tips that change during a long block, a playful plant that wiggles when tapped, haptic taps on Android.
+
+### Changed
+- New visual design: bundled Inter and Fraunces fonts (subset to Latin + Hungarian, ~80 kB, precached), thin tabular timer digits, a single themed colour system, softer cards with depth, a floating tab bar with a sliding indicator, segmented controls that slide, count-up numbers, staggered card and plant animations.
+- Stats: a level header with the headline numbers, the challenges card and the year map; the "total" card became "Insights".
+- Storage schema 4 (`prefs.theme`, `preset`, `dailyGoal`, `nickname`, `challenges`), migrated automatically; backups include challenges.
+
+### Fixed
+- The breathing guide, streak flame, timelines and sliders used fixed dark colours.
+
 ## 1.1.0 — 2026-11-12 · Sounds, My forest, four screens
 
 ### Added

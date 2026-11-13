@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_SOUND, SCHEMA_VERSION } from '../lib/config'
+import { DEFAULT_DAILY_GOAL, DEFAULT_SOUND, SCHEMA_VERSION } from '../lib/config'
 import { MIGRATION_STEPS, migrate, storedVersion } from '../lib/migrations'
 import { sanitizeState } from '../lib/sanitize'
 
@@ -45,7 +45,18 @@ describe('migrations', () => {
     const s = sanitizeState(legacy)
     expect(s.schemaVersion).toBe(SCHEMA_VERSION)
     expect(s.categories[0].growth).toBe('tolgy')
-    expect(s.prefs).toEqual({ breakGuide: 'stretch', lang: 'hu', feedback: null, onboarded: true, sound: DEFAULT_SOUND })
+    expect(s.prefs).toEqual({
+      breakGuide: 'stretch',
+      lang: 'hu',
+      feedback: null,
+      onboarded: true,
+      sound: DEFAULT_SOUND,
+      theme: 'system',
+      preset: '25',
+      dailyGoal: DEFAULT_DAILY_GOAL,
+      nickname: '',
+    })
+    expect(s.challenges).toEqual([])
   })
 
   it('2 → 3: existing users skip the introduction, new ones see it', () => {
@@ -54,5 +65,13 @@ describe('migrations', () => {
     const unused = migrate({ schemaVersion: 2, sessions: [] }).data
     expect(unused.prefs.onboarded).toBe(false)
     expect(sanitizeState(null).prefs.onboarded).toBe(false)
+  })
+
+  it('3 → 4: follows the device theme, keeps 25/5, daily goal of four, no challenges', () => {
+    const v3 = { schemaVersion: 3, sessions: legacy.sessions, prefs: { lang: 'en', onboarded: true, sound: DEFAULT_SOUND } }
+    const { data } = migrate(v3)
+    expect(data.prefs).toMatchObject({ lang: 'en', onboarded: true, theme: 'system', preset: '25', dailyGoal: 4, nickname: '' })
+    expect(data.challenges).toEqual([])
+    expect(data.sessions).toEqual(legacy.sessions)
   })
 })

@@ -24,7 +24,7 @@ export function BreathingGuide({ elapsedSec }) {
           const filled = i < phase ? SEG : i === phase ? (SEG * (within + 1)) / BREATH_PHASE_SEC : 0
           return (
             <g key={i}>
-              <circle cx="50" cy="50" r={R} fill="none" stroke="#27272a" strokeWidth="2" strokeLinecap="round" strokeDasharray={`${SEG} ${C}`} strokeDashoffset={offset} />
+              <circle cx="50" cy="50" r={R} fill="none" stroke="rgb(var(--z800))" strokeWidth="2" strokeLinecap="round" strokeDasharray={`${SEG} ${C}`} strokeDashoffset={offset} />
               <circle
                 cx="50"
                 cy="50"
@@ -52,7 +52,7 @@ export function BreathingGuide({ elapsedSec }) {
         <p key={phase} className="animate-fade-up text-sm font-medium text-sand-200">
           {label}
         </p>
-        <p className="font-mono text-3xl font-light tabular-nums text-sand-100">{BREATH_PHASE_SEC - within}</p>
+        <p className="num text-3xl font-light text-sand-100">{BREATH_PHASE_SEC - within}</p>
         <p key={`h${phase}`} className="mt-0.5 max-w-[9rem] animate-fade-up text-[11px] leading-snug text-zinc-400">
           {hint}
         </p>

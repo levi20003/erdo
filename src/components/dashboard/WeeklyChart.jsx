@@ -67,30 +67,30 @@ function WeeklyChart({ className }) {
     >
       <div key={offset} className={direction === 'right' ? 'animate-slide-from-left' : 'animate-slide-from-right'}>
         <div className="mb-5 flex items-baseline gap-3">
-          <p className="text-3xl font-semibold tabular-nums tracking-tight text-zinc-100">{formatMinutes(total)}</p>
+          <p className="num font-display text-3xl font-semibold text-zinc-50">{formatMinutes(total)}</p>
           <p className="text-xs text-zinc-500">
             {formatMinutes(total / 7)} {t.perDay}
           </p>
         </div>
 
         <ol className="mb-6 flex h-36 items-end gap-1.5 sm:gap-2" aria-label={t.aria.perDay}>
-          {series.map((day) => {
+          {series.map((day, i) => {
             const isToday = day.key === todayKey
             return (
               <li key={day.key} className="group flex h-full min-w-0 flex-1 flex-col items-center gap-2">
-                <div className="relative flex w-full flex-1 flex-col-reverse overflow-hidden rounded-lg bg-zinc-800/40 transition-colors group-hover:bg-zinc-800/70">
-                  {Object.entries(day.byCategory).map(([id, min]) => (
-                    <div
-                      key={id}
-                      className="w-full border-t border-zinc-900 first:border-t-0"
-                      style={{ height: `${(min / max) * 100}%`, background: (categories[id] ?? DELETED).color }}
-                    />
-                  ))}
-                  <span className="pointer-events-none absolute inset-x-0 top-1 text-center text-[10px] tabular-nums text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100">
-                    {day.total ? Math.round(day.total) : ''}
-                  </span>
+                <div className="relative flex w-full flex-1 flex-col-reverse overflow-hidden rounded-xl bg-zinc-800/50 transition-colors group-hover:bg-zinc-800/80">
+                  <div className="flex w-full origin-bottom animate-bar flex-col-reverse" style={{ height: `${(day.total / max) * 100}%`, animationDelay: `${i * 50}ms` }}>
+                    {Object.entries(day.byCategory).map(([id, min]) => (
+                      <div key={id} className="w-full border-t border-zinc-900 first:rounded-b-xl last:rounded-t-xl first:border-t-0" style={{ height: `${(min / day.total) * 100}%`, background: (categories[id] ?? DELETED).color }} />
+                    ))}
+                  </div>
+                  {day.total > 0 && (
+                    <span className="num pointer-events-none absolute inset-x-0 top-1 text-center text-[10px] text-zinc-400 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+                      {Math.round(day.total)}
+                    </span>
+                  )}
                 </div>
-                <span className={`text-[11px] ${isToday ? 'font-medium text-sand' : 'text-zinc-500'}`}>{weekdayShort(day.date)}</span>
+                <span className={`text-[11px] capitalize ${isToday ? 'font-semibold text-sand' : 'text-zinc-500'}`}>{weekdayShort(day.date)}</span>
               </li>
             )
           })}

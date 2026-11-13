@@ -13,7 +13,7 @@ export function lazyScreen(factory) {
       logError('chunk', err)
       return {
         default: () => (
-          <p role="alert" className="text-sm text-[#e2b8bc]">
+          <p role="alert" className="text-sm text-rose">
             {t.lazyFailed}
           </p>
         ),

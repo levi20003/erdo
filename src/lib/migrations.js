@@ -1,4 +1,4 @@
-import { DEFAULT_SOUND, SCHEMA_VERSION } from './config'
+import { DEFAULT_DAILY_GOAL, DEFAULT_PRESET, DEFAULT_SOUND, SCHEMA_VERSION } from './config'
 
 /*
  * Saved-data migrations. Each step takes data of version N and returns data of
@@ -22,6 +22,19 @@ const STEPS = {
       onboarded: Array.isArray(data.sessions) && data.sessions.length > 0,
       sound: { ...DEFAULT_SOUND },
     },
+  }),
+  // 3 → 4: appearance follows the device, 25/5 stays the length, a daily goal
+  // of four sessions, no nickname yet, no challenges.
+  3: (data) => ({
+    ...data,
+    prefs: {
+      ...(isObj(data.prefs) ? data.prefs : {}),
+      theme: 'system',
+      preset: DEFAULT_PRESET,
+      dailyGoal: DEFAULT_DAILY_GOAL,
+      nickname: '',
+    },
+    challenges: [],
   }),
 }
 

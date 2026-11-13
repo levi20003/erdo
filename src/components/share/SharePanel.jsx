@@ -105,7 +105,7 @@ export default function SharePanel({ scope = null }) {
           type="button"
           disabled={!card}
           onClick={() => shareOrDownload(card.blob, filename, { title: t.share.cardTitle, text: t.share.shareText }, downloadBlob)}
-          className="rounded-xl bg-olive px-4 py-3 text-sm font-medium text-sand-100 transition hover:bg-olive-400 disabled:opacity-40 sm:py-2.5"
+          className="rounded-xl bg-olive px-4 py-3 text-sm font-medium text-cream transition hover:bg-olive-400 disabled:opacity-40 sm:py-2.5"
         >
           {t.share.share}
         </button>

@@ -6,7 +6,8 @@ FocusGrove is a single-page React app with no backend. Everything — state, his
 main.jsx
 └─ ErrorBoundary            crash screen instead of a blank page (no store dependency)
    └─ AppStoreProvider      reducer + persistence + cross-tab sync
-      └─ LanguageRoot       applies prefs.lang, remounts the UI on change
+      └─ ThemeRoot          resolves prefs.theme (+ the OS setting) → <html data-theme>
+         └─ LanguageRoot    applies prefs.lang, remounts the UI on change
          └─ ToastProvider   toasts, suppressed during focus (distraction lock)
             └─ App          timer (usePomodoro), tabs (useTab), screens, sheets
 ```
@@ -32,6 +33,9 @@ main.jsx
 | `src/lib/insights.js`, `src/lib/stats.js` | Derived numbers (streak, totals, weekly comparison). |
 | `src/lib/sound.js` | Web Audio engine: unlock, chimes, phase-end sound + vibration, synthesised background sounds. |
 | `src/lib/unlocks.js`, `src/lib/forest.js` | Plant unlock thresholds; My forest periods (day/week/month/year, Monday weeks). |
+| `src/lib/levels.js` | XP (completed focus minutes) → level, progress and title. |
+| `src/lib/challenge.js` | Friend challenges: create, encode/decode/validate links, status. |
+| `src/lib/yearmap.js`, `src/lib/season.js` | Year map data; the season the forest scene dresses for. |
 | `src/hooks/` | React wiring: `usePomodoro`, `useStrictMode`, `useTicker`, `useWakeLock`, `useSoundscape`, `useTab`, `useToday`, … |
 | `src/components/` | UI, grouped by area (timer, growth, forest, stats, settings, sound, onboarding, layout, share, feedback…). |
 | `public/sw.js` | Service worker; `vite.config.js` injects the hashed asset list at build time. |
@@ -40,17 +44,19 @@ main.jsx
 
 ```js
 {
-  schemaVersion: 3,
+  schemaVersion: 4,
   categories: [{ id, name, color, growth: 'tolgy' | 'fenyves' | 'szikla' | 'gomba' | 'nyir' | 'cseresznye' }],
-  sessions:   [{ id, categoryId, start, end, durationSec, status: 'completed' | 'failed', reason? }],
+  sessions:   [{ id, categoryId, start, end, durationSec, status: 'completed' | 'failed', reason?, plannedSec? }],
   selectedCategoryId,
-  timer: null | { phase: 'focus' | 'break', categoryId, startedAt, endsAt, durationSec, pageLoadId? },
+  timer: null | { phase: 'focus' | 'break', categoryId, startedAt, endsAt, durationSec, breakSec?, pageLoadId? },
   prefs: {
     breakGuide: 'breathing' | 'stretch', lang: 'hu' | 'en', feedback: null | { shownAt, dismissals, rating },
     onboarded: boolean,
     sound: { chime: 'harang' | 'csengo' | 'madar' | 'fa' | 'off', volume: 0..1, vibrate: boolean,
              ambient: 'off' | 'eso' | 'erdo' | 'patak' | 'zaj', ambientVolume: 0..1 },
+    theme: 'system' | 'light' | 'dark', preset: '25' | '50' | '90', dailyGoal: 1..12, nickname: string (≤ 20),
   },
+  challenges: [{ id, role: 'host' | 'guest', goal, days: 3 | 7 | 14, start: 'YYYY-MM-DD', opponent, opponentDone, opponentAt, createdAt }],
 }
 ```
 
@@ -88,6 +94,20 @@ Session ids are derived from the focus block's start (`s-<startedAt>`), so the s
 - Leaving starts an absence. Returning within `LEAVE_GRACE_MS` (5 s) forgives it; otherwise the block fails — decided by a timer where the page keeps running, or on return where the OS froze timers.
 - A focus block found at page load (reload / reopen) fails. A block started in another tab is mirrored, not enforced.
 - `useWakeLock` keeps the screen on during focus and re-acquires the lock on return; unsupported browsers just skip it. The web cannot distinguish a manual screen lock from an app switch, so locking the phone counts as leaving.
+
+## Theme and design system
+
+Colours are CSS variables holding `R G B` (`src/index.css`): the neutral `zinc` scale flips between dark and light (950 is always the page, 50 the strongest text), and the accent tokens (`sand`, `olive-200/300/900`, `rose`) shift so small text keeps its contrast on paper. `tailwind.config.js` maps every class to those variables, so one set of classes serves both themes; `dark:` utilities follow `<html data-theme>`. `index.html` sets `data-theme` before the first paint; `ThemeRoot` keeps it in sync with the preference and the OS. The forest scene picks a night or day palette and a seasonal one in JS (`ForestScene.jsx`).
+
+Fonts are bundled: Inter (UI, tabular figures for numbers) and Fraunces (display), each subset to Latin plus the Hungarian ő/ű, about 80 kB together, precached by the service worker.
+
+## Focus lengths, goals, levels
+
+`PRESETS` in `lib/config.js` defines 25/5, 50/10 and 90/15. `START_FOCUS` reads `prefs.preset` and stores the break length on the timer (`breakSec`), so changing the preset never affects a running block. A failed block stores `plannedSec` so its withered plant shows how far it got. The daily goal and levels are derived from the sessions on render (`useProgress`), never stored.
+
+## Challenges (no server)
+
+A challenge is created locally (`role: 'host'`) and shared as `…/#k=<base64url JSON>` holding `{ id, goal, days, start, nickname, count, sender role, time }`. `useChallengeInbox` reads the token on load and on `hashchange`, removes it from the address, and validates every field (`decodeChallenge`: id format, ranges, real calendar date within ±60 days, sane timestamps, ≤ 600 characters, nickname stripped of control/invisible characters). An unknown host link is an invitation (accept → `role: 'guest'`); a link from the other side updates the opponent's count only if it is newer; one's own link changes nothing. Each side's count is only as fresh as the last link received.
 
 ## Screens and navigation
 
@@ -127,4 +147,4 @@ Measured in Chromium (5 s samples): an idle dashboard does **zero** layouts per 
 - only the active breathing arc animates;
 - `prefers-reduced-motion` disables motion and shows the celebration as a still card.
 
-Bundle (production, gzip): main JS 82.6 kB, CSS 9.0 kB; Forest, Stats, Settings, the introduction and Share load on demand. The service worker precaches all of it for offline use.
+Bundle (production, gzip): main JS 97 kB, CSS 18 kB (incl. the two tiny Hungarian font subsets), fonts 74 kB; Forest, Stats, Settings, the introduction and Share load on demand. The service worker precaches all of it for offline use.

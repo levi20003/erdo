@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
 import LanguageRoot from './components/LanguageRoot'
+import ThemeRoot from './components/ThemeRoot'
 import { ToastProvider } from './components/toast/ToastProvider'
 import { installGlobalErrorHandlers, logError } from './lib/errorLog'
 import { AppStoreProvider } from './store/AppStore'
@@ -14,11 +15,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
       <AppStoreProvider>
-        <LanguageRoot>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
-        </LanguageRoot>
+        <ThemeRoot>
+          <LanguageRoot>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </LanguageRoot>
+        </ThemeRoot>
       </AppStoreProvider>
     </ErrorBoundary>
   </React.StrictMode>,

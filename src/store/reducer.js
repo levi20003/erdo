@@ -1,5 +1,6 @@
-import { BREAK_SEC, CELEBRATION_MS, FOCUS_SEC, MIN_LOGGED_FAIL_SEC } from '../lib/config'
-import { sanitizeSound, sanitizeState } from '../lib/sanitize'
+import { cleanName, MAX_CHALLENGES, sanitizeChallenge } from '../lib/challenge'
+import { BREAK_SEC, CELEBRATION_MS, MIN_LOGGED_FAIL_SEC, PRESET_IDS, PRESETS, THEMES } from '../lib/config'
+import { sanitizeGoal, sanitizeSound, sanitizeState } from '../lib/sanitize'
 import { uid } from '../lib/time'
 
 /**
@@ -7,10 +8,12 @@ import { uid } from '../lib/time'
  *  categories          [{ id, name, color, growth: 'tolgy'|'fenyves'|'szikla'|'gomba' }]
  *  sessions            [{ id, categoryId, start, end, durationSec, status: 'completed'|'failed', reason? }]
  *  selectedCategoryId
- *  timer               null | { phase: 'focus'|'break', categoryId, startedAt, endsAt, durationSec, pageLoadId? }
+ *  timer               null | { phase: 'focus'|'break', categoryId, startedAt, endsAt, durationSec, breakSec?, pageLoadId? }
  *                      A break's startedAt lies CELEBRATION_MS in the future: the completion celebration plays first.
  *  prefs               { breakGuide: 'breathing'|'stretch', lang: 'hu'|'en', feedback: null | { shownAt, dismissals, rating },
- *                        onboarded: boolean, sound: { chime, volume, vibrate, ambient, ambientVolume } }
+ *                        onboarded: boolean, sound: { chime, volume, vibrate, ambient, ambientVolume },
+ *                        theme: 'system'|'light'|'dark', preset: '25'|'50'|'90', dailyGoal: 1..12, nickname }
+ *  challenges          [{ id, role: 'host'|'guest', goal, days, start, opponent, opponentDone, opponentAt, createdAt }]
  *  schemaVersion       SCHEMA_VERSION (lib/migrations.js)
  *
  * Time-dependent actions carry `now`, so the reducer is pure and testable.
@@ -20,7 +23,7 @@ export function createInitialState(stored) {
   return sanitizeState(stored)
 }
 
-const PREF_VALUES = { breakGuide: ['breathing', 'stretch'], lang: ['hu', 'en'] }
+const PREF_VALUES = { breakGuide: ['breathing', 'stretch'], lang: ['hu', 'en'], theme: THEMES, preset: PRESET_IDS }
 
 export function reducer(state, action) {
   const { timer } = state
@@ -28,14 +31,16 @@ export function reducer(state, action) {
   switch (action.type) {
     case 'START_FOCUS': {
       if (timer?.phase === 'focus' || !state.selectedCategoryId) return state
+      const preset = PRESETS[state.prefs.preset] ?? PRESETS[25]
       return {
         ...state,
         timer: {
           phase: 'focus',
           categoryId: state.selectedCategoryId,
           startedAt: action.now,
-          endsAt: action.now + FOCUS_SEC * 1000,
-          durationSec: FOCUS_SEC,
+          endsAt: action.now + preset.focus * 1000,
+          durationSec: preset.focus,
+          breakSec: preset.break,
           pageLoadId: action.pageLoadId,
         },
       }
@@ -54,6 +59,7 @@ export function reducer(state, action) {
         durationSec: timer.durationSec,
         status: 'completed',
       }
+      const breakSec = timer.breakSec ?? BREAK_SEC
       return {
         ...state,
         sessions: [...state.sessions, session],
@@ -61,8 +67,8 @@ export function reducer(state, action) {
           phase: 'break',
           categoryId: timer.categoryId,
           startedAt: action.now + CELEBRATION_MS,
-          endsAt: action.now + CELEBRATION_MS + BREAK_SEC * 1000,
-          durationSec: BREAK_SEC,
+          endsAt: action.now + CELEBRATION_MS + breakSec * 1000,
+          durationSec: breakSec,
         },
       }
     }
@@ -78,6 +84,8 @@ export function reducer(state, action) {
         start: timer.startedAt,
         end,
         durationSec: elapsedSec,
+        // How long the block was meant to be: the withered plant shows how far it got.
+        plannedSec: timer.durationSec,
         status: 'failed',
         reason: action.reason,
       }
@@ -123,6 +131,50 @@ export function reducer(state, action) {
       // Every field is re-validated, so a bad value can't reach the audio code.
       return { ...state, prefs: { ...state.prefs, sound: sanitizeSound({ ...state.prefs.sound, ...action.patch }) } }
 
+    case 'SET_DAILY_GOAL':
+      return { ...state, prefs: { ...state.prefs, dailyGoal: sanitizeGoal(action.goal) } }
+
+    case 'SET_NICKNAME':
+      return { ...state, prefs: { ...state.prefs, nickname: cleanName(action.name) } }
+
+    case 'ADD_CHALLENGE': {
+      const challenge = sanitizeChallenge(action.challenge)
+      if (!challenge || state.challenges.some((c) => c.id === challenge.id)) return state
+      return { ...state, challenges: [challenge, ...state.challenges].slice(0, MAX_CHALLENGES) }
+    }
+
+    case 'ACCEPT_CHALLENGE': {
+      // A friend's invitation (already validated by decodeChallenge): this user joins as the guest.
+      const { link } = action
+      if (state.challenges.some((c) => c.id === link.id)) return state
+      const challenge = sanitizeChallenge({
+        id: link.id,
+        role: 'guest',
+        goal: link.goal,
+        days: link.days,
+        start: link.start,
+        opponent: link.name,
+        opponentDone: link.done,
+        opponentAt: link.at,
+        createdAt: action.now,
+      })
+      return challenge ? { ...state, challenges: [challenge, ...state.challenges].slice(0, MAX_CHALLENGES) } : state
+    }
+
+    case 'UPDATE_CHALLENGE': {
+      // The friend's latest count. An older link never overwrites a newer one.
+      const { link } = action
+      const challenges = state.challenges.map((c) =>
+        c.id === link.id && c.role !== link.role && link.at > (c.opponentAt ?? 0)
+          ? { ...c, opponent: link.name || c.opponent, opponentDone: link.done, opponentAt: link.at }
+          : c,
+      )
+      return { ...state, challenges }
+    }
+
+    case 'REMOVE_CHALLENGE':
+      return { ...state, challenges: state.challenges.filter((c) => c.id !== action.id) }
+
     case 'COMPLETE_ONBOARDING': {
       const selectedCategoryId = state.categories.some((c) => c.id === action.categoryId) ? action.categoryId : state.selectedCategoryId
       return { ...state, selectedCategoryId, prefs: { ...state.prefs, onboarded: true } }
@@ -138,7 +190,9 @@ export function reducer(state, action) {
       const sessionIds = new Set(state.sessions.map((s) => s.id))
       const categories = [...state.categories, ...imported.categories.filter((c) => !catIds.has(c.id))]
       const sessions = [...state.sessions, ...imported.sessions.filter((s) => !sessionIds.has(s.id))].sort((a, b) => a.end - b.end)
-      return { ...state, categories, sessions }
+      const challengeIds = new Set(state.challenges.map((c) => c.id))
+      const challenges = [...state.challenges, ...(imported.challenges ?? []).filter((c) => !challengeIds.has(c.id))].slice(0, MAX_CHALLENGES)
+      return { ...state, categories, sessions, challenges }
     }
 
     case 'FEEDBACK_SHOWN':
