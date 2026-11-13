@@ -1,6 +1,5 @@
 import { t } from '../../lib/strings'
 import Icon from '../ui/Icon'
-import CategorySelect from './CategorySelect'
 import PomodoroCore from './PomodoroCore'
 
 /**
@@ -10,12 +9,11 @@ import PomodoroCore from './PomodoroCore'
  */
 export default function TimerCard({ pomodoro, onFullscreen, onSound, className = '' }) {
   const focusing = pomodoro.timer?.phase === 'focus'
-  const idle = !pomodoro.timer
 
   return (
     <section
       aria-label="Pomodoro"
-      className={`relative flex min-w-0 flex-col items-center gap-4 overflow-hidden rounded-[2rem] border bg-zinc-900 p-4 shadow-card transition-[border-color,box-shadow] duration-700 sm:p-6 ${
+      className={`relative flex min-w-0 flex-col items-center gap-4 overflow-hidden rounded-3xl border bg-zinc-900 p-4 shadow-card transition-[border-color,box-shadow] duration-700 sm:p-6 ${
         focusing ? 'animate-live-glow justify-center border-sand/35' : 'border-zinc-800/80'
       } ${className}`}
     >
@@ -26,12 +24,6 @@ export default function TimerCard({ pomodoro, onFullscreen, onSound, className =
           focusing ? 'opacity-100' : 'opacity-60'
         }`}
       />
-
-      {idle && (
-        <div className="relative w-full animate-fade-in">
-          <CategorySelect />
-        </div>
-      )}
 
       <div className="relative w-full">
         <PomodoroCore pomodoro={pomodoro} onSound={onSound} onFullscreen={onFullscreen} />

@@ -44,7 +44,7 @@ main.jsx
 
 ```js
 {
-  schemaVersion: 4,
+  schemaVersion: 5,
   categories: [{ id, name, color, growth: 'tolgy' | 'fenyves' | 'szikla' | 'gomba' | 'nyir' | 'cseresznye' }],
   sessions:   [{ id, categoryId, start, end, durationSec, status: 'completed' | 'failed', reason?, plannedSec? }],
   selectedCategoryId,
@@ -55,6 +55,7 @@ main.jsx
     sound: { chime: 'harang' | 'csengo' | 'madar' | 'fa' | 'off', volume: 0..1, vibrate: boolean,
              ambient: 'off' | 'eso' | 'erdo' | 'patak' | 'zaj', ambientVolume: 0..1 },
     theme: 'system' | 'light' | 'dark', preset: '25' | '50' | '90', dailyGoal: 1..12, nickname: string (≤ 20),
+    avatar: 'sprout' | 'fox' | 'owl' | 'deer' | 'bear' | 'hedgehog' | 'rabbit' | 'squirrel' | 'frog',
   },
   challenges: [{ id, role: 'host' | 'guest', goal, days: 3 | 7 | 14, start: 'YYYY-MM-DD', opponent, opponentDone, opponentAt, createdAt }],
 }
@@ -99,7 +100,9 @@ Session ids are derived from the focus block's start (`s-<startedAt>`), so the s
 
 Colours are CSS variables holding `R G B` (`src/index.css`): the neutral `zinc` scale flips between dark and light (950 is always the page, 50 the strongest text), and the accent tokens (`sand`, `olive-200/300/900`, `rose`) shift so small text keeps its contrast on paper. `tailwind.config.js` maps every class to those variables, so one set of classes serves both themes; `dark:` utilities follow `<html data-theme>`. `index.html` sets `data-theme` before the first paint; `ThemeRoot` keeps it in sync with the preference and the OS. The forest scene picks a night or day palette and a seasonal one in JS (`ForestScene.jsx`).
 
-Fonts are bundled: Inter (UI, tabular figures for numbers) and Fraunces (display), each subset to Latin plus the Hungarian ő/ű, about 80 kB together, precached by the service worker.
+Fonts are bundled: Exo 2 (titles, timer and other numbers, with tabular figures) and Nunito (text), each subset to Latin plus the Hungarian ő/ű, about 76 kB together, precached by the service worker.
+
+The visual language follows the design mock-ups: a green gradient header (`Hero`) with greeting, daily tagline and avatar; the first card of each screen overlaps it (`-mt-12`); `.pale-card` (summary), `.leaf-card` (green "flashcards" with a lime blob and a pale wave, used by `LeafTile`), `.bar-fill` (maroon by day, lime by night), `.btn-primary` (forest-green pill) and `.btn-bark` (bark-brown pill) live in `index.css`; waves and pine silhouettes in `components/art/Shapes.jsx`. Header, card, leaf, bar and tab-bar colours are theme variables too.
 
 ## Focus lengths, goals, levels
 
@@ -111,9 +114,9 @@ A challenge is created locally (`role: 'host'`) and shared as `…/#k=<base64url
 
 ## Screens and navigation
 
-`useTab` maps four screens to URL hashes (`#fokusz`, `#erdo`, `#statisztika`, `#beallitasok`), so the browser/Android back button moves between them and a reload keeps the screen. `BottomNav` (phones) and `HeaderNav` (`md` and up) render the same items. While a focus block runs the screen is forced to the timer and the header and tabs are not rendered. Forest, Stats, Settings, the introduction and the share panel are lazy chunks.
+`useTab` maps four screens to URL hashes (`#fokusz`, `#erdo`, `#statisztika`, `#profil`; the old `#beallitasok` still opens Profile), so the browser/Android back button moves between them and a reload keeps the screen. `BottomNav` (phones) and `HeaderNav` (`md` and up) render the same items. While a focus block runs the screen is forced to the timer and the header and tabs are not rendered. Forest, Stats, Settings, the introduction and the share panel are lazy chunks.
 
-The first-run introduction shows while `prefs.onboarded` is false (never over a running block); the migration to schema 3 marks existing users with sessions as onboarded.
+The first run (welcome → local profile → focus choice, or welcome → restore a backup) shows while `prefs.onboarded` is false (never over a running block); the migration to schema 3 marks existing users with sessions as onboarded. The profile is just `prefs.nickname` and `prefs.avatar`: there is no account or password, and restoring a backup fills in a missing name and avatar.
 
 ## Sound
 

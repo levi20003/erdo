@@ -14,11 +14,13 @@ export default function Card({ title, icon, action, className = '', children, as
       />
       {(title || action) && (
         <header className="mb-4 flex min-h-8 flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <h2 className="eyebrow flex items-center gap-2">
-            {icon && <span className="text-sand">{icon}</span>}
-            {title}
-          </h2>
-          {action}
+          {title && (
+            <h2 className="eyebrow flex items-center gap-2">
+              {icon && <span className="text-sand">{icon}</span>}
+              {title}
+            </h2>
+          )}
+          <span className="ml-auto">{action}</span>
         </header>
       )}
       {children}

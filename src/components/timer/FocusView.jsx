@@ -30,7 +30,7 @@ export default function FocusView({ pomodoro, onExit }) {
     >
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute left-1/2 top-[42%] size-[150vmax] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle,rgb(95_98_57/0.28),rgb(9_9_11/0)_40%)] transition-opacity duration-1000 ${
+        className={`pointer-events-none absolute left-1/2 top-[42%] size-[150vmax] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle,rgb(45_119_73/0.28),rgb(9_9_11/0)_40%)] transition-opacity duration-1000 ${
           focusing ? 'opacity-100' : 'opacity-60'
         }`}
       />

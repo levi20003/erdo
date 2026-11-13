@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DEFAULT_DAILY_GOAL, DEFAULT_SOUND, SCHEMA_VERSION } from '../lib/config'
+import { DEFAULT_AVATAR, DEFAULT_DAILY_GOAL, DEFAULT_SOUND, SCHEMA_VERSION } from '../lib/config'
 import { MIGRATION_STEPS, migrate, storedVersion } from '../lib/migrations'
 import { sanitizeState } from '../lib/sanitize'
 
@@ -55,6 +55,7 @@ describe('migrations', () => {
       preset: '25',
       dailyGoal: DEFAULT_DAILY_GOAL,
       nickname: '',
+      avatar: DEFAULT_AVATAR,
     })
     expect(s.challenges).toEqual([])
   })
@@ -73,5 +74,10 @@ describe('migrations', () => {
     expect(data.prefs).toMatchObject({ lang: 'en', onboarded: true, theme: 'system', preset: '25', dailyGoal: 4, nickname: '' })
     expect(data.challenges).toEqual([])
     expect(data.sessions).toEqual(legacy.sessions)
+  })
+
+  it('4 → 5: the local profile gets the default avatar, the nickname stays', () => {
+    const { data } = migrate({ schemaVersion: 4, prefs: { nickname: 'Levi', theme: 'dark' } })
+    expect(data.prefs).toMatchObject({ nickname: 'Levi', theme: 'dark', avatar: 'sprout' })
   })
 })

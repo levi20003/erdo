@@ -205,7 +205,7 @@ export default {
   storageNewer: 'Your data was saved by a newer FocusGrove version. This version can open it, but reloading the page is recommended.',
   lazyFailed: 'This part failed to load (probably a new version was released). Please reload the page.',
 
-  nav: { label: 'Main menu', focus: 'Focus', forest: 'My forest', stats: 'Stats', settings: 'Settings' },
+  nav: { label: 'Main menu', focus: 'Focus', forest: 'My forest', stats: 'Stats', settings: 'Profile' },
   sound: {
     title: 'Sounds',
     chime: 'Chime at the end of a session',
@@ -399,4 +399,57 @@ export default {
     'Stuck? Write down the next tiny step.',
     'Focus is a muscle: every session makes it stronger.',
   ],
+  avatar: {
+    label: 'Pick an avatar',
+    names: { sprout: 'Sprout', fox: 'Fox', owl: 'Owl', deer: 'Deer', bear: 'Bear', hedgehog: 'Hedgehog', rabbit: 'Rabbit', squirrel: 'Squirrel', frog: 'Frog' },
+  },
+  hero: {
+    hi: (name) => (name ? `Hi, ${name}!` : 'Hi there!'),
+    taglines: ['Focus is a superpower.', 'Small steps, big forest.', 'One session, one tree.', 'Something grows today.', 'Quiet now. The forest grows.'],
+    profile: 'Open profile',
+  },
+  summary: {
+    label: 'Today’s summary',
+    category: (name) => `Category: ${name}. Change`,
+    today: 'Today:',
+    sessions: (n) => (n === 1 ? '1 session' : `${n} sessions`),
+    focus: (time) => `${time} of focus`,
+    goal: 'Daily goal:',
+    goalValue: (n) => (n === 1 ? '1 session' : `${n} sessions`),
+  },
+  sections: { growth: 'Progress', challenges: 'Challenges', more: 'All' },
+  welcome: {
+    title: 'Welcome!',
+    subtitle: 'to FocusGrove',
+    body: 'Start a focus session and, as long as you leave your phone alone, an acorn grows into a tree. Leave the app for more than 5 seconds and it withers. Every session earns a guided break.',
+    start: 'Get started',
+  },
+  signup: {
+    title: 'Hello!',
+    subtitle: 'Welcome! We’re happy to see you here. What should we call you?',
+    name: 'Your name',
+    namePlaceholder: 'e.g. Alex',
+    haveMet: 'Have we met already?',
+    restore: 'Restore from a backup',
+    next: 'Next',
+    privacy: 'No password, no account: your profile stays on this device.',
+  },
+  signin: {
+    title: 'Sign in',
+    subtitle: 'Hello, my friend! We’re happy to see you again.',
+    body: 'There is no password: bring your forest back from your backup file (Profile → Backup JSON).',
+    choose: 'Choose backup',
+    newHere: 'New here?',
+    create: 'Create a profile',
+  },
+  choose: {
+    note: 'You can switch any time and create your own in your Profile.',
+    finish: 'Let’s go!',
+  },
+  me: {
+    title: 'Profile',
+    edit: 'Edit profile',
+    unnamed: 'Nameless forester',
+    save: 'Save',
+  },
 }

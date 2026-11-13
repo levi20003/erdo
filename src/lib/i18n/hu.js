@@ -204,7 +204,7 @@ export default {
   storageNewer: 'Az adataidat egy újabb FocusGrove-verzió mentette. Ez a verzió megnyitja őket, de érdemes frissíteni az oldalt.',
   lazyFailed: 'Ez a rész nem töltődött be (valószínűleg új verzió jelent meg). Töltsd újra az oldalt.',
 
-  nav: { label: 'Fő menü', focus: 'Fókusz', forest: 'Erdőm', stats: 'Statisztika', settings: 'Beállítások' },
+  nav: { label: 'Fő menü', focus: 'Fókusz', forest: 'Erdőm', stats: 'Statisztika', settings: 'Profil' },
   sound: {
     title: 'Hangok',
     chime: 'Csengő a kör végén',
@@ -398,4 +398,57 @@ export default {
     'Ha elakadtál, írd le a következő apró lépést.',
     'A fókusz izom: minden kör erősíti.',
   ],
+  avatar: {
+    label: 'Válassz avatart',
+    names: { sprout: 'Hajtás', fox: 'Róka', owl: 'Bagoly', deer: 'Őz', bear: 'Medve', hedgehog: 'Sün', rabbit: 'Nyúl', squirrel: 'Mókus', frog: 'Béka' },
+  },
+  hero: {
+    hi: (name) => (name ? `Szia, ${name}!` : 'Szia!'),
+    taglines: ['A fókusz szupererő.', 'Kis lépés, nagy erdő.', 'Egy kör, egy fa.', 'Ma is nő valami.', 'Csend van. Nő az erdő.'],
+    profile: 'Profil megnyitása',
+  },
+  summary: {
+    label: 'Mai összegzés',
+    category: (name) => `Kategória: ${name}. Váltás`,
+    today: 'Ma:',
+    sessions: (n) => `${n} kör`,
+    focus: (time) => `${time} fókusz`,
+    goal: 'Napi cél:',
+    goalValue: (n) => `${n} kör`,
+  },
+  sections: { growth: 'Fejlődés', challenges: 'Kihívások', more: 'Mind' },
+  welcome: {
+    title: 'Üdv!',
+    subtitle: 'a FocusGrove-ban',
+    body: 'Indíts egy fókuszt, és amíg nem nyúlsz a telefonhoz, egy makkból fa nő. Ha 5 másodpercnél tovább elhagyod az appot, a növény elszárad. Minden kör után vezetett szünet jár.',
+    start: 'Kezdjük',
+  },
+  signup: {
+    title: 'Szia!',
+    subtitle: 'Örülünk, hogy itt vagy. Hogyan szólíthatunk?',
+    name: 'Neved',
+    namePlaceholder: 'pl. Levi',
+    haveMet: 'Jártál már itt?',
+    restore: 'Visszaállítás mentésből',
+    next: 'Tovább',
+    privacy: 'Nincs jelszó és fiók: a profilod csak ezen az eszközön van.',
+  },
+  signin: {
+    title: 'Belépés',
+    subtitle: 'Szia újra! Örülünk, hogy visszatértél.',
+    body: 'Jelszó nincs: a korábbi erdődet a mentésfájlból töltheted vissza (Profil → Mentés JSON).',
+    choose: 'Mentés kiválasztása',
+    newHere: 'Új vagy itt?',
+    create: 'Profil létrehozása',
+  },
+  choose: {
+    note: 'Később bármikor válthatsz, és sajátot is létrehozhatsz a Profilban.',
+    finish: 'Kezdjük!',
+  },
+  me: {
+    title: 'Profil',
+    edit: 'Profil szerkesztése',
+    unnamed: 'Névtelen erdész',
+    save: 'Mentés',
+  },
 }

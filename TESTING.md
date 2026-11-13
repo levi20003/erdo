@@ -19,7 +19,7 @@ CI (`.github/workflows/ci.yml`) runs all of it on every push and pull request; t
 | `challenge.test.js` | Link round-trip (accents), rejection of malformed / out-of-range / oversized links, nickname cleaning, invite vs update vs own link, accept once, newer-only updates, status and leader, repair of stored challenges |
 | `progress.test.js` | 50- and 90-minute presets (break length, planned length of a failed block), saved timer validation, daily goal and theme validation, XP → levels and titles, year map layout and summary, seasons |
 | `sanitize.test.js` | Repair of garbage, broken sessions/categories/timers, duplicates, ordering |
-| `migrations.test.js` | Every step present, v1 → … → v4, determinism and idempotency, newer-version data untouched |
+| `migrations.test.js` | Every step present, v1 → … → v5, determinism and idempotency, newer-version data untouched |
 | `storage.test.js` | Empty, corrupt JSON (copy kept), legacy (backup kept), newer version (unknown fields preserved), full quota (frees space, retries), blocked storage, no duplicate writes |
 | `errorLog.test.js` | Anonymisation, entry and size caps, never throws, clearing |
 | `exportData.test.js` | CSV BOM / separators / decimal marks per language, quoting, formula neutralisation, backup round-trip, emergency-file import, rejection of foreign files |
@@ -39,7 +39,7 @@ Run against the **production build** (service worker included), with Playwright'
 | `strict-and-reload` | 2 s away forgiven, 6 s away fails; block that ends while briefly away still completes; reload mid-focus fails, reload during break keeps it |
 | `data` | Corrupt storage opens with warning + copy; legacy data migrated with backup; CSV export; JSON backup → wipe → restore (merge, idempotent); share card is a 1080×1350 PNG |
 | `ux` | English switch persists; feedback prompt after 5 sessions, dismissable, never during focus; 375×667 phone has no horizontal overflow; reduced motion shows a still celebration |
-| `screens` | First-run introduction → category choice → persisted, replayable; tabs live in the URL (back button, reload); Stats empty state; My forest grown/withered counts, plant details, periods, locked collection; 10th session unlocks the birch (celebration + selectable) |
+| `screens` | First run: welcome → local profile (name + avatar) → focus choice, persisted, replayable; "sign in" restores a backup with its profile; editing the profile; picking the category from the summary card; tabs live in the URL (back button, reload); Stats empty state; My forest grown/withered counts, plant details, periods, locked collection; 10th session unlocks the birch (celebration + selectable) |
 | `engage` | Theme follows the device, the header switch overrides it and survives a reload (no flash), Settings returns to System; a 50-minute block logs 50 minutes and a 10-minute break; daily goal set from the ring, goal reached and level-up shown in the celebration; a full friend challenge between two browser contexts (create → copy link → friend accepts → friend completes a session and replies → host's copy updates; own link ignored); a broken link is refused; year map day details; every screen fits a 375 px phone in light and dark |
 | `sound` | With `--autoplay-policy=user-gesture-required`: the Start tap leaves the AudioContext running, the end of the block plays the chime and vibrates; background sound loops during focus, can be switched mid-session, settings persist |
 

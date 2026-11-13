@@ -66,8 +66,8 @@ export default function SessionCelebration({ celebrating }) {
         {goalReached && ` ${t.celebrate.goalReached}`}
       </span>
       <div aria-hidden="true" className="absolute inset-0 grid place-items-center">
-        <div className="celebrate-rays absolute size-[140vmax] bg-[conic-gradient(from_0deg,transparent_0deg,rgb(201_171_132/0.10)_10deg,transparent_20deg,transparent_40deg,rgb(128_132_77/0.12)_50deg,transparent_60deg,transparent_80deg,rgb(201_171_132/0.10)_90deg,transparent_100deg,transparent_120deg,rgb(128_132_77/0.12)_130deg,transparent_140deg,transparent_160deg,rgb(201_171_132/0.10)_170deg,transparent_180deg,transparent_200deg,rgb(128_132_77/0.12)_210deg,transparent_220deg,transparent_240deg,rgb(201_171_132/0.10)_250deg,transparent_260deg,transparent_280deg,rgb(128_132_77/0.12)_290deg,transparent_300deg,transparent_320deg,rgb(201_171_132/0.10)_330deg,transparent_340deg)] [mask-image:radial-gradient(circle,black_10%,transparent_55%)]" />
-        <div className="celebrate-flare absolute size-[90vmin] rounded-full bg-[radial-gradient(circle,rgb(230_214_191/0.55),rgb(201_171_132/0.25)_25%,rgb(95_98_57/0.18)_50%,transparent_70%)]" />
+        <div className="celebrate-rays absolute size-[140vmax] bg-[conic-gradient(from_0deg,transparent_0deg,rgb(204_212_120/0.10)_10deg,transparent_20deg,transparent_40deg,rgb(64_160_100/0.12)_50deg,transparent_60deg,transparent_80deg,rgb(204_212_120/0.10)_90deg,transparent_100deg,transparent_120deg,rgb(64_160_100/0.12)_130deg,transparent_140deg,transparent_160deg,rgb(204_212_120/0.10)_170deg,transparent_180deg,transparent_200deg,rgb(64_160_100/0.12)_210deg,transparent_220deg,transparent_240deg,rgb(204_212_120/0.10)_250deg,transparent_260deg,transparent_280deg,rgb(64_160_100/0.12)_290deg,transparent_300deg,transparent_320deg,rgb(204_212_120/0.10)_330deg,transparent_340deg)] [mask-image:radial-gradient(circle,black_10%,transparent_55%)]" />
+        <div className="celebrate-flare absolute size-[90vmin] rounded-full bg-[radial-gradient(circle,rgb(233_238_190/0.55),rgb(204_212_120/0.25)_25%,rgb(45_119_73/0.18)_50%,transparent_70%)]" />
         {SWARM.map((f, i) => (
           <span
             key={i}
@@ -98,7 +98,7 @@ export default function SessionCelebration({ celebrating }) {
         </p>
         <XpBar before={before} after={after} levelUp={levelUp} gained={minutes} />
         {levelUp && (
-          <p className="celebrate-pop mt-3 flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#80844d,#c9ab84)] px-4 py-2 font-display text-lg font-semibold text-cream shadow-button" style={{ animationDelay: '1300ms' }}>
+          <p className="celebrate-pop mt-3 flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#40a064,#2d7749)] px-4 py-2 font-display text-lg font-semibold text-cream shadow-button" style={{ animationDelay: '1300ms' }}>
             <Icon name="bolt" size={18} /> {t.celebrate.levelUp(after.level, t.levels.titles[titleIndex(after.level)])}
           </p>
         )}
@@ -143,7 +143,7 @@ function XpBar({ before, after, levelUp, gained }) {
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-zinc-800">
         <div
-          className="h-full rounded-full bg-[linear-gradient(90deg,#80844d,#c9ab84)] shadow-[0_0_14px_rgb(201_171_132/0.7)] transition-[width] duration-[900ms] ease-out"
+          className="h-full rounded-full bar-fill shadow-[0_0_14px_rgb(204_212_120/0.7)] transition-[width] duration-[900ms] ease-out"
           style={{ width: `${Math.max(3, width)}%` }}
         />
       </div>

@@ -35,8 +35,8 @@ function StreakFlame({ lit }) {
             <path d="M20 17c1 3 5 5 5 9.5a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 0 2 1 3 2 3 0-3-.5-5 .5-7.5Z" fill="#f3ebdf" opacity="0.9" />
           </g>
         )}
-        <path d="M20 33c-6 0-9 3-11 5 6 1 10-1 11-5Z" fill={lit ? '#80844d' : 'rgb(var(--z700))'} />
-        <path d="M20 33c5 0 8 2 10 4-5 1-9 0-10-4Z" fill={lit ? '#5f6239' : 'rgb(var(--z800))'} />
+        <path d="M20 33c-6 0-9 3-11 5 6 1 10-1 11-5Z" fill={lit ? '#40a064' : 'rgb(var(--z700))'} />
+        <path d="M20 33c5 0 8 2 10 4-5 1-9 0-10-4Z" fill={lit ? '#2d7749' : 'rgb(var(--z800))'} />
         {lit &&
           EMBERS.map(([x, delay, dx]) => (
             <circle key={x} className="ember" cx={20 + x} cy="12" r="0.9" fill="#e6d6bf" style={{ '--delay': `${delay}s`, '--dx': `${dx}px` }} />
@@ -61,7 +61,7 @@ function StreakTile({ streak, className = '' }) {
       {lit && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-28 rounded-t-2xl bg-[radial-gradient(ellipse_at_30%_0%,rgb(201_171_132/0.12),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-28 rounded-t-2xl bg-[radial-gradient(ellipse_at_30%_0%,rgb(204_212_120/0.12),transparent_70%)]"
         />
       )}
       <div className="relative flex items-center gap-4">
@@ -79,7 +79,7 @@ function StreakTile({ streak, className = '' }) {
               <span className="text-zinc-400">{t.streakCard.nextMilestone(next)}</span>
               <span className="shrink-0 tabular-nums text-sand">{t.streakCard.remaining(next - streak.current)}</span>
             </div>
-            <Bar value={streak.current - prev} max={next - prev} color="linear-gradient(90deg,#80844d,#c9ab84)" label={t.streakCard.nextMilestone(next)} />
+            <Bar value={streak.current - prev} max={next - prev} color="linear-gradient(90deg,rgb(var(--bar-from)),rgb(var(--bar-to)))" label={t.streakCard.nextMilestone(next)} />
           </>
         ) : (
           <p className="text-[11px] text-sand">{t.streakCard.allDone}</p>

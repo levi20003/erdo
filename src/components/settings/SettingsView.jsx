@@ -6,6 +6,7 @@ import { SoundSettings } from '../sound/SoundControls'
 import Card from '../ui/Card'
 import Icon from '../ui/Icon'
 import PreferencesCard from './PreferencesCard'
+import ProfileCard from '../profile/ProfileCard'
 
 const SettingsPanel = lazyScreen(() => import('./SettingsPanel'))
 
@@ -14,6 +15,7 @@ export default function SettingsView({ onGoal }) {
   return (
     <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:grid-cols-2">
       <div className="flex min-w-0 flex-col gap-4">
+        <ProfileCard />
         <PreferencesCard onGoal={onGoal} className="animate-fade-up" />
         <SoundSettings className="animate-fade-up" />
       </div>

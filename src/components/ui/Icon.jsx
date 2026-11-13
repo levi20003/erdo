@@ -39,6 +39,10 @@ const PATHS = {
   sparkle: <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z M19 16l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7Z" />,
   calendar: <><rect x="4" y="5" width="16" height="15" rx="2.5" /><path d="M4 10h16M9 3v4M15 3v4" /></>,
   minus: <path d="M5 12h14" />,
+  arrowRight: <><path d="M4 12h16" /><path d="m14 6 6 6-6 6" /></>,
+  home: <><path d="M4 11 12 4l8 7" /><path d="M6 10v10h12V10" /><path d="M10 20v-5h4v5" /></>,
+  user: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>,
+  chevronDown: <path d="m6 9 6 6 6-6" />,
   bolt: <path d="M13 3 5 14h6l-1 7 8-11h-6l1-7Z" />,
   // Stretch illustrations
   neck: <><circle cx="12" cy="8" r="3.5" /><path d="M9 16c0-2 1.3-3 3-3s3 1 3 3M6 21c0-3 2.5-5 6-5s6 2 6 5" /><path d="M5.5 6.5a7 7 0 0 1 3-3.5M18.5 6.5a7 7 0 0 0-3-3.5" /><path d="M16.5 2.5l2 .5-.5 2" /></>,

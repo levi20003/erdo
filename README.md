@@ -10,9 +10,10 @@ An offline-first focus timer PWA (strict Pomodoro: 25/5, 50/10 or 90/15). Every 
 - **Sounds.** An end-of-timer chime that plays even without background sound (repeats until you tap, vibrates on Android), and free background sounds during focus — rain, forest, stream, brown noise — synthesised on the device.
 - **Erdő theme.** Four starter plants and six to unlock (Napraforgó at 3 sessions … Mamutfenyő at 100), five stages each, animated SVG; the scene follows the season and is day or night with the theme.
 - **My forest.** Every block you finish grows a plant, every block you abandon leaves a withered one. Browse by day, week, month or year, tap a plant for its details, share a period.
-- **Four screens.** Focus, My forest, Stats, Settings — bottom tabs on phones, back button works. A short first-run introduction.
+- **Four screens.** Focus, My forest, Stats, Profile — a bark-brown tab bar on phones, back button works. A welcome screen and profile set-up on first run.
 - **Focus mode.** When a block starts, everything else steps away: only the plant, the clock, sounds and *Give up* remain. Optional full-screen view.
-- **Light and dark mode**, following the device or chosen in the header.
+- **Light and dark mode**, following the device or chosen in the header: a meadow by day, the forest at night.
+- **Local profile, no account.** A name and a forest-animal avatar; a new phone "signs in" by restoring a backup.
 - **Rewards.** Daily goal ring, forester levels (XP), completion celebration with level-ups and unlocks, daily streak, year map, weekly history, insights.
 - **Challenge a friend** with a link — no server, no account; the friend replies with their score the same way.
 - **Your data.** JSON backup and restore (merge), CSV export for spreadsheets, shareable forest image, local error log.
@@ -55,4 +56,4 @@ Pushing to `main` runs `.github/workflows/deploy.yml`: lint → unit tests → b
 
 ## Tech
 
-React 18, Vite 6, Tailwind CSS 3.4. Runtime dependencies: `react` and `react-dom` only. Fonts: Inter and Fraunces (SIL Open Font License, bundled in `src/assets/fonts`). Dev tooling: Vitest, Playwright, ESLint.
+React 18, Vite 6, Tailwind CSS 3.4. Runtime dependencies: `react` and `react-dom` only. Fonts: Exo 2 and Nunito (SIL Open Font License, bundled in `src/assets/fonts`). Dev tooling: Vitest, Playwright, ESLint.

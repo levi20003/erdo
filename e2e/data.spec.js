@@ -12,7 +12,7 @@ test('corrupted storage: app still opens, warns, and keeps a copy', async ({ pag
 test('legacy (unversioned) data is migrated with a backup', async ({ page }) => {
   await openApp(page, { sessions: pastSessions(2) })
   await expect(page.getByRole('status').filter({ hasText: 'frissítve' })).toBeVisible()
-  expect((await stored(page)).schemaVersion).toBe(4)
+  expect((await stored(page)).schemaVersion).toBe(5)
   // Returning users skip the introduction.
   await expect(page.getByRole('dialog', { name: 'Bevezető' })).toHaveCount(0)
   expect(await page.evaluate((k) => localStorage.getItem(`${k}:backup-v1`), KEY)).not.toBeNull()
@@ -20,7 +20,7 @@ test('legacy (unversioned) data is migrated with a backup', async ({ page }) => 
 
 test('CSV export, JSON backup and restore (merge)', async ({ page }, testInfo) => {
   await openApp(page, { schemaVersion: 3, sessions: pastSessions(3), prefs: { onboarded: true } })
-  await goTo(page, 'Beállítások')
+  await goTo(page, 'Profil')
 
   const [csv] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Táblázat (CSV)' }).click()])
   const csvText = fs.readFileSync(await csv.path(), 'utf8')

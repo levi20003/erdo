@@ -10,7 +10,7 @@ All in the browser's `localStorage` for the app's address (`levi20003.github.io`
 
 | Key | Contents |
 | --- | --- |
-| `focusgrove:v1` | Your categories (name, colour, plant), sessions (start, end, duration, completed/failed and why), the running timer, settings (break guide, language, sounds, theme, focus length, daily goal, nickname, whether you've seen the introduction, feedback prompt state), friend challenges (goal, dates, the friend's nickname and last known count) |
+| `focusgrove:v1` | Your categories (name, colour, plant), sessions (start, end, duration, completed/failed and why), the running timer, settings (break guide, language, sounds, theme, focus length, daily goal, your profile (nickname and avatar), whether you've seen the introduction, feedback prompt state), friend challenges (goal, dates, the friend's nickname and last known count) |
 | `focusgrove:v1:backup-v<N>` | An untouched copy of your data, taken before upgrading it to a new format |
 | `focusgrove:v1:backup-before-reset-<time>` | A copy taken before "Reset to defaults" on the crash screen |
 | `focusgrove:v1:corrupt-<time>` | A copy of saved data that could not be read, kept instead of being overwritten |

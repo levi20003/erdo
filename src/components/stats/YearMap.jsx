@@ -7,13 +7,13 @@ import { useAppStore } from '../../store/AppStore'
 import Card from '../ui/Card'
 import Icon from '../ui/Icon'
 
-// Empty → light olive → deep olive → gold: more focus, warmer tile.
+// Empty → pale green → deep green → accent (maroon by day, lime by night): more focus, stronger tile.
 const SHADES = [
   'bg-zinc-800/70',
-  'bg-[#80844d]/40',
-  'bg-[#80844d]/75',
-  'bg-[#a3a05f]',
-  'bg-[#c9ab84] shadow-[0_0_6px_rgb(201_171_132/0.6)]',
+  'bg-olive-300/30',
+  'bg-olive-300/55',
+  'bg-olive-300/85',
+  'bg-sand shadow-[0_0_6px_rgb(var(--sand)/0.6)]',
 ]
 
 /** The whole year as twelve small calendars; tap a day to see what you did. */

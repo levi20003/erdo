@@ -3,7 +3,7 @@ import { goTo, MIN, openApp, overflowing, pastSessions, stored } from './helpers
 
 test('switching to English translates the UI and survives a reload', async ({ page }) => {
   await openApp(page)
-  await goTo(page, 'Beállítások')
+  await goTo(page, 'Profil')
   await page.getByRole('radio', { name: 'English' }).click()
   // Still on the Settings screen after the language remount, now in English.
   await expect(page.getByText('Settings and data')).toBeVisible()

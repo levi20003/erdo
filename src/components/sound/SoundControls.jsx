@@ -163,7 +163,7 @@ export function SoundSettings({ className = '' }) {
               type="checkbox"
               checked={sound.vibrate}
               onChange={(e) => actions.setSound({ vibrate: e.target.checked })}
-              className="size-5 cursor-pointer accent-[#80844d]"
+              className="size-5 cursor-pointer accent-[#40a064]"
             />
           </label>
         ) : (

@@ -30,7 +30,7 @@ export function BreathingGuide({ elapsedSec }) {
                 cy="50"
                 r={R}
                 fill="none"
-                stroke="#c9ab84"
+                stroke="#ccd478"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeDasharray={`${filled} ${C}`}
@@ -45,7 +45,7 @@ export function BreathingGuide({ elapsedSec }) {
       </svg>
       <div
         aria-hidden="true"
-        className="absolute size-[62%] rounded-full bg-[radial-gradient(circle_at_50%_40%,rgb(201_171_132/0.28),rgb(95_98_57/0.35)_60%,rgb(95_98_57/0.15))] ring-1 ring-sand/20"
+        className="absolute size-[62%] rounded-full bg-[radial-gradient(circle_at_50%_40%,rgb(204_212_120/0.28),rgb(45_119_73/0.35)_60%,rgb(45_119_73/0.15))] ring-1 ring-sand/20"
         style={{ transform: `scale(${expanded ? 1 : 0.6})`, transition: `transform ${BREATH_PHASE_SEC}s cubic-bezier(.45,0,.55,1)` }}
       />
       <div className="relative flex flex-col items-center text-center" aria-live="polite">

@@ -1,6 +1,8 @@
 import { cleanName, sanitizeChallenges } from './challenge'
 import {
   AMBIENTS,
+  AVATARS,
+  DEFAULT_AVATAR,
   BREAK_LENGTHS,
   CHIMES,
   DEFAULT_CATEGORIES,
@@ -127,6 +129,7 @@ function sanitizePrefs(raw) {
     preset: PRESET_IDS.includes(src.preset) ? src.preset : DEFAULT_PRESET,
     dailyGoal: sanitizeGoal(src.dailyGoal),
     nickname: cleanName(src.nickname),
+    avatar: AVATARS.includes(src.avatar) ? src.avatar : DEFAULT_AVATAR,
   }
 }
 

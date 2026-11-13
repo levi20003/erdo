@@ -21,14 +21,15 @@ const GROUND_BITS = [[34, 159], [58, 163], [76, 158], [128, 160], [146, 164], [1
 
 /* Night and day palettes, then the season tints the trees and the ground. */
 const BASE = {
-  dark: { skyTop: '#0d0e0a', skyBottom: '#171912', far: '#1c1e16', near: '#22251a', ground: '#15170f', grass: '#2d3120', glow: '#c9ab84' },
-  light: { skyTop: '#cfe0d4', skyBottom: '#f3ead6', far: '#a9b891', near: '#86996b', ground: '#738a55', grass: '#5c7044', glow: '#ffe7b0' },
+  dark: { skyTop: '#0e1310', skyBottom: '#18211a', far: '#1b271d', near: '#213225', ground: '#131b14', grass: '#2b3c2c', glow: '#ccd478' },
+  // The meadow of the design: pale lime sky, sage and forest-green hills.
+  light: { skyTop: '#f1f3d6', skyBottom: '#d2d79f', far: '#90b77d', near: '#42855b', ground: '#5b8c57', grass: '#3d6a44', glow: '#fff6c8' },
 }
 const SEASON = {
-  spring: { dark: {}, light: { far: '#b3c495', near: '#8aa36a' }, bits: ['#e7b6c4', '#f6f0e4', '#f2d16b'], fall: '#efc3cf' },
+  spring: { dark: {}, light: { far: '#a3c98a', near: '#4f9a62' }, bits: ['#e7b6c4', '#f6f0e4', '#f2d16b'], fall: '#efc3cf' },
   summer: { dark: {}, light: {}, bits: null, fall: null },
-  autumn: { dark: { far: '#241f15', near: '#2b2416' }, light: { far: '#cfa66d', near: '#b5804c', ground: '#8a7a4a', grass: '#6f6436' }, bits: ['#c4623a', '#d98a3d', '#a8432c'], fall: '#d9773a' },
-  winter: { dark: { far: '#1b2024', near: '#20262a', ground: '#262c30', grass: '#39424a', skyTop: '#0b0e12' }, light: { skyTop: '#d9e4ea', skyBottom: '#f2f4f2', far: '#a7b5b8', near: '#8a9a9d', ground: '#eef2f2', grass: '#c9d3d6' }, bits: null, fall: '#ffffff' },
+  autumn: { dark: { far: '#262115', near: '#2d2617' }, light: { far: '#c4b06c', near: '#a8743f', ground: '#7a8a4a', grass: '#5d6a36' }, bits: ['#c4623a', '#d98a3d', '#a8432c'], fall: '#d9773a' },
+  winter: { dark: { far: '#1b2024', near: '#20262a', ground: '#262c30', grass: '#39424a', skyTop: '#0b0e12' }, light: { skyTop: '#e3ebee', skyBottom: '#f2f4f2', far: '#a7b5b8', near: '#7f9396', ground: '#eef2f2', grass: '#c9d3d6' }, bits: null, fall: '#ffffff' },
 }
 
 const tree = (x, h, w) => `M${x} ${GROUND_Y + 4 - h}L${x - w} ${GROUND_Y + 6}H${x + w}Z`
@@ -141,7 +142,7 @@ export default function ForestScene({ item = 'tolgy', color = '#7d8247', progres
 
       {backdrop && alive && (
         <>
-          <circle key={stage} className="stage-bloom" cx="100" cy="118" r="34" fill="none" stroke="#c9ab84" strokeWidth="0.8" />
+          <circle key={stage} className="stage-bloom" cx="100" cy="118" r="34" fill="none" stroke="#ccd478" strokeWidth="0.8" />
           {look.fall
             ? FALLING.map((f, i) => (
                 <ellipse

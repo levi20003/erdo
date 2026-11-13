@@ -7,8 +7,9 @@ import { useChallengeInbox } from './components/challenge/useChallengeInbox'
 import FeedbackPrompt from './components/feedback/FeedbackPrompt'
 import FocusSide from './components/focus/FocusSide'
 import GoalSheet from './components/focus/GoalSheet'
-import Greeting from './components/focus/Greeting'
-import Header from './components/layout/Header'
+import CategorySheet from './components/focus/CategorySheet'
+import SummaryCard from './components/focus/SummaryCard'
+import Hero from './components/layout/Hero'
 import { BottomNav } from './components/layout/Nav'
 import { AmbientPicker } from './components/sound/SoundControls'
 import SessionToasts from './components/toast/SessionToasts'
@@ -48,6 +49,7 @@ export default function App() {
   const [share, setShare] = useState(null) // null | { scope }
   const [soundOpen, setSoundOpen] = useState(false)
   const [goalOpen, setGoalOpen] = useState(false)
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [challenge, setChallenge] = useState(undefined) // undefined: closed · null: new · object: send score
   const shownShare = useRetained(share)
   const shownChallenge = useRetained(challenge === undefined ? undefined : { c: challenge })
@@ -60,6 +62,7 @@ export default function App() {
   const openShareAll = useCallback(() => setShare({ scope: null }), [])
   const openShare = useCallback((scope) => setShare({ scope }), [])
   const openGoal = useCallback(() => setGoalOpen(true), [])
+  const openCategories = useCallback(() => setCategoriesOpen(true), [])
   const openChallenge = useCallback((c) => setChallenge(c), [])
 
   const stats = useMemo(() => {
@@ -76,50 +79,50 @@ export default function App() {
   return (
     <>
       {/* Inert behind Focus View and the introduction: no focus, clicks or screen-reader access. */}
-      <div
-        inert={focusView.open || onboarding ? '' : undefined}
-        className={`mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-4 overflow-x-clip px-3 pt-[max(0.75rem,env(safe-area-inset-top))] min-[400px]:px-4 sm:px-6 ${
-          focusMode ? 'pb-4' : 'pb-32 md:pb-10'
-        }`}
-      >
-        {!focusMode && <Header tab={screen} onTab={setTab} />}
+      <div inert={focusView.open || onboarding ? '' : undefined} className="min-h-dvh overflow-x-clip">
+        {!focusMode && <Hero screen={screen} onTab={setTab} />}
+        <div
+          className={`relative mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 min-[400px]:px-4 sm:px-6 ${
+            focusMode ? 'min-h-dvh pb-4 pt-[max(0.75rem,env(safe-area-inset-top))]' : '-mt-12 pb-32 md:pb-10'
+          }`}
+        >
+          {!focusMode && <Banners />}
+          {/* Only on Stats: on the Focus screen it would push the Start button below the fold on phones. */}
+          {!focusMode && !pomodoro.celebrating && screen === 'stats' && <FeedbackPrompt />}
 
-        {!focusMode && <Banners />}
-        {/* Only on Stats: on the Focus screen it would push the Start button below the fold on phones. */}
-        {!focusMode && !pomodoro.celebrating && screen === 'stats' && <FeedbackPrompt />}
-
-        <main key={screen} className={focusMode ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center' : 'min-w-0 animate-fade-up'}>
-          {screen === 'focus' && (
-            <div
-              className={
-                focusMode
-                  ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center'
-                  : 'mx-auto grid w-full max-w-xl gap-4 lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start'
-              }
-            >
-              <div className="flex min-w-0 flex-col gap-4">
-                {!focusMode && <Greeting onGoal={openGoal} />}
-                <TimerCard
-                  pomodoro={pomodoro}
-                  onFullscreen={focusView.enter}
-                  onSound={() => setSoundOpen(true)}
-                  className={focusMode ? 'min-h-[min(46rem,calc(100dvh-2rem))] justify-center' : ''}
-                />
+          <main key={screen} className={focusMode ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center' : 'min-w-0 animate-fade-up'}>
+            {screen === 'focus' && (
+              <div
+                className={
+                  focusMode
+                    ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center'
+                    : 'mx-auto grid w-full max-w-xl gap-4 lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start'
+                }
+              >
+                <div className="flex min-w-0 flex-col gap-4">
+                  {!focusMode && <SummaryCard onCategories={openCategories} onGoal={openGoal} />}
+                  <TimerCard
+                    pomodoro={pomodoro}
+                    onFullscreen={focusView.enter}
+                    onSound={() => setSoundOpen(true)}
+                    className={focusMode ? 'min-h-[min(46rem,calc(100dvh-2rem))] justify-center' : ''}
+                  />
+                </div>
+                {!focusMode && <FocusSide onOpen={setTab} onChallenge={openChallenge} className="lg:sticky lg:top-4 lg:pt-14" />}
               </div>
-              {!focusMode && <FocusSide onOpen={setTab} onChallenge={openChallenge} className="lg:sticky lg:top-4" />}
-            </div>
-          )}
-          <Suspense fallback={sheetFallback}>
-            {screen === 'forest' && <ForestView onStartFocus={goFocus} onShare={openShare} />}
-            {screen === 'stats' && <StatsView stats={stats} onShare={openShareAll} onStartFocus={goFocus} onChallenge={openChallenge} onGoal={openGoal} />}
-            {screen === 'settings' && (
-              <>
-                <SettingsView onGoal={openGoal} />
-                <p className="mt-6 text-center text-xs text-zinc-500">{t.footer}</p>
-              </>
             )}
-          </Suspense>
-        </main>
+            <Suspense fallback={sheetFallback}>
+              {screen === 'forest' && <ForestView onStartFocus={goFocus} onShare={openShare} />}
+              {screen === 'stats' && <StatsView stats={stats} onShare={openShareAll} onStartFocus={goFocus} onChallenge={openChallenge} onGoal={openGoal} />}
+              {screen === 'settings' && (
+                <>
+                  <SettingsView onGoal={openGoal} />
+                  <p className="mt-6 text-center text-xs text-zinc-500">{t.footer}</p>
+                </>
+              )}
+            </Suspense>
+          </main>
+        </div>
       </div>
 
       {!focusMode && !onboarding && <BottomNav tab={screen} onChange={setTab} />}
@@ -129,6 +132,7 @@ export default function App() {
         <AmbientPicker />
       </Sheet>
       <GoalSheet open={goalOpen} onClose={() => setGoalOpen(false)} />
+      <CategorySheet open={categoriesOpen} onClose={() => setCategoriesOpen(false)} />
       <ChallengeSheet open={challenge !== undefined} onClose={() => setChallenge(undefined)} challenge={shownChallenge?.c ?? null} />
       <InviteSheet invite={onboarding ? null : invite} onClose={closeInvite} onAccepted={() => setTab('stats')} />
       <Sheet open={share !== null} onClose={() => setShare(null)} title={t.share.title}>

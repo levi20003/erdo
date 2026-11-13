@@ -1,25 +1,72 @@
 import { expect, test } from '@playwright/test'
 import { goTo, MIN, openApp, pastSessions, stored } from './helpers'
 
-test('first run: introduction, category choice, and it can be replayed', async ({ page }) => {
+test('first run: welcome → local profile (name + avatar) → focus choice; replayable', async ({ page }) => {
   await openApp(page, undefined, { firstRun: true })
   const intro = page.getByRole('dialog', { name: 'Bevezető' })
-  await expect(intro).toBeVisible()
-  for (let i = 0; i < 3; i++) await intro.getByRole('button', { name: 'Tovább' }).click()
+  await expect(intro.getByRole('heading', { name: 'Üdv!' })).toBeVisible()
+  await intro.getByRole('button', { name: 'Kezdjük', exact: true }).click()
+  await intro.getByLabel('Neved').fill('Levi')
+  await intro.getByRole('radio', { name: 'Bagoly' }).click()
+  await intro.getByRole('button', { name: 'Tovább' }).click()
   await intro.getByRole('radio', { name: /Kreatív/ }).click()
   await intro.getByRole('button', { name: 'Kezdjük!' }).click()
   await expect(intro).toHaveCount(0)
-  await expect(page.getByRole('radio', { name: /Kreatív/ })).toHaveAttribute('aria-checked', 'true')
-  expect((await stored(page)).prefs.onboarded).toBe(true)
+  await expect(page.getByRole('heading', { name: 'Szia, Levi!' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /Kategória: Kreatív/ })).toBeVisible()
+  expect((await stored(page)).prefs).toMatchObject({ onboarded: true, nickname: 'Levi', avatar: 'owl' })
+  expect((await stored(page)).selectedCategoryId).toBe('kreativ')
 
   await page.reload()
   await expect(page.getByRole('dialog', { name: 'Bevezető' })).toHaveCount(0)
 
-  await goTo(page, 'Beállítások')
+  await goTo(page, 'Profil')
   await page.getByRole('button', { name: 'Bevezető újra' }).click()
   await expect(page.getByRole('dialog', { name: 'Bevezető' })).toBeVisible()
   await page.getByRole('button', { name: 'Kihagyás' }).click()
   await expect(page.getByRole('dialog', { name: 'Bevezető' })).toHaveCount(0)
+})
+
+test('"sign in" on a new device restores a backup, profile included', async ({ page }) => {
+  const backup = {
+    app: 'FocusGrove',
+    kind: 'backup',
+    data: { schemaVersion: 5, sessions: pastSessions(3), prefs: { nickname: 'Anna', avatar: 'deer', onboarded: true } },
+  }
+  await openApp(page, undefined, { firstRun: true })
+  const intro = page.getByRole('dialog', { name: 'Bevezető' })
+  await intro.getByRole('button', { name: 'Kezdjük', exact: true }).click()
+  await intro.getByRole('button', { name: 'Visszaállítás mentésből' }).click()
+  await expect(intro.getByRole('heading', { name: 'Belépés' })).toBeVisible()
+  await intro.getByTestId('restore-input').setInputFiles({ name: 'mentes.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) })
+  await expect(page.getByText('Visszaállítva: 3 új munkamenet')).toBeVisible()
+  await expect(intro).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Szia, Anna!' })).toBeVisible()
+  const s = await stored(page)
+  expect(s.sessions).toHaveLength(3)
+  expect(s.prefs).toMatchObject({ nickname: 'Anna', avatar: 'deer', onboarded: true })
+})
+
+test('profile: change name and avatar from the Profile screen', async ({ page }) => {
+  await openApp(page)
+  await goTo(page, 'Profil')
+  await page.getByRole('button', { name: 'Profil szerkesztése' }).first().click()
+  const sheet = page.getByRole('dialog', { name: 'Profil szerkesztése' })
+  await sheet.getByLabel('Neved').fill('Bence')
+  await sheet.getByRole('radio', { name: 'Medve' }).click()
+  await sheet.getByRole('button', { name: 'Mentés' }).click()
+  await expect(page.getByRole('main')).toContainText('Bence')
+  expect((await stored(page)).prefs).toMatchObject({ nickname: 'Bence', avatar: 'bear' })
+  await goTo(page, 'Fókusz')
+  await expect(page.getByRole('heading', { name: 'Szia, Bence!' })).toBeVisible()
+})
+
+test('the category is picked from the summary card', async ({ page }) => {
+  await openApp(page)
+  await page.getByRole('button', { name: /Kategória: Tanulás/ }).click()
+  await page.getByRole('dialog').getByRole('radio', { name: /Fejlesztés/ }).click()
+  await expect(page.getByRole('button', { name: /Kategória: Fejlesztés/ })).toBeVisible()
+  expect((await stored(page)).selectedCategoryId).toBe('fejlesztes')
 })
 
 test('screens live in the URL: back button and reload keep your place', async ({ page }) => {
@@ -79,7 +126,7 @@ test('a session that reaches 10 completed unlocks the birch, celebrated and sele
   await page.clock.runFor(25 * MIN + 400)
   await expect(page.getByRole('status').filter({ hasText: 'Új növény: Nyírfa' })).toBeVisible()
   await page.clock.runFor(4000)
-  await goTo(page, 'Beállítások')
+  await goTo(page, 'Profil')
   await page.getByRole('button', { name: 'Szerkesztés: Tanulás' }).click()
   await expect(page.getByRole('dialog').getByRole('button', { name: /Nyírfa/ })).toBeEnabled()
   await expect(page.getByRole('dialog').getByRole('button', { name: /Cseresznyefa/ })).toBeDisabled()

@@ -50,7 +50,7 @@ export default function PomodoroCore({ pomodoro, large = false, onSound, onFulls
   return (
     <div className="flex w-full flex-col items-center gap-3 sm:gap-4">
       {/* Sized by height too, so the clock and the button stay on short screens. */}
-      <div className={`relative ${large ? 'w-[min(80vw,50dvh,28rem)]' : 'w-full max-w-[min(16.5rem,31dvh)] sm:max-w-[min(19rem,38dvh)]'}`}>
+      <div className={`relative ${large ? 'w-[min(80vw,50dvh,28rem)]' : 'w-full max-w-[min(16rem,28dvh)] sm:max-w-[min(19rem,36dvh)]'}`}>
         {onSound && (
           <button type="button" onClick={onSound} aria-label={t.sound.button} title={t.sound.button} className={`${corner} -left-3 top-0`}>
             <Icon name={sound.ambient === 'off' ? 'volumeOff' : 'volume'} size={17} className={sound.ambient === 'off' ? '' : 'text-sand'} />
@@ -61,7 +61,7 @@ export default function PomodoroCore({ pomodoro, large = false, onSound, onFulls
             <Icon name="expand" size={16} />
           </button>
         )}
-        <ProgressRing progress={timer ? progress : 0} color={onBreak ? '#c9ab84' : category?.color ?? '#5f6239'} live={focusing}>
+        <ProgressRing progress={timer ? progress : 0} color={onBreak ? '#ccd478' : category?.color ?? '#2d7749'} live={focusing}>
           {onBreak ? (
             <div key={`break-${state.prefs.breakGuide}`} className="size-full animate-scene-in">
               {state.prefs.breakGuide === 'stretch' ? <StretchGuide elapsedSec={breakElapsed} /> : <BreathingGuide elapsedSec={breakElapsed} />}
@@ -115,13 +115,13 @@ export default function PomodoroCore({ pomodoro, large = false, onSound, onFulls
             stage={stage}
             progress={growth}
             active={focusing}
-            color={category?.color ?? '#5f6239'}
+            color={category?.color ?? '#2d7749'}
             durationSec={timer?.durationSec ?? idleSec}
             compact={large}
           />
         )}
         <p
-          className={`num font-extralight leading-none text-zinc-50 ${large ? 'text-[5.5rem] sm:text-[7rem]' : 'text-[4.25rem] sm:text-[4.75rem]'}`}
+          className={`num font-extralight leading-none text-zinc-50 ${large ? 'text-[5.5rem] sm:text-[7rem]' : 'text-[3.9rem] sm:text-[4.75rem]'}`}
           aria-label={`${t.phase[phase]}: ${clock}`}
         >
           {clock}

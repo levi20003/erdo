@@ -1,5 +1,5 @@
 import { cleanName, MAX_CHALLENGES, sanitizeChallenge } from '../lib/challenge'
-import { BREAK_SEC, CELEBRATION_MS, MIN_LOGGED_FAIL_SEC, PRESET_IDS, PRESETS, THEMES } from '../lib/config'
+import { AVATARS, BREAK_SEC, CELEBRATION_MS, DEFAULT_AVATAR, MIN_LOGGED_FAIL_SEC, PRESET_IDS, PRESETS, THEMES } from '../lib/config'
 import { sanitizeGoal, sanitizeSound, sanitizeState } from '../lib/sanitize'
 import { uid } from '../lib/time'
 
@@ -23,7 +23,7 @@ export function createInitialState(stored) {
   return sanitizeState(stored)
 }
 
-const PREF_VALUES = { breakGuide: ['breathing', 'stretch'], lang: ['hu', 'en'], theme: THEMES, preset: PRESET_IDS }
+const PREF_VALUES = { breakGuide: ['breathing', 'stretch'], lang: ['hu', 'en'], theme: THEMES, preset: PRESET_IDS, avatar: AVATARS }
 
 export function reducer(state, action) {
   const { timer } = state
@@ -192,7 +192,14 @@ export function reducer(state, action) {
       const sessions = [...state.sessions, ...imported.sessions.filter((s) => !sessionIds.has(s.id))].sort((a, b) => a.end - b.end)
       const challengeIds = new Set(state.challenges.map((c) => c.id))
       const challenges = [...state.challenges, ...(imported.challenges ?? []).filter((c) => !challengeIds.has(c.id))].slice(0, MAX_CHALLENGES)
-      return { ...state, categories, sessions, challenges }
+      // A restored profile fills in only what this device doesn't have yet.
+      const from = imported.prefs ?? {}
+      const prefs = {
+        ...state.prefs,
+        nickname: state.prefs.nickname || from.nickname || '',
+        avatar: state.prefs.avatar === DEFAULT_AVATAR && from.avatar ? from.avatar : state.prefs.avatar,
+      }
+      return { ...state, categories, sessions, challenges, prefs }
     }
 
     case 'FEEDBACK_SHOWN':

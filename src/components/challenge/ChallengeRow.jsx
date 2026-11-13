@@ -10,7 +10,7 @@ function Lane({ label, value, goal, mine }) {
       <span className={`w-16 shrink-0 truncate text-xs ${mine ? 'font-semibold text-zinc-100' : 'text-zinc-400'}`}>{label}</span>
       <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-zinc-800">
         <div
-          className={`h-full rounded-full transition-[width] duration-1000 ease-out ${mine ? 'bg-[linear-gradient(90deg,#80844d,#c9ab84)]' : 'bg-zinc-500'}`}
+          className={`h-full rounded-full transition-[width] duration-1000 ease-out ${mine ? 'bar-fill' : 'bg-zinc-500'}`}
           style={{ width: `${pct}%` }}
         />
       </div>

@@ -27,13 +27,14 @@ export default {
           900: v('z900'),
           950: v('z950'),
         },
+        // "olive" is the forest green of the design (header, primary button).
         olive: {
-          DEFAULT: '#5f6239',
+          DEFAULT: '#2d7749',
           200: v('olive-200'),
           300: v('olive-300'),
-          400: '#717548',
-          500: '#5f6239',
-          600: '#4b4d2c',
+          400: '#40a064',
+          500: '#2d7749',
+          600: '#1f5a37',
           900: v('olive-900'),
         },
         sand: {
@@ -45,20 +46,22 @@ export default {
           500: v('sand-500'),
           900: v('sand-900'),
         },
-        // Text on olive / gold fills: light in both themes.
-        cream: '#f7f1e6',
+        // Text on green / bark fills: light in both themes.
+        cream: '#f7f8e8',
+        bark: '#483838',
+        lime: '#d2d79f',
         rose: v('rose'),
       },
       fontFamily: {
         // Bundled and precached (src/assets/fonts), so the app looks the same offline.
-        sans: ['"Inter Var"', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-        display: ['"Fraunces Var"', 'ui-serif', 'Georgia', 'serif'],
+        sans: ['"Nunito Var"', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        display: ['"Exo 2 Var"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'SF Mono', 'Menlo', 'Consolas', 'monospace'],
       },
       boxShadow: {
         card: 'var(--shadow-card)',
         lift: 'var(--shadow-lift)',
-        button: '0 10px 28px -12px rgb(95 98 57 / 0.85), inset 0 1px 0 rgb(255 255 255 / 0.14)',
+        button: '0 10px 24px -12px rgb(45 119 73 / 0.9), inset 0 1px 0 rgb(255 255 255 / 0.25)',
       },
       transitionTimingFunction: {
         spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -99,8 +102,8 @@ export default {
         bar: { from: { transform: 'scaleY(0)' }, to: { transform: 'none' } },
         // Live session: the timer card's border breathes between olive and gold.
         'live-glow': {
-          '0%, 100%': { boxShadow: '0 0 0 1px rgb(128 132 77 / 0.35), 0 0 48px -16px rgb(128 132 77 / 0.55)' },
-          '50%': { boxShadow: '0 0 0 1px rgb(201 171 132 / 0.55), 0 0 72px -14px rgb(201 171 132 / 0.5)' },
+          '0%, 100%': { boxShadow: '0 0 0 1px rgb(64 160 100 / 0.4), 0 0 48px -16px rgb(64 160 100 / 0.55)' },
+          '50%': { boxShadow: '0 0 0 1px rgb(204 212 120 / 0.6), 0 0 72px -14px rgb(204 212 120 / 0.5)' },
         },
       },
       animation: {

@@ -2,6 +2,20 @@
 
 All notable changes. Dates are release dates in Europe/Budapest.
 
+## 1.3.0 — 2026-11-13 · New look: meadow and forest night
+
+### Added
+- **Local profile, no account**: a name and a forest-animal avatar, shown in the header ("Szia, Levi!") and on the new Profile tab, and used as the nickname in challenge links. Editable any time; nothing leaves the device.
+- **New first run** in the style of the design: a welcome screen with the forest edge, a "sign up" that creates the local profile, a "sign in" that restores a backup on a new device (profile included), and a "what are you focusing on?" list.
+- **Summary card** on the Focus screen: the current category (tap to switch), today's sessions and focus time, the daily goal, and a goal ring in percent.
+
+### Changed
+- The whole app follows the new design: a green header with greeting, daily tagline and avatar; a pale summary card overlapping it; green "flashcard" tiles with progress bars for level, next plant and the plant collection; bold uppercase section titles with arrows; a bark-brown bottom tab bar (Focus · My forest · Stats · Profile); bark-brown and forest-green pill buttons.
+- Fonts: Exo 2 for titles and numbers, Nunito for text (bundled, Latin + Hungarian, ~76 kB).
+- Light mode is the design's meadow (white and pale lime, forest green, bark-brown text, maroon accents); dark mode is the forest at night (bark browns, moss greens, lime accents). The forest scene's daylight palette matches.
+- Settings became the **Profile** tab (`#profil`; old `#beallitasok` links still work).
+- Storage schema 5 (`prefs.avatar`); restoring a backup also fills in a missing name and avatar.
+
 ## 1.2.0 — 2026-11-13 · Light and dark, a new look, levels, challenges
 
 ### Added

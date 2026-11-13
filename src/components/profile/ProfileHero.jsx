@@ -24,12 +24,12 @@ function ProfileHero({ totalMin, completedCount, bestStreak, className = '' }) {
   const into = Math.round(useCountUp(level.xp - level.floor, { duration: 1300 }))
 
   return (
-    <section className={`relative overflow-hidden rounded-[2rem] border border-zinc-800/80 bg-zinc-900 p-5 shadow-card sm:p-7 ${className}`}>
+    <section className={`pale-card p-5 sm:p-7 ${className}`}>
       <span
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-[radial-gradient(circle,rgb(var(--sand)/0.22),transparent_65%)] opacity-50 dark:opacity-100"
       />
-      <span aria-hidden="true" className="pointer-events-none absolute -bottom-28 -left-16 hidden size-72 rounded-full bg-[radial-gradient(circle,rgb(95_98_57/0.28),transparent_65%)] dark:block" />
+      <span aria-hidden="true" className="pointer-events-none absolute -bottom-28 -left-16 hidden size-72 rounded-full bg-[radial-gradient(circle,rgb(45_119_73/0.28),transparent_65%)] dark:block" />
       <div className="relative flex items-center gap-4 sm:gap-6">
         <Ring value={level.progress} size={92} stroke={7} glow>
           <span className="flex flex-col items-center leading-none">
@@ -44,7 +44,7 @@ function ProfileHero({ totalMin, completedCount, bestStreak, className = '' }) {
           <h2 className="mt-1 font-display text-3xl font-medium leading-tight tracking-tight text-zinc-50 sm:text-4xl">{title}</h2>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-800">
             <div
-              className="h-full rounded-full bg-[linear-gradient(90deg,#80844d,#c9ab84)] shadow-[0_0_12px_rgb(201_171_132/0.5)] transition-[width] duration-[1300ms] ease-out"
+              className="h-full rounded-full bar-fill shadow-[0_0_12px_rgb(204_212_120/0.5)] transition-[width] duration-[1300ms] ease-out"
               style={{ width: `${Math.max(2, level.progress * 100)}%` }}
             />
           </div>

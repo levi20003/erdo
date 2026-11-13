@@ -23,7 +23,7 @@ test('follows the device theme; the switch overrides it and is remembered', asyn
   await page.reload()
   expect(await theme()).toBe('light')
 
-  await goTo(page, 'Beállítások')
+  await goTo(page, 'Profil')
   await page.getByRole('radio', { name: 'Rendszer' }).click()
   await expect.poll(theme).toBe('dark')
 })
@@ -135,7 +135,7 @@ test('@mobile every screen fits a small phone, in light and dark', async ({ page
     await page.emulateMedia({ colorScheme })
     const challenge = { id: 'abcd1234', role: 'host', goal: 10, days: 7, start: new Date().toLocaleDateString('sv'), opponent: 'Anna Marie Long', opponentDone: 3, opponentAt: Date.now(), createdAt: Date.now() }
     await openApp(page, { schemaVersion: 4, prefs: { onboarded: true }, sessions: pastSessions(12), challenges: [challenge] })
-    for (const screen of ['Fókusz', 'Erdőm', 'Statisztika', 'Beállítások']) {
+    for (const screen of ['Fókusz', 'Erdőm', 'Statisztika', 'Profil']) {
       await goTo(page, screen)
       await page.waitForTimeout(300)
       expect(await overflowing(page), `${screen} (${colorScheme})`).toEqual([])

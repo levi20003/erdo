@@ -9,7 +9,9 @@ import { isUnlocked, unlockAt } from '../../lib/unlocks'
 import { useAppStore, useCategoryLookup } from '../../store/AppStore'
 import { DELETED } from '../dashboard/CategoryBars'
 import ForestScene from '../growth/ForestScene'
+import { LeafBar, LeafTile } from '../focus/FocusSide'
 import Card from '../ui/Card'
+import SectionTitle from '../ui/SectionTitle'
 import Segmented from '../ui/Segmented'
 import Icon from '../ui/Icon'
 import Sheet, { useRetained } from '../ui/Sheet'
@@ -52,8 +54,7 @@ export default function ForestView({ onStartFocus, onShare }) {
   return (
     <div className="flex flex-col gap-4">
       <Card
-        title={t.forest.title}
-        icon={<Icon name="tree" size={13} />}
+        aria-label={t.forest.title}
         action={
           grown.length > 0 && (
             <button
@@ -158,31 +159,35 @@ export default function ForestView({ onStartFocus, onShare }) {
         )}
       </Card>
 
-      <Card title={t.forest.collection} icon={<Icon name="leaf" size={13} />}>
-        <p className="-mt-2 mb-4 text-xs text-zinc-400">{t.forest.collectionHint}</p>
-        <ul className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-          {GROWTH_IDS.map((id) => {
+      {/* The collection as the design's green word cards: a bar fills towards each unlock. */}
+      <section className="flex flex-col gap-3">
+        <SectionTitle>{t.forest.collection}</SectionTitle>
+        <p className="-mt-1 px-1 text-sm text-zinc-400">{t.forest.collectionHint}</p>
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {GROWTH_IDS.map((id, i) => {
             const open = isUnlocked(id, completedCount)
-            const color = Object.values(categories).find((c) => c.growth === id)?.color ?? '#7d8247'
+            const at = unlockAt(id)
+            const color = Object.values(categories).find((c) => c.growth === id)?.color ?? '#2d7749'
             return (
-              <li key={id} className={`group flex flex-col items-center gap-1 rounded-2xl border p-2 text-center transition ${open ? 'border-zinc-800 bg-zinc-950/50 hover:border-olive/50' : 'border-dashed border-zinc-800'}`}>
-                <span className={`relative block size-16 transition-transform duration-300 ease-spring ${open ? 'group-hover:-rotate-3 group-hover:scale-110' : 'opacity-35 grayscale'}`}>
-                  <ForestScene item={id} color={color} progress={1} backdrop={false} className="size-full" />
-                  {!open && (
-                    <span className="absolute inset-0 grid place-items-center">
-                      <Icon name="lock" size={18} className="text-zinc-300" />
+              <li key={id} className="animate-fade-up" style={{ animationDelay: `${i * 40}ms` }}>
+                <LeafTile
+                  title={growthItem(id).name}
+                  subtitle={open ? t.forest.unlocked : t.forest.locked(at - completedCount)}
+                  className={`h-full ${open ? '' : 'saturate-[0.6]'}`}
+                  art={
+                    <span className={`relative block size-full ${open ? '' : 'opacity-50 grayscale'}`}>
+                      <ForestScene item={id} color={color} progress={1} backdrop={false} className="size-full" />
+                      {!open && <Icon name="lock" size={14} className="absolute bottom-0 right-0 text-white drop-shadow" />}
                     </span>
-                  )}
-                </span>
-                <span className={`text-xs leading-tight ${open ? 'text-zinc-200' : 'text-zinc-400'}`}>{growthItem(id).name}</span>
-                <span className={`text-[11px] ${open ? 'text-olive-300' : 'text-sand'}`}>
-                  {open ? t.forest.unlocked : t.forest.locked(unlockAt(id) - completedCount)}
-                </span>
+                  }
+                >
+                  <LeafBar value={at ? Math.min(1, completedCount / at) : 1} label={at && !open ? `${completedCount}/${at}` : null} />
+                </LeafTile>
               </li>
             )
           })}
         </ul>
-      </Card>
+      </section>
 
       <Sheet open={selected !== null} onClose={() => setSelected(null)} title={growthItem((categories[shownPlant?.categoryId] ?? DELETED).growth).name}>
         {shownPlant && <PlantDetails session={shownPlant} category={categories[shownPlant.categoryId] ?? DELETED} />}

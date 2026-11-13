@@ -22,8 +22,10 @@ export const THEMES = ['system', 'light', 'dark']
 export const DEFAULT_DAILY_GOAL = 4
 export const MAX_DAILY_GOAL = 12
 
-/** Shown to a friend in a challenge link; nothing else about the user leaves the device. */
+/** The local profile: a nickname (also shown to a friend in a challenge link) and an avatar. No account, no password. */
 export const MAX_NICKNAME = 20
+export const AVATARS = ['sprout', 'fox', 'owl', 'deer', 'bear', 'hedgehog', 'rabbit', 'squirrel', 'frog']
+export const DEFAULT_AVATAR = 'sprout'
 
 /** Completion celebration shown between focus and break; the 5-minute break starts after it. */
 export const CELEBRATION_MS = 3600
@@ -51,8 +53,9 @@ export const STORAGE_KEY = 'focusgrove:v1'
  *   2 — schemaVersion field, prefs.lang, prefs.feedback
  *   3 — prefs.onboarded, prefs.sound
  *   4 — prefs.theme, prefs.preset, prefs.dailyGoal, prefs.nickname, challenges
+ *   5 — prefs.avatar (local profile: nickname + avatar, no account)
  */
-export const SCHEMA_VERSION = 4
+export const SCHEMA_VERSION = 5
 
 /** End-of-phase sounds (synthesised in lib/sound.js; no audio files). */
 export const CHIMES = ['harang', 'csengo', 'madar', 'fa', 'off']

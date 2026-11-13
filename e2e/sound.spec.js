@@ -61,7 +61,7 @@ test('background sound plays during focus and the chosen chime is saved', async 
   expect((await audio(page)).vibrations).toEqual([])
 
   await page.clock.runFor(10_000)
-  await goTo(page, 'Beállítások')
+  await goTo(page, 'Profil')
   await page.getByRole('radio', { name: 'Fahang' }).click()
   expect((await stored(page)).prefs.sound.chime).toBe('fa')
   expect(await page.evaluate((k) => JSON.parse(localStorage.getItem(k)).prefs.sound.ambient, KEY)).toBe('patak')
