@@ -23,8 +23,8 @@ export function useTab() {
   const setTab = useCallback((next) => {
     if (next === fromHash()) return
     window.location.hash = HASHES[next]
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
+    // Straight to the top: a smooth scroll racing the screen change looks jittery on phones.
+    window.scrollTo(0, 0)
   }, [])
 
   return [tab, setTab]

@@ -47,7 +47,7 @@ test('the Start tap unlocks audio; the chime rings at the end, with vibration', 
 })
 
 test('background sound plays during focus and the chosen chime is saved', async ({ page }) => {
-  await openApp(page, { schemaVersion: 3, prefs: { onboarded: true, sound: { chime: 'madar', ambient: 'eso', vibrate: false } } })
+  await openApp(page, { schemaVersion: 6, prefs: { onboarded: true, sound: { chime: 'madar', ambient: 'eso', vibrate: false } } })
   await page.getByRole('button', { name: 'Fókusz indítása' }).click()
   await page.waitForTimeout(300)
   expect((await audio(page)).loops).toBeGreaterThan(0)

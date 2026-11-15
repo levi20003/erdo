@@ -1,15 +1,15 @@
-import { Suspense, useCallback, useMemo, useState } from 'react'
+import { Suspense, useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import Banners from './components/Banners'
 import SessionCelebration from './components/celebration/SessionCelebration'
 import ChallengeSheet from './components/challenge/ChallengeSheet'
 import InviteSheet from './components/challenge/InviteSheet'
 import { useChallengeInbox } from './components/challenge/useChallengeInbox'
-import FeedbackPrompt from './components/feedback/FeedbackPrompt'
 import FocusSide from './components/focus/FocusSide'
 import GoalSheet from './components/focus/GoalSheet'
 import CategorySheet from './components/focus/CategorySheet'
 import SummaryCard from './components/focus/SummaryCard'
 import Hero from './components/layout/Hero'
+import { useTheme } from './components/ThemeRoot'
 import { BottomNav } from './components/layout/Nav'
 import { AmbientPicker } from './components/sound/SoundControls'
 import SessionToasts from './components/toast/SessionToasts'
@@ -19,6 +19,7 @@ import Sheet, { useRetained } from './components/ui/Sheet'
 import { useFullscreen } from './hooks/useFullscreen'
 import { usePomodoro } from './hooks/usePomodoro'
 import { useTab } from './hooks/useTab'
+import { HERO_COLOR, PAGE_COLOR, useThemeColor } from './hooks/useThemeColor'
 import { useToday } from './hooks/useToday'
 import { computeInsights } from './lib/insights'
 import { lazyScreen } from './lib/lazy'
@@ -26,12 +27,21 @@ import { completed, computeStreak, totalMinutes } from './lib/stats'
 import { t } from './lib/strings'
 import { useAppStore } from './store/AppStore'
 
-// Everything but the Focus screen loads on demand (the service worker still precaches it for offline use).
-const SharePanel = lazyScreen(() => import('./components/share/SharePanel'))
-const ForestView = lazyScreen(() => import('./components/forest/ForestView'))
-const StatsView = lazyScreen(() => import('./components/stats/StatsView'))
-const SettingsView = lazyScreen(() => import('./components/settings/SettingsView'))
-const Onboarding = lazyScreen(() => import('./components/onboarding/Onboarding'))
+// Everything but the Focus screen loads on demand (the service worker still precaches it for offline use)…
+const SCREENS = {
+  share: () => import('./components/share/SharePanel'),
+  forest: () => import('./components/forest/ForestView'),
+  stats: () => import('./components/stats/StatsView'),
+  settings: () => import('./components/settings/SettingsView'),
+  onboarding: () => import('./components/onboarding/Onboarding'),
+}
+const SharePanel = lazyScreen(SCREENS.share)
+const ForestView = lazyScreen(SCREENS.forest)
+const StatsView = lazyScreen(SCREENS.stats)
+const SettingsView = lazyScreen(SCREENS.settings)
+const Onboarding = lazyScreen(SCREENS.onboarding)
+// …and is fetched in the background once the app is idle, so switching tabs is instant.
+const preloadScreens = () => Object.values(SCREENS).forEach((load) => load().catch(() => {}))
 const sheetFallback = <div className="h-40 animate-pulse rounded-3xl bg-zinc-800/40" />
 
 /*
@@ -55,9 +65,22 @@ export default function App() {
   const shownChallenge = useRetained(challenge === undefined ? undefined : { c: challenge })
   const { invite, closeInvite } = useChallengeInbox()
 
+  useEffect(() => {
+    const idle = window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1200))
+    const cancel = window.cancelIdleCallback ?? clearTimeout
+    const id = idle(preloadScreens)
+    return () => cancel(id)
+  }, [])
+
   const focusMode = pomodoro.timer?.phase === 'focus'
   const onboarding = !state.prefs.onboarded && !focusMode
-  const screen = focusMode ? 'focus' : tab
+  // The menu reacts at once; the screen itself swaps as soon as it is ready (no loading flash in between).
+  const shownTab = useDeferredValue(tab)
+  const screen = focusMode ? 'focus' : shownTab
+  const navTab = focusMode ? 'focus' : tab
+  const theme = useTheme()
+  // The status bar matches what is under it: the green header, or the plain page in focus mode. (The introduction sets its own.)
+  useThemeColor(onboarding ? null : focusMode || focusView.open ? PAGE_COLOR[theme] : HERO_COLOR[theme])
   const goFocus = useCallback(() => setTab('focus'), [setTab])
   const openShareAll = useCallback(() => setShare({ scope: null }), [])
   const openShare = useCallback((scope) => setShare({ scope }), [])
@@ -80,15 +103,13 @@ export default function App() {
     <>
       {/* Inert behind Focus View and the introduction: no focus, clicks or screen-reader access. */}
       <div inert={focusView.open || onboarding ? '' : undefined} className="min-h-dvh overflow-x-clip">
-        {!focusMode && <Hero screen={screen} onTab={setTab} />}
+        {!focusMode && <Hero screen={screen} tab={navTab} onTab={setTab} />}
         <div
           className={`relative mx-auto flex w-full max-w-6xl flex-col gap-4 px-3 min-[400px]:px-4 sm:px-6 ${
-            focusMode ? 'min-h-dvh pb-4 pt-[max(0.75rem,env(safe-area-inset-top))]' : '-mt-12 pb-32 md:pb-10'
+            focusMode ? 'min-h-dvh pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]' : '-mt-12 pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-10'
           }`}
         >
           {!focusMode && <Banners />}
-          {/* Only on Stats: on the Focus screen it would push the Start button below the fold on phones. */}
-          {!focusMode && !pomodoro.celebrating && screen === 'stats' && <FeedbackPrompt />}
 
           <main key={screen} className={focusMode ? 'mx-auto flex w-full max-w-xl flex-1 flex-col justify-center' : 'min-w-0 animate-fade-up'}>
             {screen === 'focus' && (
@@ -113,7 +134,7 @@ export default function App() {
             )}
             <Suspense fallback={sheetFallback}>
               {screen === 'forest' && <ForestView onStartFocus={goFocus} onShare={openShare} />}
-              {screen === 'stats' && <StatsView stats={stats} onShare={openShareAll} onStartFocus={goFocus} onChallenge={openChallenge} onGoal={openGoal} />}
+              {screen === 'stats' && <StatsView stats={stats} onShare={openShareAll} onStartFocus={goFocus} onChallenge={openChallenge} quiet={pomodoro.celebrating} />}
               {screen === 'settings' && (
                 <>
                   <SettingsView onGoal={openGoal} />
@@ -125,7 +146,7 @@ export default function App() {
         </div>
       </div>
 
-      {!focusMode && !onboarding && <BottomNav tab={screen} onChange={setTab} />}
+      {!focusMode && !onboarding && <BottomNav tab={navTab} onChange={setTab} />}
       {focusView.open && <FocusView pomodoro={pomodoro} onExit={focusView.exit} />}
       <SessionCelebration celebrating={pomodoro.celebrating} />
       <Sheet open={soundOpen} onClose={() => setSoundOpen(false)} title={t.sound.title}>

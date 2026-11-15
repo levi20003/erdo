@@ -6,7 +6,6 @@ import { useAppStore } from '../store/AppStore'
  * index.html applies the same rule before the first paint, so there is no flash.
  */
 const ThemeContext = createContext('dark')
-const META = { dark: '#0d0e0b', light: '#f3f0e8' }
 // Dark unless the device asks for light (also when it states no preference).
 const query = () => window.matchMedia?.('(prefers-color-scheme: light)')
 
@@ -30,9 +29,8 @@ export default function ThemeRoot({ children }) {
   const theme = resolveTheme(pref, systemDark)
 
   useEffect(() => {
-    const root = document.documentElement
-    root.dataset.theme = theme
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', META[theme])
+    // The status-bar colour follows what is at the top of the screen (see useThemeColor in App).
+    document.documentElement.dataset.theme = theme
   }, [theme])
 
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>

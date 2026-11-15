@@ -51,7 +51,7 @@ export default function Sheet({ open, onClose, title, description, children }) {
       <div
         aria-hidden="true"
         onClick={onClose}
-        className={`absolute inset-0 bg-black/60 backdrop-blur-sm ${closing ? 'animate-fade-out' : 'animate-fade-in'}`}
+        className={`absolute inset-0 bg-[#1d1717]/60 backdrop-blur-sm ${closing ? 'animate-fade-out' : 'animate-fade-in'}`}
       />
       <div
         ref={panelRef}
@@ -59,14 +59,14 @@ export default function Sheet({ open, onClose, title, description, children }) {
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className={`relative max-h-[90dvh] w-full overflow-y-auto rounded-t-3xl border border-b-0 border-zinc-800 bg-zinc-900 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 shadow-2xl outline-none sm:max-w-md sm:rounded-2xl sm:border-b sm:p-6 ${
+        className={`relative max-h-[90dvh] w-full overflow-y-auto rounded-t-[1.75rem] border border-b-0 border-zinc-800 bg-zinc-900 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 shadow-2xl outline-none sm:max-w-md sm:rounded-3xl sm:border-b sm:p-6 ${
           closing ? 'animate-sheet-down sm:animate-pop-out' : 'animate-sheet-up sm:animate-pop-in'
         }`}
       >
-        <div aria-hidden="true" className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-700 sm:hidden" />
+        <div aria-hidden="true" className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-zinc-700 sm:hidden" />
         <header className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 className="font-display text-xl font-medium text-zinc-50">{title}</h2>
+            <h2 className="font-display text-xl font-bold leading-tight text-zinc-50">{title}</h2>
             {description && <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{description}</p>}
           </div>
           <button
@@ -74,7 +74,7 @@ export default function Sheet({ open, onClose, title, description, children }) {
             data-close
             onClick={onClose}
             aria-label={t.close}
-            className="-mr-1 -mt-1 rounded-lg p-1.5 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-200"
+            className="icon-btn -mr-2 -mt-1.5 size-9 bg-zinc-800/70"
           >
             <Icon name="close" size={16} />
           </button>
@@ -90,20 +90,11 @@ export default function Sheet({ open, onClose, title, description, children }) {
 export function ConfirmSheet({ open, onClose, onConfirm, title, description, confirmLabel, cancelLabel = t.cancel }) {
   return (
     <Sheet open={open} onClose={onClose} title={title} description={description}>
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <button
-          type="button"
-          onClick={onConfirm}
-          className="rounded-xl border border-zinc-800 px-4 py-3 text-sm font-medium text-rose transition hover:border-[#a8747a]/50 hover:bg-[#a8747a]/10 sm:py-2.5"
-        >
+      <div className="flex flex-col-reverse gap-2 sm:flex-row">
+        <button type="button" onClick={onConfirm} className="btn-ghost min-h-12 flex-1 !text-rose hover:!border-rose/50">
           {confirmLabel}
         </button>
-        <button
-          type="button"
-          data-autofocus
-          onClick={onClose}
-          className="rounded-xl bg-olive px-4 py-3 text-sm font-medium text-cream transition hover:bg-olive-400 sm:py-2.5"
-        >
+        <button type="button" data-autofocus onClick={onClose} className="btn-primary min-h-12 flex-[2]">
           {cancelLabel}
         </button>
       </div>

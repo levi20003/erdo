@@ -1,9 +1,11 @@
 /* FocusGrove service worker.
- * The build step (vite.config.js) replaces the two placeholders below with the
- * hashed asset list and a content version. In dev the fallbacks are used.
+ * The build step (vite.config.js) replaces the placeholders below with the
+ * hashed asset list, a content version and the app version. In dev the
+ * fallbacks are used.
  */
 const BUILD_URLS = self.__PRECACHE_URLS__
 const CACHE = 'focusgrove-__CACHE_VERSION__'
+const VERSION = '__APP_VERSION__'
 // Relative to this worker's URL, so the app works under any base path (e.g. /erdo/ on GitHub Pages).
 const STATIC = ['./manifest.json', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png']
 const PRECACHE = [...(Array.isArray(BUILD_URLS) ? BUILD_URLS : ['./']), ...STATIC]
@@ -11,7 +13,15 @@ const SHELL = new URL('./', self.location).href
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)))
-  self.skipWaiting()
+  // The first install takes over at once (offline from the very first visit).
+  // An update waits: the open app keeps its own files until the user taps
+  // "Update" (see src/lib/updates.js) or every window of the app is closed.
+  if (!self.registration.active) self.skipWaiting()
+})
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting()
+  if (event.data?.type === 'GET_VERSION') event.ports[0]?.postMessage({ version: VERSION })
 })
 
 self.addEventListener('activate', (event) => {

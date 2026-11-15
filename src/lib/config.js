@@ -24,7 +24,7 @@ export const MAX_DAILY_GOAL = 12
 
 /** The local profile: a nickname (also shown to a friend in a challenge link) and an avatar. No account, no password. */
 export const MAX_NICKNAME = 20
-export const AVATARS = ['sprout', 'fox', 'owl', 'deer', 'bear', 'hedgehog', 'rabbit', 'squirrel', 'frog']
+export const AVATARS = ['sprout', 'fox', 'owl', 'deer', 'bear', 'hedgehog', 'rabbit', 'squirrel', 'frog', 'bird']
 export const DEFAULT_AVATAR = 'sprout'
 
 /** Completion celebration shown between focus and break; the 5-minute break starts after it. */
@@ -54,8 +54,9 @@ export const STORAGE_KEY = 'focusgrove:v1'
  *   3 — prefs.onboarded, prefs.sound
  *   4 — prefs.theme, prefs.preset, prefs.dailyGoal, prefs.nickname, challenges
  *   5 — prefs.avatar (local profile: nickname + avatar, no account)
+ *   6 — category colours moved from the old olive/sand palette to the current one
  */
-export const SCHEMA_VERSION = 5
+export const SCHEMA_VERSION = 6
 
 /** End-of-phase sounds (synthesised in lib/sound.js; no audio files). */
 export const CHIMES = ['harang', 'csengo', 'madar', 'fa', 'off']
@@ -77,10 +78,23 @@ export const FEEDBACK_AFTER = 5
 export const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'dev'
 
 export const DEFAULT_CATEGORIES = [
-  { id: 'tanulas', name: 'Tanulás', color: '#7d8247', growth: 'tolgy' },
-  { id: 'fejlesztes', name: 'Fejlesztés', color: '#5f6239', growth: 'fenyves' },
-  { id: 'kreativ', name: 'Kreatív', color: '#c9ab84', growth: 'gomba' },
-  { id: 'fokusz', name: 'Fókusz Munkamenet', color: '#8f9d7a', growth: 'szikla' },
+  { id: 'tanulas', name: 'Tanulás', color: '#62a16a', growth: 'tolgy' },
+  { id: 'fejlesztes', name: 'Fejlesztés', color: '#2d7749', growth: 'fenyves' },
+  { id: 'kreativ', name: 'Kreatív', color: '#e0903c', growth: 'gomba' },
+  { id: 'fokusz', name: 'Fókusz Munkamenet', color: '#a8b545', growth: 'szikla' },
 ]
 
-export const PALETTE = ['#5f6239', '#7d8247', '#8f9d7a', '#c9ab84', '#b07d5b', '#a8747a', '#6f8191', '#a1a1aa']
+/** Category colours: forest, leaf, moss, amber, terracotta, maroon, bark, sky. */
+export const PALETTE = ['#2d7749', '#62a16a', '#a8b545', '#e0903c', '#c2553f', '#8b3a3a', '#7e5454', '#5b8fa8']
+
+/** The pre-1.4 palette → today's (schema 6 migration). Colours picked with the custom picker are left alone. */
+export const LEGACY_COLORS = {
+  '#5f6239': '#2d7749',
+  '#7d8247': '#62a16a',
+  '#8f9d7a': '#a8b545',
+  '#c9ab84': '#e0903c',
+  '#b07d5b': '#c2553f',
+  '#a8747a': '#8b3a3a',
+  '#6f8191': '#5b8fa8',
+  '#a1a1aa': '#7e5454',
+}

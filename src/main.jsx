@@ -5,7 +5,8 @@ import ErrorBoundary from './components/ErrorBoundary'
 import LanguageRoot from './components/LanguageRoot'
 import ThemeRoot from './components/ThemeRoot'
 import { ToastProvider } from './components/toast/ToastProvider'
-import { installGlobalErrorHandlers, logError } from './lib/errorLog'
+import { installGlobalErrorHandlers } from './lib/errorLog'
+import { registerServiceWorker } from './lib/updates'
 import { AppStoreProvider } from './store/AppStore'
 import './index.css'
 
@@ -28,8 +29,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 
 // Registered in production only, so the dev server never serves stale cached files.
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () =>
-    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch((err) => logError('sw', err, 'registration failed')),
-  )
-}
+if (import.meta.env.PROD) registerServiceWorker(`${import.meta.env.BASE_URL}sw.js`)

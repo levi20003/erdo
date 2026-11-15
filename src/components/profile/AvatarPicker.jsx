@@ -2,10 +2,10 @@ import { AVATARS } from '../../lib/config'
 import { t } from '../../lib/strings'
 import Avatar from './Avatar'
 
-/** Nine forest animals to pick from. */
+/** Ten forest characters to pick from, five to a row. */
 export default function AvatarPicker({ value, onChange, className = '' }) {
   return (
-    <div role="radiogroup" aria-label={t.avatar.label} className={`grid grid-cols-5 gap-2 sm:grid-cols-9 ${className}`}>
+    <div role="radiogroup" aria-label={t.avatar.label} className={`grid grid-cols-5 gap-x-1 gap-y-2 ${className}`}>
       {AVATARS.map((id) => {
         const on = id === value
         return (
@@ -16,9 +16,13 @@ export default function AvatarPicker({ value, onChange, className = '' }) {
             aria-checked={on}
             aria-label={t.avatar.names[id]}
             onClick={() => onChange(id)}
-            className={`press grid aspect-square place-items-center rounded-2xl transition ${on ? 'bg-olive-900 ring-2 ring-olive-400' : 'hover:bg-zinc-800/60'}`}
+            className="press grid aspect-square place-items-center rounded-full"
           >
-            <Avatar id={id} size={44} className={on ? 'scale-110 transition-transform duration-300 ease-spring' : 'transition-transform duration-300'} />
+            <Avatar
+              id={id}
+              size={52}
+              className={`transition duration-300 ease-spring ${on ? 'scale-110 !ring-[3px] !ring-olive-400' : 'opacity-80 hover:opacity-100'}`}
+            />
           </button>
         )
       })}

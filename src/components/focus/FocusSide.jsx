@@ -21,15 +21,15 @@ export function LeafBar({ value, label }) {
   )
 }
 
-/** A green "flashcard" tile: uppercase title, a line under it, a bar, and art in the lime corner. */
-export function LeafTile({ title, subtitle, children, art, onClick, className = '' }) {
+/** A green "flashcard" tile: uppercase title, a line under it, a bar or chip, and art in the lime corner. */
+export function LeafTile({ title, subtitle, children, art, onClick, ariaLabel, className = '' }) {
   const Tag = onClick ? 'button' : 'div'
   return (
-    <Tag type={onClick ? 'button' : undefined} onClick={onClick} className={`leaf-card press group flex min-h-[7.5rem] flex-col p-4 text-left ${className}`}>
+    <Tag type={onClick ? 'button' : undefined} onClick={onClick} aria-label={ariaLabel} className={`leaf-card press group flex min-h-[7.75rem] flex-col p-4 text-left ${className}`}>
       {art && <span className="absolute right-2 top-2 size-14 transition-transform duration-300 ease-spring group-hover:-rotate-6 group-hover:scale-110">{art}</span>}
-      <span className="max-w-[70%] font-display text-[15px] font-bold uppercase leading-tight tracking-[0.02em] drop-shadow-sm">{title}</span>
-      {subtitle && <span className="mt-0.5 max-w-[70%] truncate text-xs font-semibold text-white/85">{subtitle}</span>}
-      <span className="mt-auto">{children}</span>
+      <span className="max-w-[68%] font-display text-[15px] font-bold uppercase leading-tight tracking-[0.02em] drop-shadow-sm">{title}</span>
+      {subtitle && <span className="mt-0.5 max-w-[68%] truncate text-xs font-semibold text-white/85">{subtitle}</span>}
+      <span className="mt-auto block">{children}</span>
     </Tag>
   )
 }

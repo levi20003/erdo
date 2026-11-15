@@ -1,31 +1,37 @@
-import { Suspense } from 'react'
-import { lazyScreen } from '../../lib/lazy'
-import { t } from '../../lib/strings'
 import CategoryManager from '../categories/CategoryManager'
-import { SoundSettings } from '../sound/SoundControls'
-import Card from '../ui/Card'
-import Icon from '../ui/Icon'
-import PreferencesCard from './PreferencesCard'
 import ProfileCard from '../profile/ProfileCard'
+import { SoundSettings } from '../sound/SoundControls'
+import AboutCard from './AboutCard'
+import DataCard from './DataCard'
+import { AppearanceCard, FocusCard } from './PreferencesCard'
 
-const SettingsPanel = lazyScreen(() => import('./SettingsPanel'))
-
-/** Settings screen: appearance and focus defaults, sounds, categories, then language / data / error log / about. */
+/** The Profile screen: who you are, how the app looks and sounds, what you focus on, and your data. */
 export default function SettingsView({ onGoal }) {
+  const stagger = (i) => ({ animationDelay: `${i * 50}ms` })
   return (
     <div className="grid min-w-0 grid-cols-1 items-start gap-4 md:grid-cols-2">
       <div className="flex min-w-0 flex-col gap-4">
         <ProfileCard />
-        <PreferencesCard onGoal={onGoal} className="animate-fade-up" />
-        <SoundSettings className="animate-fade-up" />
+        <div className="animate-fade-up" style={stagger(1)}>
+          <AppearanceCard />
+        </div>
+        <div className="animate-fade-up" style={stagger(2)}>
+          <FocusCard onGoal={onGoal} />
+        </div>
+        <div className="animate-fade-up" style={stagger(3)}>
+          <SoundSettings />
+        </div>
       </div>
       <div className="flex min-w-0 flex-col gap-4">
-        <CategoryManager className="animate-fade-up" />
-        <Card title={t.settings.title} icon={<Icon name="settings" size={13} />} className="animate-fade-up">
-          <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-800/40" />}>
-            <SettingsPanel />
-          </Suspense>
-        </Card>
+        <div className="animate-fade-up" style={stagger(2)}>
+          <CategoryManager />
+        </div>
+        <div className="animate-fade-up" style={stagger(3)}>
+          <DataCard />
+        </div>
+        <div className="animate-fade-up" style={stagger(4)}>
+          <AboutCard />
+        </div>
       </div>
     </div>
   )

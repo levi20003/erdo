@@ -22,7 +22,7 @@ The service worker additionally caches the app's own files (HTML, JavaScript, CS
 
 ## Network
 
-The only network traffic is downloading the app itself from GitHub Pages, which, like any web host, sees the request (IP address, browser). After the first visit the app runs from the device cache. FocusGrove makes no other requests: no APIs, fonts, CDNs, analytics or ads. Chimes and background sounds are generated on the device; nothing is streamed.
+The only network traffic is downloading the app itself from GitHub Pages, which, like any web host, sees the request (IP address, browser). After the first visit the app runs from the device cache. FocusGrove makes no other requests: no APIs, fonts, CDNs, analytics or ads. Chimes and background sounds are generated on the device; nothing is streamed. To offer updates, the app asks the same host whether a newer version of itself exists (when it is opened, when it returns to the foreground, and when you tap *Check for updates*); that request carries nothing about you or your data.
 
 ## The error log
 

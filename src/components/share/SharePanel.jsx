@@ -7,6 +7,7 @@ import { getLocale, t } from '../../lib/strings'
 import { formatHours } from '../../lib/time'
 import { useAppStore, useCategoryLookup } from '../../store/AppStore'
 import ForestScene from '../growth/ForestScene'
+import Icon from '../ui/Icon'
 
 const MAX_PLANTS = 24
 
@@ -29,8 +30,8 @@ export default function SharePanel({ scope = null }) {
     const map = new Map()
     for (const s of grown) {
       const c = categories[s.categoryId]
-      const key = `${c?.growth ?? 'tolgy'}|${c?.color ?? '#7d8247'}`
-      if (!map.has(key)) map.set(key, { key, growth: c?.growth ?? 'tolgy', color: c?.color ?? '#7d8247' })
+      const key = `${c?.growth ?? 'tolgy'}|${c?.color ?? '#62a16a'}`
+      if (!map.has(key)) map.set(key, { key, growth: c?.growth ?? 'tolgy', color: c?.color ?? '#62a16a' })
     }
     return [...map.values()]
   }, [grown, categories])
@@ -47,7 +48,7 @@ export default function SharePanel({ scope = null }) {
         }
         const plants = grown.map((s) => {
           const c = categories[s.categoryId]
-          return images.get(`${c?.growth ?? 'tolgy'}|${c?.color ?? '#7d8247'}`)
+          return images.get(`${c?.growth ?? 'tolgy'}|${c?.color ?? '#62a16a'}`)
         })
         const total = completed(sessions).length
         const blob = await drawShareCard({
@@ -84,7 +85,7 @@ export default function SharePanel({ scope = null }) {
   const filename = `focusgrove-erdom-${fileDate()}.png`
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs leading-relaxed text-zinc-500">{t.share.hint}</p>
+      <p className="hint">{t.share.hint}</p>
       {/* Off-screen artwork the card is drawn from. */}
       <div ref={artRef} aria-hidden="true" className="pointer-events-none fixed -left-[9999px] top-0 size-64">
         {kinds.map((k) => (
@@ -93,7 +94,7 @@ export default function SharePanel({ scope = null }) {
           </div>
         ))}
       </div>
-      <div className="grid aspect-[4/5] w-full place-items-center overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950">
+      <div className="grid aspect-[4/5] w-full place-items-center overflow-hidden rounded-2xl bg-zinc-950 shadow-lift ring-1 ring-zinc-800">
         {card ? (
           <img src={card.url} alt={t.share.title} className="size-full object-contain" data-testid="share-preview" />
         ) : (
@@ -105,17 +106,17 @@ export default function SharePanel({ scope = null }) {
           type="button"
           disabled={!card}
           onClick={() => shareOrDownload(card.blob, filename, { title: t.share.cardTitle, text: t.share.shareText }, downloadBlob)}
-          className="rounded-xl bg-olive px-4 py-3 text-sm font-medium text-cream transition hover:bg-olive-400 disabled:opacity-40 sm:py-2.5"
+          className="btn-primary min-h-12"
         >
-          {t.share.share}
+          <Icon name="share" size={16} /> {t.share.share}
         </button>
         <button
           type="button"
           disabled={!card}
           onClick={() => downloadBlob(card.blob, filename)}
-          className="rounded-xl border border-zinc-800 px-4 py-3 text-sm text-zinc-200 transition hover:border-zinc-700 disabled:opacity-40 sm:py-2.5"
+          className="btn-ghost min-h-12 disabled:opacity-40"
         >
-          {t.share.download}
+          <Icon name="download" size={16} /> {t.share.download}
         </button>
       </div>
     </div>

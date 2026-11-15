@@ -44,19 +44,19 @@ function WeeklyChart({ className }) {
   // Scale to at least two pomodoros so a single session doesn't fill the column.
   const max = Math.max(50, ...series.map((d) => d.total))
   const rangeLabel = offset === 0 ? t.last7 : `${shortDate(days[0])} – ${shortDate(days[6])}`
-  const navButton = 'grid size-8 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-100 disabled:pointer-events-none disabled:opacity-25'
+  const navButton = 'icon-btn size-9'
 
   return (
     <Card
       title={t.week}
-      icon={<Icon name="chart" size={13} />}
+      icon={<Icon name="chart" size={14} />}
       className={className}
       action={
-        <div className="-mr-1.5 ml-auto flex items-center gap-0.5">
+        <div className="-mr-2 flex items-center">
           <button type="button" aria-label={t.prevWeek} disabled={offset >= oldestOffset} onClick={() => go(1)} className={navButton}>
             <Icon name="chevronLeft" size={16} />
           </button>
-          <span className="min-w-[5.5rem] whitespace-nowrap text-center text-xs tabular-nums text-zinc-400" aria-live="polite">
+          <span className="num min-w-[5.5rem] whitespace-nowrap text-center text-xs font-bold text-zinc-300" aria-live="polite">
             {rangeLabel}
           </span>
           <button type="button" aria-label={t.nextWeek} disabled={offset === 0} onClick={() => go(-1)} className={navButton}>
@@ -73,24 +73,21 @@ function WeeklyChart({ className }) {
           </p>
         </div>
 
-        <ol className="mb-6 flex h-36 items-end gap-1.5 sm:gap-2" aria-label={t.aria.perDay}>
+        <ol className="mb-6 flex h-40 items-end gap-1.5 sm:gap-2.5" aria-label={t.aria.perDay}>
           {series.map((day, i) => {
             const isToday = day.key === todayKey
             return (
-              <li key={day.key} className="group flex h-full min-w-0 flex-1 flex-col items-center gap-2">
-                <div className="relative flex w-full flex-1 flex-col-reverse overflow-hidden rounded-xl bg-zinc-800/50 transition-colors group-hover:bg-zinc-800/80">
-                  <div className="flex w-full origin-bottom animate-bar flex-col-reverse" style={{ height: `${(day.total / max) * 100}%`, animationDelay: `${i * 50}ms` }}>
+              <li key={day.key} className="flex h-full min-w-0 flex-1 flex-col items-center gap-1.5">
+                {/* The value sits above its column, never on top of the bar. */}
+                <span className={`num h-3.5 text-[10px] font-bold leading-none ${day.total ? (isToday ? 'text-sand' : 'text-zinc-400') : 'text-transparent'}`}>{Math.round(day.total)}</span>
+                <div className={`relative flex w-full flex-1 flex-col-reverse overflow-hidden rounded-xl ${isToday ? 'bg-zinc-800 ring-1 ring-inset ring-sand/40' : 'bg-zinc-800/60'}`}>
+                  <div className="flex w-full origin-bottom animate-bar flex-col-reverse overflow-hidden rounded-xl" style={{ height: `${(day.total / max) * 100}%`, animationDelay: `${i * 50}ms` }}>
                     {Object.entries(day.byCategory).map(([id, min]) => (
-                      <div key={id} className="w-full border-t border-zinc-900 first:rounded-b-xl last:rounded-t-xl first:border-t-0" style={{ height: `${(min / day.total) * 100}%`, background: (categories[id] ?? DELETED).color }} />
+                      <div key={id} className="w-full border-t border-zinc-900/60 first:border-t-0" style={{ height: `${(min / day.total) * 100}%`, background: (categories[id] ?? DELETED).color }} />
                     ))}
                   </div>
-                  {day.total > 0 && (
-                    <span className="num pointer-events-none absolute inset-x-0 top-1 text-center text-[10px] text-zinc-400 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
-                      {Math.round(day.total)}
-                    </span>
-                  )}
                 </div>
-                <span className={`text-[11px] capitalize ${isToday ? 'font-semibold text-sand' : 'text-zinc-500'}`}>{weekdayShort(day.date)}</span>
+                <span className={`text-[11px] capitalize ${isToday ? 'font-bold text-sand' : 'font-semibold text-zinc-500'}`}>{weekdayShort(day.date)}</span>
               </li>
             )
           })}

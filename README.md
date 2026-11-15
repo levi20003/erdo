@@ -16,6 +16,7 @@ An offline-first focus timer PWA (strict Pomodoro: 25/5, 50/10 or 90/15). Every 
 - **Local profile, no account.** A name and a forest-animal avatar; a new phone "signs in" by restoring a backup.
 - **Rewards.** Daily goal ring, forester levels (XP), completion celebration with level-ups and unlocks, daily streak, year map, weekly history, insights.
 - **Challenge a friend** with a link — no server, no account; the friend replies with their score the same way.
+- **Updates from inside the app.** A new version downloads in the background; one tap (banner, or Profile → Check for updates) switches to it.
 - **Your data.** JSON backup and restore (merge), CSV export for spreadsheets, shareable forest image, local error log.
 - **Resilient.** Versioned storage with migrations and automatic backups, repair of damaged data, recovery when storage is full, crash screen instead of a blank page.
 

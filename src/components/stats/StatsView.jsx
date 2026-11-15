@@ -1,6 +1,7 @@
 import { t } from '../../lib/strings'
 import ChallengesCard from '../challenge/ChallengesCard'
 import DailyChart from '../dashboard/DailyChart'
+import FeedbackPrompt from '../feedback/FeedbackPrompt'
 import StreakTile from '../dashboard/StreakTile'
 import TotalTile from '../dashboard/TotalTile'
 import WeeklyChart from '../dashboard/WeeklyChart'
@@ -10,7 +11,7 @@ import Card from '../ui/Card'
 import YearMap from './YearMap'
 
 /** Statistics: level and headline numbers, streak, challenges, the year, the week, today, insights. */
-export default function StatsView({ stats, onShare, onStartFocus, onChallenge }) {
+export default function StatsView({ stats, onShare, onStartFocus, onChallenge, quiet = false }) {
   if (!stats.completedCount && !stats.failedCount) {
     return (
       <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
@@ -34,6 +35,12 @@ export default function StatsView({ stats, onShare, onStartFocus, onChallenge })
   return (
     <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
       <ProfileHero totalMin={stats.totalMin} completedCount={stats.completedCount} bestStreak={stats.streak.longest} className="animate-fade-up md:col-span-2" />
+      {/* A quiet question between cards — never over the celebration, never on the Focus screen. */}
+      {!quiet && (
+        <div className="empty:hidden md:col-span-2">
+          <FeedbackPrompt />
+        </div>
+      )}
       <div className="animate-fade-up" style={stagger(1)}>
         <StreakTile streak={stats.streak} className="h-full" />
       </div>

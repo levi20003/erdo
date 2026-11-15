@@ -44,7 +44,7 @@ main.jsx
 
 ```js
 {
-  schemaVersion: 5,
+  schemaVersion: 6,
   categories: [{ id, name, color, growth: 'tolgy' | 'fenyves' | 'szikla' | 'gomba' | 'nyir' | 'cseresznye' }],
   sessions:   [{ id, categoryId, start, end, durationSec, status: 'completed' | 'failed', reason?, plannedSec? }],
   selectedCategoryId,
@@ -112,9 +112,21 @@ The visual language follows the design mock-ups: a green gradient header (`Hero`
 
 A challenge is created locally (`role: 'host'`) and shared as `…/#k=<base64url JSON>` holding `{ id, goal, days, start, nickname, count, sender role, time }`. `useChallengeInbox` reads the token on load and on `hashchange`, removes it from the address, and validates every field (`decodeChallenge`: id format, ranges, real calendar date within ±60 days, sane timestamps, ≤ 600 characters, nickname stripped of control/invisible characters). An unknown host link is an invitation (accept → `role: 'guest'`); a link from the other side updates the opponent's count only if it is newer; one's own link changes nothing. Each side's count is only as fresh as the last link received.
 
+## Updates
+
+`public/sw.js` precaches the build. The **first** install takes over immediately (offline from the first visit); an **update** installs and waits, so an open app never loses the files it is running. `src/lib/updates.js` owns the rest:
+
+- it registers the worker, notices a waiting one (`updatefound` → `installed` while a controller exists), asks it for its version over a `MessageChannel`, and publishes `{ status: 'ready', version }` (`useUpdate`);
+- `checkForUpdate()` calls `registration.update()` — quietly when the app returns to the foreground (at most every 30 minutes), visibly from **Profile → About**;
+- `applyUpdate()` posts `SKIP_WAITING`, waits for `controllerchange` and reloads (with a timeout fallback); the next load shows "Updated: FocusGrove x.y.z";
+- if the page already runs the waiting version (a manual reload fetched the new shell), the worker is activated silently, without a prompt;
+- the prompt lives in `Banners`, which render nothing during a focus block — a reload would fail the block.
+
+`vite.config.js` writes the asset list, a content hash and the app version into `dist/sw.js`.
+
 ## Screens and navigation
 
-`useTab` maps four screens to URL hashes (`#fokusz`, `#erdo`, `#statisztika`, `#profil`; the old `#beallitasok` still opens Profile), so the browser/Android back button moves between them and a reload keeps the screen. `BottomNav` (phones) and `HeaderNav` (`md` and up) render the same items. While a focus block runs the screen is forced to the timer and the header and tabs are not rendered. Forest, Stats, Settings, the introduction and the share panel are lazy chunks.
+`useTab` maps four screens to URL hashes (`#fokusz`, `#erdo`, `#statisztika`, `#profil`; the old `#beallitasok` still opens Profile), so the browser/Android back button moves between them and a reload keeps the screen. `BottomNav` (phones) and `HeaderNav` (`md` and up) render the same items. While a focus block runs the screen is forced to the timer and the header and tabs are not rendered. The phone tab bar is a dock floating above the bottom edge (`padding-bottom: max(0.75rem, safe-area-inset-bottom + 0.5rem)`), over the page colour, so it sits correctly with gesture bars, three-button bars and rounded display corners alike. The menu highlights at once (`tab`) while the content follows through `useDeferredValue`, and the lazy screens are preloaded on idle, so switching never shows a loading state. Forest, Stats, Settings, the introduction and the share panel are lazy chunks.
 
 The first run (welcome → local profile → focus choice, or welcome → restore a backup) shows while `prefs.onboarded` is false (never over a running block); the migration to schema 3 marks existing users with sessions as onboarded. The profile is just `prefs.nickname` and `prefs.avatar`: there is no account or password, and restoring a backup fills in a missing name and avatar.
 
@@ -150,4 +162,4 @@ Measured in Chromium (5 s samples): an idle dashboard does **zero** layouts per 
 - only the active breathing arc animates;
 - `prefers-reduced-motion` disables motion and shows the celebration as a still card.
 
-Bundle (production, gzip): main JS 97 kB, CSS 18 kB (incl. the two tiny Hungarian font subsets), fonts 74 kB; Forest, Stats, Settings, the introduction and Share load on demand. The service worker precaches all of it for offline use.
+Bundle (production, gzip): main JS 105 kB, CSS 20 kB (incl. the two tiny Hungarian font subsets), fonts 72 kB; Forest, Stats, Settings, the introduction and Share load on demand. The service worker precaches all of it for offline use.

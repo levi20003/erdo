@@ -11,7 +11,7 @@ import Icon from '../ui/Icon'
 import Sheet, { ConfirmSheet, useRetained } from '../ui/Sheet'
 import CategoryForm from './CategoryForm'
 
-const iconButton = 'rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-100 disabled:pointer-events-none disabled:opacity-30'
+const iconButton = 'icon-btn'
 
 function CategoryManager({ className }) {
   const { state, actions } = useAppStore()
@@ -31,39 +31,32 @@ function CategoryManager({ className }) {
   return (
     <Card
       title={t.categories}
-      icon={<Icon name="leaf" size={13} />}
+      icon={<Icon name="leaf" size={14} />}
       className={className}
       action={
-        <button
-          type="button"
-          onClick={() => setEditing('new')}
-          className="flex items-center gap-1 rounded-lg border border-zinc-800 px-2.5 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800"
-        >
+        <button type="button" onClick={() => setEditing('new')} className="press flex min-h-9 items-center gap-1.5 rounded-xl bg-sand/15 px-3 text-xs font-bold text-sand hover:bg-sand/25">
           <Icon name="plus" size={14} /> {t.newCategory}
         </button>
       }
     >
-      <ul className="grid grid-cols-[minmax(0,1fr)] gap-2">
+      <ul className="flex flex-col divide-y divide-zinc-800">
         {state.categories.map((c) => (
-          <li
-            key={c.id}
-            className="group flex min-w-0 animate-fade-up items-center gap-3 rounded-xl border border-transparent bg-zinc-950/50 py-2 pl-2 pr-1.5 transition hover:border-zinc-800 hover:bg-zinc-950"
-          >
-            <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-lg bg-zinc-900">
+          <li key={c.id} className="flex min-w-0 items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+            <span className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-zinc-950 ring-1 ring-zinc-800">
               <ForestScene item={c.growth} color={c.color} progress={1} backdrop={false} className="size-full" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-1.5 truncate text-sm text-zinc-200">
-                <span className="size-1.5 shrink-0 rounded-full" style={{ background: c.color }} />
+              <p className="flex items-center gap-2 text-sm font-bold text-zinc-100">
                 <span className="truncate">{c.name}</span>
+                <span className="size-2 shrink-0 rounded-full ring-2 ring-zinc-900" style={{ background: c.color }} />
               </p>
-              <p className="truncate text-xs text-zinc-500">
+              <p className="num truncate text-xs text-zinc-500">
                 {growthItem(c.growth).name} · {formatMinutes(minutes[c.id] ?? 0)}
               </p>
             </div>
-            <div className="flex shrink-0 transition-opacity sm:opacity-60 sm:group-hover:opacity-100">
+            <div className="flex shrink-0">
               <button type="button" aria-label={`${t.edit}: ${c.name}`} onClick={() => setEditing(c)} className={iconButton}>
-                <Icon name="pencil" size={15} />
+                <Icon name="pencil" size={16} />
               </button>
               <button
                 type="button"
@@ -73,7 +66,7 @@ function CategoryManager({ className }) {
                 onClick={() => setDeleting(c)}
                 className={iconButton}
               >
-                <Icon name="trash" size={15} />
+                <Icon name="trash" size={16} />
               </button>
             </div>
           </li>

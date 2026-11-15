@@ -3,7 +3,7 @@ import { PRESETS } from '../lib/config'
 import { levelOf, titleIndex, xpOf } from '../lib/levels'
 import { sanitizeState } from '../lib/sanitize'
 import { seasonOf } from '../lib/season'
-import { dayTotals, intensity, monthsOf, yearSummary } from '../lib/yearmap'
+import { dayTotals, intensity, weeksOf, yearSummary } from '../lib/yearmap'
 import { createInitialState, reducer } from '../store/reducer'
 
 const T0 = new Date(2026, 10, 13, 9).getTime()
@@ -68,12 +68,17 @@ describe('levels', () => {
 })
 
 describe('year map and seasons', () => {
-  it('lays months out from Monday and grades days by minutes', () => {
-    const months = monthsOf(2026)
-    expect(months[0]).toMatchObject({ length: 31, offset: 3 }) // 1 Jan 2026 is a Thursday
-    expect(months[1].length).toBe(28)
-    expect(months[10].offset).toBe(6) // 1 Nov 2026 is a Sunday
+  it('grades days by minutes', () => {
     expect([0, 10, 25, 59, 60, 119, 120, 300].map(intensity)).toEqual([0, 1, 2, 2, 3, 3, 4, 4])
+  })
+
+  it('lays the year out as Monday-first week columns', () => {
+    const weeks = weeksOf(2026)
+    expect(weeks).toHaveLength(53)
+    expect(weeks[0].map((d) => d && d.getDate())).toEqual([null, null, null, 1, 2, 3, 4]) // 1 Jan 2026: Thursday
+    expect(weeks.at(-1).map((d) => d && d.getDate())).toEqual([28, 29, 30, 31, null, null, null])
+    expect(weeks.flat().filter(Boolean)).toHaveLength(365)
+    expect(weeksOf(2024).flat().filter(Boolean)).toHaveLength(366)
   })
 
   it('sums the year and finds the longest run of active days', () => {

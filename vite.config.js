@@ -25,6 +25,7 @@ function precacheManifest() {
       const sw = readFileSync(swPath, 'utf8')
         .replace('self.__PRECACHE_URLS__', JSON.stringify(urls))
         .replace('__CACHE_VERSION__', version)
+        .replace('__APP_VERSION__', pkg.version)
       writeFileSync(swPath, sw)
     },
   }

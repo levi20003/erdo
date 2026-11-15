@@ -12,14 +12,14 @@ test('corrupted storage: app still opens, warns, and keeps a copy', async ({ pag
 test('legacy (unversioned) data is migrated with a backup', async ({ page }) => {
   await openApp(page, { sessions: pastSessions(2) })
   await expect(page.getByRole('status').filter({ hasText: 'frissítve' })).toBeVisible()
-  expect((await stored(page)).schemaVersion).toBe(5)
+  expect((await stored(page)).schemaVersion).toBe(6)
   // Returning users skip the introduction.
   await expect(page.getByRole('dialog', { name: 'Bevezető' })).toHaveCount(0)
   expect(await page.evaluate((k) => localStorage.getItem(`${k}:backup-v1`), KEY)).not.toBeNull()
 })
 
 test('CSV export, JSON backup and restore (merge)', async ({ page }, testInfo) => {
-  await openApp(page, { schemaVersion: 3, sessions: pastSessions(3), prefs: { onboarded: true } })
+  await openApp(page, { schemaVersion: 6, sessions: pastSessions(3), prefs: { onboarded: true } })
   await goTo(page, 'Profil')
 
   const [csv] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Táblázat (CSV)' }).click()])
@@ -33,7 +33,7 @@ test('CSV export, JSON backup and restore (merge)', async ({ page }, testInfo) =
   await json.saveAs(backupPath)
 
   // Wipe the data, then restore from the file.
-  await page.evaluate((k) => localStorage.setItem(k, JSON.stringify({ schemaVersion: 3, prefs: { onboarded: true } })), KEY)
+  await page.evaluate((k) => localStorage.setItem(k, JSON.stringify({ schemaVersion: 6, prefs: { onboarded: true } })), KEY)
   await page.reload()
   await page.getByTestId('import-input').setInputFiles(backupPath)
   await expect(page.getByText('Visszaállítva: 3 új munkamenet')).toBeVisible()
@@ -45,7 +45,7 @@ test('CSV export, JSON backup and restore (merge)', async ({ page }, testInfo) =
 })
 
 test('share card renders a 1080×1350 PNG', async ({ page }) => {
-  await openApp(page, { schemaVersion: 3, sessions: pastSessions(6), prefs: { onboarded: true } })
+  await openApp(page, { schemaVersion: 6, sessions: pastSessions(6), prefs: { onboarded: true } })
   await goTo(page, 'Statisztika')
   await page.getByRole('button', { name: 'Az erdőm megosztása' }).click()
   await expect(page.getByTestId('share-preview')).toBeVisible({ timeout: 10_000 })

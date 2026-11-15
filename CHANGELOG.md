@@ -2,6 +2,27 @@
 
 All notable changes. Dates are release dates in Europe/Budapest.
 
+## 1.4.0 — 2026-11-15 · In-app updates, a designer's pass, a dock that fits every phone
+
+### Added
+- **Update from inside the app.** A new version downloads quietly and waits; a banner ("Új verzió érhető el · Frissítés") and **Profile → About → Check for updates** switch to it with one tap and confirm the version afterwards. The app also looks for updates whenever it returns to the foreground. An update is never offered or applied during a focus block (a reload would fail it).
+- **Plant preview**: tap a plant in the collection to watch it grow through its five stages.
+- **Ten hand-drawn avatars** (fox, owl, deer, bear, hedgehog, rabbit, squirrel, frog, robin, sprout) replace the emoji, so they look the same on every phone.
+
+### Changed
+- **Bottom navigation** is now a dock that floats above the bottom edge: it stays clear of rounded display corners and of the Android gesture bar / iPhone home indicator (safe-area inset), with the page colour around and under it, and content fades out behind it. The installed app runs as `standalone` (was `fullscreen`, which hid the system bars and fought with gestures). Tested at Pixel 9a size (411 × 899 at 2.625×) with 0, 24 and 48 px insets.
+- **Tab switching is instant**: screens are fetched in the background once the app is idle, the menu reacts at once and the content swaps without a loading flash or a smooth-scroll race.
+- **A design pass over every screen**, with one shared vocabulary (labels, hints, inputs, switch, slider with filled track, chips, settings-style list rows):
+  - Focus: the summary card shows today as "3/4 sessions", what is left to the goal and the ring; sound and full-screen sit in the timer card's corners; on short phones the card compacts so Start stays on screen.
+  - My forest: a three-number row (grown · withered · focus), a meadow panel, share as a full-width button; the collection shows "Available" chips or a bar towards the unlock.
+  - Stats: the year is a compact heat map (one column per week, scrolls to today on phones, full width on desktop); weekly values sit above their bars; the feedback question moved between cards.
+  - Profile: regrouped into Appearance (theme, language), Focus (length, daily goal), Sounds, Categories, Your data and About.
+  - Toasts are bark-brown snack bars above the dock; banners, sheets, the crash screen and the share image follow the same look; a new app icon; the status-bar colour follows what is at the top of the screen.
+- Category colours moved to a palette that matches the app (forest, leaf, moss, amber, terracotta, maroon, bark, sky). Storage schema 6 migrates categories that still wore an old palette colour; custom colours are untouched.
+
+### Fixed
+- After a deploy, an open app could hit "this part didn't load" on a screen it hadn't opened yet: the old files were deleted as soon as the new worker took over. The new worker now waits, and that message offers the update button.
+
 ## 1.3.0 — 2026-11-13 · New look: meadow and forest night
 
 ### Added

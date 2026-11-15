@@ -23,7 +23,8 @@ export function svgToImage(svgEl) {
   })
 }
 
-const FONT = 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif'
+const DISPLAY = '"Exo 2 Var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif'
+const TEXT = '"Nunito Var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif'
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath()
@@ -38,80 +39,108 @@ function roundRect(ctx, x, y, w, h, r) {
 /**
  * plants: images, most recent first (one per grown session, already capped).
  * stats:  [{ value, label }] × up to 3; labels: { title, subtitle, more, footer }.
+ *
+ * The card wears the app's daytime look: green header with a wave, the plants
+ * on a pale meadow, bark-brown numbers.
  */
 export async function drawShareCard({ plants, extra, stats, labels }) {
+  // The app's own fonts, if they are loaded (the card still draws with system fonts otherwise).
+  await Promise.all([document.fonts?.load(`700 76px ${DISPLAY}`), document.fonts?.load(`600 30px ${TEXT}`)]).catch(() => {})
+
   const canvas = document.createElement('canvas')
   canvas.width = CARD_W
   canvas.height = CARD_H
   const ctx = canvas.getContext('2d')
-
-  // Background and card panel in the app's palette.
-  ctx.fillStyle = '#09090b'
-  ctx.fillRect(0, 0, CARD_W, CARD_H)
-  const glow = ctx.createRadialGradient(CARD_W / 2, 560, 40, CARD_W / 2, 560, 620)
-  glow.addColorStop(0, 'rgba(201,171,132,0.18)')
-  glow.addColorStop(1, 'rgba(95,98,57,0)')
-  ctx.fillStyle = glow
-  ctx.fillRect(0, 0, CARD_W, CARD_H)
-  roundRect(ctx, 60, 60, CARD_W - 120, CARD_H - 120, 48)
-  ctx.strokeStyle = 'rgba(201,171,132,0.28)'
-  ctx.lineWidth = 3
-  ctx.stroke()
-
   ctx.textBaseline = 'alphabetic'
-  ctx.fillStyle = '#c9ab84'
-  ctx.font = `600 30px ${FONT}`
-  ctx.fillText('FocusGrove', 120, 170)
-  ctx.fillStyle = '#fafafa'
-  ctx.font = `700 76px ${FONT}`
-  ctx.fillText(labels.title, 120, 262)
-  ctx.fillStyle = '#a1a1aa'
-  ctx.font = `400 30px ${FONT}`
-  ctx.fillText(labels.subtitle, 120, 314)
 
-  // The forest: plants on rows of "ground", back rows smaller for depth.
-  const cols = 6
-  const cell = (CARD_W - 240) / cols
-  const rows = Math.max(1, Math.ceil(plants.length / cols))
-  const top = 360
-  const forestH = 560
-  const rowH = Math.min(cell, forestH / rows)
-  ctx.fillStyle = '#15170f'
-  roundRect(ctx, 100, top + forestH - 40, CARD_W - 200, 80, 40)
+  // Page.
+  ctx.fillStyle = '#f4f5e7'
+  ctx.fillRect(0, 0, CARD_W, CARD_H)
+
+  // Green header ending in a wave, with the lime blob in the corner.
+  const header = ctx.createLinearGradient(0, 0, 0, 400)
+  header.addColorStop(0, '#40a064')
+  header.addColorStop(1, '#2d7749')
+  ctx.fillStyle = header
+  ctx.beginPath()
+  ctx.moveTo(0, 0)
+  ctx.lineTo(CARD_W, 0)
+  ctx.lineTo(CARD_W, 330)
+  ctx.bezierCurveTo(820, 420, 620, 300, 400, 350)
+  ctx.bezierCurveTo(240, 386, 110, 400, 0, 350)
+  ctx.closePath()
   ctx.fill()
+  ctx.save()
+  ctx.clip()
+  ctx.fillStyle = 'rgba(204,212,120,0.22)'
+  ctx.beginPath()
+  ctx.ellipse(CARD_W - 60, 20, 300, 230, -0.3, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+
+  ctx.fillStyle = '#e4e9b5'
+  ctx.font = `700 30px ${DISPLAY}`
+  ctx.fillText('FOCUSGROVE', 110, 130)
+  ctx.fillStyle = '#ffffff'
+  ctx.font = `700 80px ${DISPLAY}`
+  ctx.fillText(labels.title, 108, 226)
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'
+  ctx.font = `600 32px ${TEXT}`
+  ctx.fillText(labels.subtitle, 110, 280)
+
+  // The meadow: plants on rows of ground, back rows smaller for depth.
+  const top = 440
+  const forestH = 520
+  const meadow = ctx.createLinearGradient(0, top, 0, top + forestH + 40)
+  meadow.addColorStop(0, '#eef3dc')
+  meadow.addColorStop(1, '#d6e4bd')
+  ctx.fillStyle = meadow
+  roundRect(ctx, 80, top - 20, CARD_W - 160, forestH + 60, 56)
+  ctx.fill()
+
+  const cols = 6
+  const cell = (CARD_W - 280) / cols
+  const rows = Math.max(1, Math.ceil(plants.length / cols))
+  const rowH = Math.min(cell, (forestH - 20) / rows)
   plants.forEach((img, i) => {
     const row = Math.floor(i / cols)
     const col = i % cols
+    const inRow = Math.min(cols, plants.length - row * cols)
     const scale = 1 - (rows - 1 - row) * 0.08
     const size = rowH * 1.15 * scale
-    const x = 120 + col * cell + (cell - size) / 2 + (row % 2 ? cell / 4 : 0) * (col < cols - 1 ? 1 : 0)
-    const y = top + forestH - 30 - (rows - row) * rowH * 0.92 + (rowH - size)
+    // Rows that aren't full are centred.
+    const x = 140 + ((cols - inRow) * cell) / 2 + col * cell + (cell - size) / 2
+    const y = top + forestH - 10 - (rows - row) * rowH * 0.92 + (rowH - size)
+    ctx.fillStyle = 'rgba(45,119,73,0.16)'
+    ctx.beginPath()
+    ctx.ellipse(x + size / 2, y + size * 0.93, size * 0.32, size * 0.06, 0, 0, Math.PI * 2)
+    ctx.fill()
     ctx.drawImage(img, x, y, size, size)
   })
   if (extra > 0) {
-    ctx.fillStyle = '#c9ab84'
-    ctx.font = `600 30px ${FONT}`
+    ctx.fillStyle = '#2d7749'
+    ctx.font = `700 30px ${DISPLAY}`
     ctx.textAlign = 'right'
-    ctx.fillText(labels.more, CARD_W - 120, top + forestH + 64)
+    ctx.fillText(labels.more, CARD_W - 120, top + forestH + 6)
     ctx.textAlign = 'left'
   }
 
   // Stats row.
-  const statTop = 1030
-  const statW = (CARD_W - 240) / stats.length
+  const statTop = 1050
+  const statW = (CARD_W - 220) / stats.length
   stats.forEach(({ value, label }, i) => {
-    const x = 120 + i * statW
-    ctx.fillStyle = '#fafafa'
-    ctx.font = `700 72px ${FONT}`
+    const x = 110 + i * statW
+    ctx.fillStyle = '#3a2c2c'
+    ctx.font = `700 76px ${DISPLAY}`
     ctx.fillText(String(value), x, statTop + 70)
-    ctx.fillStyle = '#a1a1aa'
-    ctx.font = `400 28px ${FONT}`
+    ctx.fillStyle = '#70665f'
+    ctx.font = `600 28px ${TEXT}`
     ctx.fillText(label, x, statTop + 116)
   })
 
-  ctx.fillStyle = '#52525b'
-  ctx.font = `400 26px ${FONT}`
-  ctx.fillText(labels.footer, 120, CARD_H - 110)
+  ctx.fillStyle = '#9e9888'
+  ctx.font = `600 26px ${TEXT}`
+  ctx.fillText(labels.footer, 110, CARD_H - 70)
 
   return new Promise((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('toBlob failed'))), 'image/png'))
 }

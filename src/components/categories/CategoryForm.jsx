@@ -8,7 +8,7 @@ import { t } from '../../lib/strings'
 import ForestScene from '../growth/ForestScene'
 import Icon from '../ui/Icon'
 
-const label = 'mb-2 block text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500'
+const label = 'label mb-2 block'
 
 /** Name, colour and growth item. Lives inside a <Sheet>. */
 export default function CategoryForm({ initial, onSubmit, onCancel }) {
@@ -34,7 +34,7 @@ export default function CategoryForm({ initial, onSubmit, onCancel }) {
           value={name}
           placeholder={t.namePlaceholder}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-3 text-base text-zinc-100 transition placeholder:text-zinc-600 focus:border-olive-400 focus:outline-none sm:py-2.5 sm:text-sm"
+          className="input"
         />
       </label>
 
@@ -51,11 +51,11 @@ export default function CategoryForm({ initial, onSubmit, onCancel }) {
                 aria-pressed={selected}
                 disabled={!open}
                 onClick={() => setGrowth(id)}
-                className={`flex min-h-24 flex-col items-center gap-1 rounded-xl border p-2 text-xs transition active:scale-[0.97] disabled:cursor-not-allowed ${
+                className={`flex min-h-24 flex-col items-center gap-1 rounded-2xl border-2 p-2 text-xs font-semibold transition active:scale-[0.97] disabled:cursor-not-allowed ${
                   selected
-                    ? 'border-olive-400 bg-olive-900/50 text-zinc-100'
+                    ? 'border-olive-400 bg-olive-900 text-zinc-50'
                     : open
-                      ? 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                      ? 'border-transparent bg-zinc-950 text-zinc-400 hover:text-zinc-200'
                       : 'border-dashed border-zinc-800 text-zinc-500'
                 }`}
               >
@@ -77,7 +77,7 @@ export default function CategoryForm({ initial, onSubmit, onCancel }) {
 
       <fieldset>
         <legend className={label}>{t.color}</legend>
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           {PALETTE.map((hex) => (
             <button
               key={hex}
@@ -85,14 +85,14 @@ export default function CategoryForm({ initial, onSubmit, onCancel }) {
               aria-label={hex}
               aria-pressed={color === hex}
               onClick={() => setColor(hex)}
-              className="grid size-8 place-items-center rounded-full ring-offset-2 ring-offset-zinc-900 transition hover:scale-110 aria-pressed:ring-2 aria-pressed:ring-zinc-300"
+              className="grid size-8 place-items-center rounded-full ring-offset-2 ring-offset-zinc-900 transition duration-200 ease-spring hover:scale-110 aria-pressed:scale-110 aria-pressed:ring-2 aria-pressed:ring-zinc-400"
               style={{ background: hex }}
             >
-              {color === hex && <Icon name="check" size={14} className="text-zinc-950" />}
+              {color === hex && <Icon name="check" size={15} strokeWidth={3} className="animate-pop-in text-white" />}
             </button>
           ))}
           <label
-            className="relative grid size-8 cursor-pointer place-items-center overflow-hidden rounded-full border border-dashed border-zinc-600 text-zinc-400 transition hover:border-zinc-400 hover:text-zinc-200"
+            className="relative grid size-8 cursor-pointer place-items-center overflow-hidden rounded-full border-2 border-dashed border-zinc-600 text-zinc-400 transition hover:border-zinc-400 hover:text-zinc-200"
             title={t.customColor}
           >
             <Icon name="plus" size={14} />
@@ -101,11 +101,11 @@ export default function CategoryForm({ initial, onSubmit, onCancel }) {
         </div>
       </fieldset>
 
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <button type="button" onClick={onCancel} className="rounded-xl px-4 py-3 text-sm text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-200 sm:py-2.5">
+      <div className="flex flex-col-reverse gap-2 sm:flex-row">
+        <button type="button" onClick={onCancel} className="btn-ghost min-h-12 flex-1">
           {t.cancel}
         </button>
-        <button type="submit" className="rounded-xl bg-olive px-5 py-3 text-sm font-medium text-cream transition hover:bg-olive-400 active:scale-[0.98] sm:py-2.5">
+        <button type="submit" className="btn-primary min-h-12 flex-[2]">
           {t.save}
         </button>
       </div>

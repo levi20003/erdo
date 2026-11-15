@@ -1,4 +1,4 @@
-import { DEFAULT_AVATAR, DEFAULT_DAILY_GOAL, DEFAULT_PRESET, DEFAULT_SOUND, SCHEMA_VERSION } from './config'
+import { DEFAULT_AVATAR, DEFAULT_DAILY_GOAL, DEFAULT_PRESET, DEFAULT_SOUND, LEGACY_COLORS, SCHEMA_VERSION } from './config'
 
 /*
  * Saved-data migrations. Each step takes data of version N and returns data of
@@ -40,6 +40,13 @@ const STEPS = {
   4: (data) => ({
     ...data,
     prefs: { ...(isObj(data.prefs) ? data.prefs : {}), avatar: DEFAULT_AVATAR },
+  }),
+  // 5 → 6: the app's palette changed; categories still wearing an old palette colour get its successor.
+  5: (data) => ({
+    ...data,
+    categories: Array.isArray(data.categories)
+      ? data.categories.map((c) => (isObj(c) && typeof c.color === 'string' && LEGACY_COLORS[c.color.toLowerCase()] ? { ...c, color: LEGACY_COLORS[c.color.toLowerCase()] } : c))
+      : data.categories,
   }),
 }
 

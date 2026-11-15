@@ -39,7 +39,7 @@ const tree = (x, h, w) => `M${x} ${GROUND_Y + 4 - h}L${x - w} ${GROUND_Y + 6}H${
  * mode, dressed for the season; the growing item, and — while focusing —
  * fireflies (summer nights) or petals, leaves and snow drifting down.
  */
-export default function ForestScene({ item = 'tolgy', color = '#7d8247', progress = 0, alive = false, withered = false, backdrop = true, className = '' }) {
+export default function ForestScene({ item = 'tolgy', color = '#62a16a', progress = 0, alive = false, withered = false, backdrop = true, className = '' }) {
   const id = useId().replace(/:/g, '')
   const theme = useTheme()
   const Item = ITEM_RENDERERS[item] ?? ITEM_RENDERERS.tolgy

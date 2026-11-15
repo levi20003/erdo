@@ -38,7 +38,7 @@ test('full cycle: focus → growth stages → celebration → break → back to 
   await expect(timerCard(page).getByRole('radio', { name: 'Légzés' })).toHaveAttribute('aria-checked', 'true')
   // The menu and today's numbers are back during the break.
   await expect(page.getByRole('navigation')).toBeVisible()
-  await expect(page.getByRole('region', { name: 'Mai összegzés' })).toContainText('1 kör')
+  await expect(page.getByRole('region', { name: 'Mai összegzés' })).toContainText('Még 3 kör a mai célig')
 
   await page.clock.runFor(5 * MIN + 1000)
   await expect(timerCard(page).getByRole('button', { name: 'Fókusz indítása' })).toBeVisible()

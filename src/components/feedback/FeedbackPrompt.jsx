@@ -42,47 +42,49 @@ export default function FeedbackPrompt() {
   })}`
 
   return (
-    <section aria-label={t.feedback.title} className="flex animate-fade-up flex-col gap-3 rounded-2xl border border-sand/25 bg-zinc-900 px-5 py-4 sm:flex-row sm:items-center">
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-zinc-100">{rating ? t.feedback.thanks : t.feedback.title}</p>
-        {!rating && <p className="mt-0.5 text-xs text-zinc-500">{t.feedback.body}</p>}
+    <section aria-label={t.feedback.title} className="flex animate-fade-up flex-col gap-3 rounded-3xl border border-zinc-800/80 bg-zinc-900 p-5 shadow-card sm:flex-row sm:items-center">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#f2a541]/15 text-[#e0903c]">
+          <Icon name="star" size={19} className="fill-current" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-zinc-100">{rating ? t.feedback.thanks : t.feedback.title}</p>
+          {!rating && <p className="hint">{t.feedback.body}</p>}
+        </div>
       </div>
       {!rating ? (
-        <div className="flex items-center gap-1" role="group" aria-label={t.feedback.title}>
-          {[1, 2, 3, 4, 5].map((n) => (
-            <button
-              key={n}
-              type="button"
-              aria-label={t.feedback.stars(n)}
-              onClick={() => actions.feedbackRate(n)}
-              className="grid size-9 place-items-center rounded-lg text-sand/70 transition hover:bg-zinc-800 hover:text-sand"
-            >
-              <Icon name="star" size={20} />
-            </button>
-          ))}
+        <div className="flex items-center justify-between gap-1 sm:justify-end" role="group" aria-label={t.feedback.title}>
+          <div className="group/stars flex">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button
+                key={n}
+                type="button"
+                aria-label={t.feedback.stars(n)}
+                onClick={() => actions.feedbackRate(n)}
+                className="peer grid size-11 place-items-center text-[#e0903c] transition duration-200 ease-spring hover:scale-125 active:scale-95"
+              >
+                <Icon name="star" size={24} />
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={() => {
               actions.feedbackDismiss()
               setClosed(true)
             }}
-            className="ml-1 rounded-lg px-2.5 py-2 text-xs text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300"
+            className="min-h-11 rounded-xl px-3 text-xs font-bold text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300"
           >
             {t.feedback.later}
           </button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <a
-            href={issueUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-lg border border-zinc-800 px-3 py-2 text-xs text-zinc-200 transition hover:border-zinc-700"
-          >
-            {t.feedback.write}
+          <a href={issueUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost min-h-11 flex-1 text-xs sm:flex-none">
+            <Icon name="chat" size={15} /> {t.feedback.write}
           </a>
-          <button type="button" onClick={() => setClosed(true)} aria-label={t.close} className="rounded-lg p-2 text-zinc-500 hover:text-zinc-200">
-            <Icon name="close" size={14} />
+          <button type="button" onClick={() => setClosed(true)} aria-label={t.close} className="icon-btn">
+            <Icon name="close" size={16} />
           </button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useThemeColor } from '../../hooks/useThemeColor'
 import { MAX_NICKNAME } from '../../lib/config'
 import { parseBackup } from '../../lib/exportData'
 import { unlockAudio } from '../../lib/sound'
@@ -8,6 +9,7 @@ import { Pines, Wave } from '../art/Shapes'
 import { CategoryList } from '../focus/CategorySheet'
 import AvatarPicker from '../profile/AvatarPicker'
 import { useToast } from '../toast/ToastProvider'
+import { useTheme } from '../ThemeRoot'
 import Icon from '../ui/Icon'
 
 /*
@@ -43,6 +45,9 @@ export default function Onboarding({ onDone }) {
   const [choice, setChoice] = useState(state.selectedCategoryId)
   const heading = useRef(null)
   const fileRef = useRef(null)
+  const theme = useTheme()
+  // Status bar: bark brown over the "sign up / sign in" header, the pale page elsewhere.
+  useThemeColor(step === 'signup' || step === 'signin' ? '#483838' : theme === 'dark' ? '#1e1c15' : '#d2d79f')
 
   useEffect(() => {
     // Screen readers start reading the new step; no focus ring lands on a button.

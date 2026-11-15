@@ -141,6 +141,9 @@
     -webkit-user-select: none;
     user-select: none;
   }
+  ::selection {
+    background: rgb(var(--blob) / 0.6);
+  }
 }
 
 @layer components {
@@ -151,9 +154,72 @@
     font-feature-settings: 'tnum';
     letter-spacing: -0.01em;
   }
-  /* Section titles, as in the design: bold, upright, uppercase. */
+  /* Card titles: small, bold, uppercase, quiet — the content is the loud part. */
   .eyebrow {
-    @apply font-display text-[13px] font-bold uppercase tracking-[0.06em] text-zinc-200;
+    @apply font-display text-xs font-bold uppercase tracking-[0.1em] text-zinc-400;
+  }
+  /* Form vocabulary, shared by every sheet and settings card. */
+  .label {
+    @apply text-sm font-bold text-zinc-200;
+  }
+  .hint {
+    @apply text-xs leading-relaxed text-zinc-500;
+  }
+  .input {
+    @apply min-h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 text-base text-zinc-100 transition placeholder:text-zinc-600 focus:border-olive-400 focus:outline-none focus:ring-4 focus:ring-olive-400/15;
+  }
+  .icon-btn {
+    @apply grid size-10 shrink-0 place-items-center rounded-xl text-zinc-400 transition duration-200 hover:bg-zinc-800 hover:text-zinc-100 active:scale-95 disabled:pointer-events-none disabled:opacity-30;
+  }
+  /* Range slider: a filled track (maroon by day, lime by night) and a white thumb. `--fill` is set inline. */
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2.75rem;
+    background: transparent;
+    cursor: pointer;
+    --fill: 50%;
+  }
+  .range::-webkit-slider-runnable-track {
+    height: 0.5rem;
+    border-radius: 999px;
+    background:
+      linear-gradient(90deg, rgb(var(--bar-from)), rgb(var(--bar-to))) 0 / var(--fill) 100% no-repeat,
+      rgb(var(--z800));
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: -0.5rem;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgb(var(--bar-to));
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
+    transition: transform 150ms ease;
+  }
+  .range:active::-webkit-slider-thumb {
+    transform: scale(1.15);
+  }
+  .range::-moz-range-track {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: rgb(var(--z800));
+  }
+  .range::-moz-range-progress {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgb(var(--bar-from)), rgb(var(--bar-to)));
+  }
+  .range::-moz-range-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgb(var(--bar-to));
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
   }
   /* The main action: forest-green gradient pill, uppercase, a light sweep now and then. */
   .btn-primary {

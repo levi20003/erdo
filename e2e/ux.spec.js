@@ -5,8 +5,9 @@ test('switching to English translates the UI and survives a reload', async ({ pa
   await openApp(page)
   await goTo(page, 'Profil')
   await page.getByRole('radio', { name: 'English' }).click()
-  // Still on the Settings screen after the language remount, now in English.
-  await expect(page.getByText('Settings and data')).toBeVisible()
+  // Still on the Profile screen after the language remount, now in English.
+  await expect(page.getByRole('heading', { name: 'Profile', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Your data' })).toBeVisible()
   await goTo(page, 'Focus')
   await expect(page.getByRole('button', { name: 'Start focus' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.lang)).toBe('en')
@@ -16,7 +17,7 @@ test('switching to English translates the UI and survives a reload', async ({ pa
 })
 
 test('feedback prompt: after 5 sessions, dismissable, not shown again right away', async ({ page }) => {
-  await openApp(page, { schemaVersion: 3, sessions: pastSessions(5), prefs: { onboarded: true } })
+  await openApp(page, { schemaVersion: 6, sessions: pastSessions(5), prefs: { onboarded: true } })
   const prompt = page.getByRole('region', { name: 'Hogy tetszik a FocusGrove?' })
   // Never on the Focus screen, where it would push Start below the fold.
   await expect(page.getByRole('button', { name: 'Fókusz indítása' })).toBeVisible()
@@ -31,14 +32,14 @@ test('feedback prompt: after 5 sessions, dismissable, not shown again right away
 })
 
 test('feedback prompt never appears during focus', async ({ page }) => {
-  await openApp(page, { schemaVersion: 3, sessions: pastSessions(5), prefs: { onboarded: true } })
+  await openApp(page, { schemaVersion: 6, sessions: pastSessions(5), prefs: { onboarded: true } })
   await page.getByRole('button', { name: 'Fókusz indítása' }).click()
   await page.clock.runFor(MIN)
   await expect(page.getByText('Hogy tetszik a FocusGrove?')).toHaveCount(0)
 })
 
 test('@mobile no horizontal overflow on a small phone, dashboard and focus mode', async ({ page }) => {
-  await openApp(page, { schemaVersion: 3, sessions: pastSessions(8), prefs: { onboarded: true } })
+  await openApp(page, { schemaVersion: 6, sessions: pastSessions(8), prefs: { onboarded: true } })
   expect(await overflowing(page)).toEqual([])
   await page.getByRole('button', { name: 'Fókusz indítása' }).click()
   await page.clock.runFor(MIN)

@@ -16,14 +16,6 @@ export function dayTotals(sessions) {
   return out
 }
 
-/** Twelve months: first day, length, and the Monday-based column of the 1st. */
-export function monthsOf(year) {
-  return Array.from({ length: 12 }, (_, month) => {
-    const first = new Date(year, month, 1)
-    return { month, first, length: new Date(year, month + 1, 0).getDate(), offset: (first.getDay() + 6) % 7 }
-  })
-}
-
 /** 0 (nothing) … 4 (two hours or more). */
 export function intensity(min) {
   if (!min) return 0
@@ -52,4 +44,24 @@ export function yearSummary(totals, year) {
     } else run = 0
   }
   return { activeDays, minutes, best, longestRun }
+}
+
+/**
+ * The year as week columns (Monday first) for a heat map: each column holds
+ * seven slots, a Date or null where the day belongs to another year.
+ */
+export function weeksOf(year) {
+  const first = new Date(year, 0, 1)
+  const start = addDays(first, -((first.getDay() + 6) % 7))
+  const weeks = []
+  for (let d = start; d.getFullYear() <= year; ) {
+    const week = []
+    for (let i = 0; i < 7; i++) {
+      week.push(d.getFullYear() === year ? d : null)
+      d = addDays(d, 1)
+    }
+    weeks.push(week)
+    if (d.getFullYear() > year) break
+  }
+  return weeks
 }

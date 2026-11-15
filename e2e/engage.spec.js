@@ -49,7 +49,7 @@ test('daily goal: set it from the ring; reaching it and levelling up are celebra
   const todayEnd = midnight + Math.max(1000, Math.min(now - midnight - 1000, 3600e3))
   const session = (id, end, durationSec) => ({ id, categoryId: 'tanulas', start: end - durationSec * 1000, end, durationSec, status: 'completed' })
   // 25 + 20 = 45 XP: the next 25 minutes cross level 2 (50 XP).
-  await openApp(page, { schemaVersion: 4, prefs: { onboarded: true }, sessions: [session('y', midnight - 3600e3, 1200), session('t', todayEnd, 1500)] })
+  await openApp(page, { schemaVersion: 6, prefs: { onboarded: true }, sessions: [session('y', midnight - 3600e3, 1200), session('t', todayEnd, 1500)] })
 
   await page.getByRole('button', { name: /Napi cél: 1 \/ 4 kör/ }).click()
   const sheet = page.getByRole('dialog', { name: 'Napi cél' })
@@ -121,7 +121,7 @@ test('a broken challenge link is refused politely', async ({ page }) => {
 test('the year map: tap a day to see what happened', async ({ page }) => {
   const yesterday = new Date(Date.now() - 864e5)
   test.skip(yesterday.getFullYear() !== new Date().getFullYear(), 'first day of the year')
-  await openApp(page, { schemaVersion: 4, prefs: { onboarded: true }, sessions: pastSessions(3) })
+  await openApp(page, { schemaVersion: 6, prefs: { onboarded: true }, sessions: pastSessions(3) })
   await goTo(page, 'Statisztika')
   const card = page.locator('section', { hasText: 'Az éved' })
   const label = yesterday.toLocaleDateString('hu-HU', { month: 'long', day: 'numeric' })
@@ -134,7 +134,7 @@ test('@mobile every screen fits a small phone, in light and dark', async ({ page
   for (const colorScheme of ['dark', 'light']) {
     await page.emulateMedia({ colorScheme })
     const challenge = { id: 'abcd1234', role: 'host', goal: 10, days: 7, start: new Date().toLocaleDateString('sv'), opponent: 'Anna Marie Long', opponentDone: 3, opponentAt: Date.now(), createdAt: Date.now() }
-    await openApp(page, { schemaVersion: 4, prefs: { onboarded: true }, sessions: pastSessions(12), challenges: [challenge] })
+    await openApp(page, { schemaVersion: 6, prefs: { onboarded: true }, sessions: pastSessions(12), challenges: [challenge] })
     for (const screen of ['Fókusz', 'Erdőm', 'Statisztika', 'Profil']) {
       await goTo(page, screen)
       await page.waitForTimeout(300)

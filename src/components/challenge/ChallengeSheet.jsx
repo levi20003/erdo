@@ -43,17 +43,17 @@ function CreateForm({ onDone }) {
       }}
     >
       <label className="flex flex-col gap-2">
-        <span className="text-sm text-zinc-300">{t.challenge.nickname}</span>
+        <span className="label">{t.challenge.nickname}</span>
         <input
           value={name}
           maxLength={MAX_NICKNAME}
           onChange={(e) => setName(e.target.value)}
           placeholder={t.challenge.nicknamePlaceholder}
-          className="min-h-12 rounded-xl border border-zinc-800 bg-zinc-950 px-4 text-base text-zinc-100 placeholder:text-zinc-600 focus:border-olive-400 focus:outline-none"
+          className="input"
         />
       </label>
       <div className="flex flex-col gap-2">
-        <span className="text-sm text-zinc-300">{t.challenge.goal}</span>
+        <span className="label">{t.challenge.goal}</span>
         <div className="flex items-center gap-3">
           <button type="button" aria-label={t.goal.less} disabled={goal <= 1} onClick={() => setGoal((g) => Math.max(1, g - 1))} className={step}>
             <Icon name="minus" size={18} />
@@ -68,7 +68,7 @@ function CreateForm({ onDone }) {
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-sm text-zinc-300">{t.challenge.days}</span>
+        <span className="label">{t.challenge.days}</span>
         <Segmented label={t.challenge.days} value={days} onChange={setDays} options={CHALLENGE_DAYS.map((d) => ({ id: d, label: t.challenge.daysValue(d) }))} />
       </div>
       <button type="submit" className="btn-primary min-h-12 w-full">

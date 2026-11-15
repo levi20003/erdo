@@ -31,7 +31,7 @@ test('"sign in" on a new device restores a backup, profile included', async ({ p
   const backup = {
     app: 'FocusGrove',
     kind: 'backup',
-    data: { schemaVersion: 5, sessions: pastSessions(3), prefs: { nickname: 'Anna', avatar: 'deer', onboarded: true } },
+    data: { schemaVersion: 6, sessions: pastSessions(3), prefs: { nickname: 'Anna', avatar: 'deer', onboarded: true } },
   }
   await openApp(page, undefined, { firstRun: true })
   const intro = page.getByRole('dialog', { name: 'Bevezető' })
@@ -99,10 +99,10 @@ test('my forest: grown and withered plants, details, periods, collection', async
     const end = Math.min(d.getTime(), now - 1000)
     return { id: `t${h}`, categoryId: 'tanulas', start: end - durationSec * 1000, end, durationSec, status, ...(status === 'failed' ? { reason: 'hidden' } : {}) }
   }
-  await openApp(page, { schemaVersion: 3, prefs: { onboarded: true }, sessions: [...pastSessions(3), today(0), today(0.5, 'failed', 600)] })
+  await openApp(page, { schemaVersion: 6, prefs: { onboarded: true }, sessions: [...pastSessions(3), today(0), today(0.5, 'failed', 600)] })
   await goTo(page, 'Erdőm')
-  await expect(page.getByText('1 kinőtt')).toBeVisible()
-  await expect(page.getByText('1 elszáradt')).toBeVisible()
+  await expect(page.getByLabel('1 kinőtt')).toBeVisible()
+  await expect(page.getByLabel('1 elszáradt')).toBeVisible()
 
   await page.getByRole('button', { name: /Elszáradt$/ }).click()
   const sheet = page.getByRole('dialog')
@@ -118,10 +118,18 @@ test('my forest: grown and withered plants, details, periods, collection', async
   // 4 completed sessions: birch unlocks at 10.
   const birch = page.locator('li', { hasText: 'Nyírfa' })
   await expect(birch).toContainText('még 6 kör')
+
+  // Tap a plant of the collection to watch it grow, stage by stage.
+  await birch.getByRole('button').click()
+  const preview = page.getByRole('dialog', { name: 'Nyírfa' })
+  await expect(preview).toContainText('10 befejezett kör után nyílik meg')
+  await preview.getByRole('radio', { name: 'Csíra' }).click()
+  await expect(preview).toContainText('2. szakasz / 5')
+  await expect(preview).toContainText('Csíra')
 })
 
 test('a session that reaches 10 completed unlocks the birch, celebrated and selectable', async ({ page }) => {
-  await openApp(page, { schemaVersion: 3, prefs: { onboarded: true }, sessions: pastSessions(9) })
+  await openApp(page, { schemaVersion: 6, prefs: { onboarded: true }, sessions: pastSessions(9) })
   await page.getByRole('button', { name: 'Fókusz indítása' }).click()
   await page.clock.runFor(25 * MIN + 400)
   await expect(page.getByRole('status').filter({ hasText: 'Új növény: Nyírfa' })).toBeVisible()

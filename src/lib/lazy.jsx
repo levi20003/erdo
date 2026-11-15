@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import { logError } from './errorLog'
 import { t } from './strings'
+import { applyUpdate } from './updates'
 
 /**
  * React.lazy for optional screens. If the chunk can't load — typically because a
@@ -13,9 +14,12 @@ export function lazyScreen(factory) {
       logError('chunk', err)
       return {
         default: () => (
-          <p role="alert" className="text-sm text-rose">
-            {t.lazyFailed}
-          </p>
+          <div role="alert" className="flex flex-col items-start gap-3 rounded-3xl border border-zinc-800 bg-zinc-900 p-5 shadow-card">
+            <p className="text-sm leading-relaxed text-zinc-300">{t.lazyFailed}</p>
+            <button type="button" onClick={applyUpdate} className="btn-primary min-h-11">
+              {t.update.applyNow}
+            </button>
+          </div>
         ),
       }
     }),

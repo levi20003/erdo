@@ -17,9 +17,9 @@ CI (`.github/workflows/ci.yml`) runs all of it on every push and pull request; t
 | `features.test.js` | Validated prefs (incl. `__proto__`), import merge, category id immutability, feedback state, insights, feedback-prompt rules, sound settings validation, onboarding actions |
 | `forest.test.js` | Day/week/month/year ranges (Monday weeks), period shifting, unlock thresholds, "next unlock" and its progress bar |
 | `challenge.test.js` | Link round-trip (accents), rejection of malformed / out-of-range / oversized links, nickname cleaning, invite vs update vs own link, accept once, newer-only updates, status and leader, repair of stored challenges |
-| `progress.test.js` | 50- and 90-minute presets (break length, planned length of a failed block), saved timer validation, daily goal and theme validation, XP → levels and titles, year map layout and summary, seasons |
+| `progress.test.js` | 50- and 90-minute presets (break length, planned length of a failed block), saved timer validation, daily goal and theme validation, XP → levels and titles, year heat-map weeks and summary, seasons |
 | `sanitize.test.js` | Repair of garbage, broken sessions/categories/timers, duplicates, ordering |
-| `migrations.test.js` | Every step present, v1 → … → v5, determinism and idempotency, newer-version data untouched |
+| `migrations.test.js` | Every step present, v1 → … → v6 (incl. the palette change), determinism and idempotency, newer-version data untouched |
 | `storage.test.js` | Empty, corrupt JSON (copy kept), legacy (backup kept), newer version (unknown fields preserved), full quota (frees space, retries), blocked storage, no duplicate writes |
 | `errorLog.test.js` | Anonymisation, entry and size caps, never throws, clearing |
 | `exportData.test.js` | CSV BOM / separators / decimal marks per language, quoting, formula neutralisation, backup round-trip, emergency-file import, rejection of foreign files |
@@ -41,6 +41,7 @@ Run against the **production build** (service worker included), with Playwright'
 | `ux` | English switch persists; feedback prompt after 5 sessions, dismissable, never during focus; 375×667 phone has no horizontal overflow; reduced motion shows a still celebration |
 | `screens` | First run: welcome → local profile (name + avatar) → focus choice, persisted, replayable; "sign in" restores a backup with its profile; editing the profile; picking the category from the summary card; tabs live in the URL (back button, reload); Stats empty state; My forest grown/withered counts, plant details, periods, locked collection; 10th session unlocks the birch (celebration + selectable) |
 | `engage` | Theme follows the device, the header switch overrides it and survives a reload (no flash), Settings returns to System; a 50-minute block logs 50 minutes and a 10-minute break; daily goal set from the ring, goal reached and level-up shown in the celebration; a full friend challenge between two browser contexts (create → copy link → friend accepts → friend completes a session and replies → host's copy updates; own link ignored); a broken link is refused; year map day details; every screen fits a 375 px phone in light and dark |
+| `update` | Against its own static server that swaps `sw.js` in memory: "Check for updates" says up to date; after a "deploy" the new worker installs and waits (the old one keeps control), the banner shows the version, one tap reloads under the new worker and confirms it, data intact; during a focus block the prompt stays hidden and appears afterwards |
 | `sound` | With `--autoplay-policy=user-gesture-required`: the Start tap leaves the AudioContext running, the end of the block plays the chime and vibrates; background sound loops during focus, can be switched mid-session, settings persist |
 
 Projects: `desktop` (Chromium) and `mobile` (Chromium at 375×667, touch). Locally, `reuseExistingServer` lets you keep a preview running.
@@ -68,6 +69,11 @@ Automated tests run in Chromium. These need a real phone:
 - [ ] CSV opens in Numbers with accents intact.
 - [ ] Ring/silent switch **off**, no background sound: the chime is audible at 25:00. (With the switch on, iOS mutes web audio — expected.)
 - [ ] Back button / swipe-back moves between screens instead of leaving the app.
+
+**Android, Pixel-class phone with gesture navigation (1.4.0)**
+- [ ] The dock floats just above the gesture pill, with the page colour around it; nothing is cut by the rounded display corners; with three-button navigation it sits above the buttons.
+- [ ] Swipe up from the bottom edge (home) and from the side (back): neither triggers a tab by accident.
+- [ ] Deploy a new version, bring the app back from the background: the "new version" banner appears; Update reloads and shows the version. Start a focus block first: no banner until it ends.
 
 **Both platforms (1.2.0)**
 - [ ] Light/dark: switch the phone's appearance while the app is open — the app follows (unless forced in Settings); no white flash when opening in dark mode.

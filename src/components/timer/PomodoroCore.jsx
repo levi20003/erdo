@@ -7,7 +7,6 @@ import { formatClock } from '../../lib/time'
 import { useAppStore, useCategoryLookup } from '../../store/AppStore'
 import { BreakGuideToggle, BreathingGuide, StretchGuide } from '../breaks/BreakGuide'
 import ForestScene from '../growth/ForestScene'
-import Icon from '../ui/Icon'
 import PresetPicker from './PresetPicker'
 import ProgressRing from './ProgressRing'
 import StageStepper from './StageStepper'
@@ -21,14 +20,11 @@ const BURST = Array.from({ length: 10 }, (_, i) => {
 })
 const TIP_EVERY_SEC = 5 * 60
 
-const corner =
-  'press absolute z-10 grid size-11 place-items-center rounded-full border border-zinc-800/80 bg-zinc-900/80 text-zinc-400 shadow-card backdrop-blur hover:text-zinc-100'
-
 /**
  * Ring + Erdő scene (or break guide) + growth stages + clock + length + controls.
  * Shared by the card and Focus View; `large` is the stripped-down Focus View variant.
  */
-export default function PomodoroCore({ pomodoro, large = false, onSound, onFullscreen }) {
+export default function PomodoroCore({ pomodoro, large = false }) {
   const { state, actions } = useAppStore()
   const categories = useCategoryLookup()
   const [poke, setPoke] = useState(0)
@@ -50,17 +46,7 @@ export default function PomodoroCore({ pomodoro, large = false, onSound, onFulls
   return (
     <div className="flex w-full flex-col items-center gap-3 sm:gap-4">
       {/* Sized by height too, so the clock and the button stay on short screens. */}
-      <div className={`relative ${large ? 'w-[min(80vw,50dvh,28rem)]' : 'w-full max-w-[min(16rem,28dvh)] sm:max-w-[min(19rem,36dvh)]'}`}>
-        {onSound && (
-          <button type="button" onClick={onSound} aria-label={t.sound.button} title={t.sound.button} className={`${corner} -left-3 top-0`}>
-            <Icon name={sound.ambient === 'off' ? 'volumeOff' : 'volume'} size={17} className={sound.ambient === 'off' ? '' : 'text-sand'} />
-          </button>
-        )}
-        {onFullscreen && (
-          <button type="button" onClick={onFullscreen} aria-label={t.fullscreen} title={t.fullscreen} className={`${corner} -right-3 top-0`}>
-            <Icon name="expand" size={16} />
-          </button>
-        )}
+      <div className={`relative ${large ? 'w-[min(80vw,50dvh,28rem)]' : 'w-full max-w-[min(16rem,25dvh)] sm:max-w-[min(19rem,36dvh)]'}`}>
         <ProgressRing progress={timer ? progress : 0} color={onBreak ? '#ccd478' : category?.color ?? '#2d7749'} live={focusing}>
           {onBreak ? (
             <div key={`break-${state.prefs.breakGuide}`} className="size-full animate-scene-in">
@@ -91,7 +77,7 @@ export default function PomodoroCore({ pomodoro, large = false, onSound, onFulls
                       key={i}
                       className="swarm absolute size-2 rounded-[60%_0] "
                       style={{
-                        background: b.gold ? '#d9c09f' : category?.color ?? '#7d8247',
+                        background: b.gold ? '#d9c09f' : category?.color ?? '#62a16a',
                         '--tx': `${b.tx}px`,
                         '--ty': `${b.ty}px`,
                         '--delay': `${b.delay}s`,
@@ -121,7 +107,7 @@ export default function PomodoroCore({ pomodoro, large = false, onSound, onFulls
           />
         )}
         <p
-          className={`num font-extralight leading-none text-zinc-50 ${large ? 'text-[5.5rem] sm:text-[7rem]' : 'text-[3.9rem] sm:text-[4.75rem]'}`}
+          className={`num font-light leading-none text-zinc-50 ${large ? 'text-[5.5rem] sm:text-[7rem]' : 'text-[3.9rem] sm:text-[4.75rem]'}`}
           aria-label={`${t.phase[phase]}: ${clock}`}
         >
           {clock}

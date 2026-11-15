@@ -80,4 +80,16 @@ describe('migrations', () => {
     const { data } = migrate({ schemaVersion: 4, prefs: { nickname: 'Levi', theme: 'dark' } })
     expect(data.prefs).toMatchObject({ nickname: 'Levi', theme: 'dark', avatar: 'sprout' })
   })
+
+  it('5 → 6: old palette colours become the new ones; custom colours stay', () => {
+    const { data } = migrate({
+      schemaVersion: 5,
+      categories: [
+        { id: 'a', name: 'A', color: '#7D8247', growth: 'tolgy' },
+        { id: 'b', name: 'B', color: '#123456', growth: 'gomba' },
+      ],
+    })
+    expect(data.categories.map((c) => c.color)).toEqual(['#62a16a', '#123456'])
+    expect(migrate({ schemaVersion: 5 }).data.categories).toBeUndefined()
+  })
 })

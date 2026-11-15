@@ -12,6 +12,8 @@ export default {
   future: { hoverOnlyWhenSupported: true },
   theme: {
     extend: {
+      // Short phones (iPhone SE and the like): the Focus screen tightens up so Start stays visible.
+      screens: { short: { raw: '(max-height: 720px) and (max-width: 767px)' } },
       colors: {
         // The neutral scale flips between themes: 950 is always the page, 50 the strongest text.
         zinc: {

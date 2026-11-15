@@ -8,9 +8,9 @@ const VISIBLE_MS = 4000
 const EXIT_MS = 180
 
 const TONES = {
-  info: { icon: 'info', className: 'text-zinc-400' },
-  success: { icon: 'sprout', className: 'text-olive-300' },
-  danger: { icon: 'alert', className: 'text-rose' },
+  info: { icon: 'info', className: 'bg-white/15 text-white' },
+  success: { icon: 'check', className: 'bg-[#9bd486] text-[#1d3324]' },
+  danger: { icon: 'alert', className: 'bg-[#e8a8a0] text-[#4a1f1f]' },
 }
 
 /**
@@ -31,7 +31,7 @@ export function ToastProvider({ children }) {
       {!locked && (
         <div
           aria-live="polite"
-          className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+          className="pointer-events-none fixed inset-x-0 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-[60] flex flex-col items-center gap-2 px-4 md:bottom-6"
         >
           {queue.slice(-3).map((toast) => (
             <Toast key={toast.id} toast={toast} onDismiss={dismiss} />
@@ -62,12 +62,14 @@ function Toast({ toast, onDismiss }) {
     <button
       type="button"
       onClick={() => setLeaving(true)}
-      className={`pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/95 px-4 py-3 text-left text-sm text-zinc-200 shadow-[0_12px_40px_-12px_rgb(0_0_0/0.8)] backdrop-blur-md ${
+      className={`pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl bg-[#2e2222] py-2.5 pl-2.5 pr-4 text-left text-sm font-semibold text-[#f7f8e8] shadow-[0_16px_40px_-12px_rgb(0_0_0/0.6)] ring-1 ring-white/10 ${
         leaving ? 'animate-toast-out' : 'animate-toast-in'
       }`}
     >
-      <Icon name={tone.icon} size={16} className={tone.className} />
-      <span className="min-w-0 flex-1">{toast.message}</span>
+      <span className={`grid size-8 shrink-0 place-items-center rounded-xl ${tone.className}`}>
+        <Icon name={tone.icon} size={16} strokeWidth={2.2} />
+      </span>
+      <span className="min-w-0 flex-1 leading-snug">{toast.message}</span>
     </button>
   )
 }
